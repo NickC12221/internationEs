@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // src/app/api/premium/webhook/route.ts
 // Stripe webhook handler
 // When Stripe is integrated, this endpoint receives payment confirmations
