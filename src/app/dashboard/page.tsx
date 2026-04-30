@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const [saveMsg, setSaveMsg] = useState('')
 
   useEffect(() => {
-    fetch('/api/auth/me')
+    fetch('/api/user')
       .then((r) => r.json())
       .then((data) => {
         if (data.success) {

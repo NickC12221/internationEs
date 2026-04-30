@@ -21,7 +21,7 @@ export default function Header() {
   const pathname = usePathname()
 
   useEffect(() => {
-    fetch('/api/auth/me')
+    fetch('/api/user')
       .then((r) => r.json())
       .then((data) => {
         if (data.success) setUser(data.data)

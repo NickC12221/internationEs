@@ -23,7 +23,7 @@ export default function ImagesPage() {
   const [uploadProgress, setUploadProgress] = useState(0)
 
   useEffect(() => {
-    fetch('/api/auth/me')
+    fetch('/api/user')
       .then((r) => r.json())
       .then((data) => {
         if (data.success) {
