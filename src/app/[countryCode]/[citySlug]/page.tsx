@@ -1,4 +1,3 @@
-// src/app/[countryCode]/[citySlug]/page.tsx
 import { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import LocationSidebar from '@/components/layout/LocationSidebar'
@@ -10,14 +9,12 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const countryCode = params.countryCode.toUpperCase()
+  const cc = params.countryCode.toUpperCase()
   const profile = await prisma.profile.findFirst({
-    where: { countryCode, citySlug: params.citySlug, isActive: true },
+    where: { countryCode: cc, citySlug: params.citySlug, isActive: true },
     select: { country: true, city: true },
   })
-
   if (!profile) return { title: 'Models' }
-
   return {
     title: `Models in ${profile.city}, ${profile.country}`,
     description: `Browse professional female models based in ${profile.city}, ${profile.country}.`,
@@ -25,13 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
-  const countryCode = params.countryCode.toUpperCase()
-
+  const cc = params.countryCode.toUpperCase()
   const locationInfo = await prisma.profile.findFirst({
-    where: { countryCode, citySlug: params.citySlug, isActive: true },
+    where: { countryCode: cc, citySlug: params.citySlug, isActive: true },
     select: { country: true, city: true },
   })
-
   return (
     <div className="min-h-screen">
       <Header />
@@ -44,7 +39,7 @@ export default async function CityPage({ params }: Props) {
           </div>
           <ModelGrid
             title={locationInfo ? `Models in ${locationInfo.city}` : 'Models'}
-            initialFilters={{ countryCode, citySlug: params.citySlug }}
+            initialFilters={{ countryCode: cc }}
           />
         </div>
       </div>
