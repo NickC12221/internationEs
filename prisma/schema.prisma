@@ -1,7 +1,5 @@
-// prisma/schema.prisma
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -54,40 +52,33 @@ model Profile {
   userId       String @unique
   user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Display info
   displayName  String
   slug         String   @unique
   bio          String?  @db.Text
   age          Int?
 
-  // Location
   country      String
-  countryCode  String   // ISO 2-letter code
+  countryCode  String
   city         String
-  citySlug     String   // URL-safe city name
+  citySlug     String
 
-  // Contact
   email        String?
   phone        String?
   instagram    String?
   twitter      String?
   website      String?
 
-  // Status
   availability AvailabilityStatus @default(AVAILABLE)
   listingTier  ListingTier        @default(FREE)
   isActive     Boolean            @default(true)
   isVerified   Boolean            @default(false)
 
-  // Images
   profileImageUrl String?
   images          ProfileImage[]
 
-  // Timestamps
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  // Premium expiry
   premiumExpiresAt DateTime?
 
   favorites    Favorite[]
@@ -104,7 +95,7 @@ model ProfileImage {
   profileId  String
   profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   url        String
-  key        String   // S3 key
+  key        String
   order      Int      @default(0)
   isMain     Boolean  @default(false)
   createdAt  DateTime @default(now())
@@ -119,13 +110,12 @@ model VerificationRequest {
 
   status    VerificationStatus @default(PENDING)
 
-  // Private files - stored in private S3 bucket
-  idImageKey    String?  // Passport/ID image key
-  videoKey      String?  // Short verification video key
+  idImageKey    String?
+  videoKey      String?
 
   adminNotes    String?  @db.Text
   reviewedAt    DateTime?
-  reviewedBy    String?  // Admin user ID
+  reviewedBy    String?
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -148,9 +138,9 @@ model Favorite {
 model PremiumOrder {
   id          String   @id @default(cuid())
   profileId   String
-  amount      Int      // In cents
+  amount      Int
   currency    String   @default("USD")
-  status      String   @default("pending") // pending, paid, failed
+  status      String   @default("pending")
   stripePaymentIntentId String?
   durationDays Int     @default(30)
   createdAt   DateTime @default(now())
