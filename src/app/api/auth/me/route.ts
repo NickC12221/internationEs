@@ -1,10 +1,12 @@
 export const dynamic = 'force-dynamic'
-export const fetchCache = 'force-no-store'
 
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({ success: false, error: 'Not configured' }, { status: 500 })
+    }
     const { getSessionFromRequest } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
 
