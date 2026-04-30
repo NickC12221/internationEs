@@ -1,12 +1,13 @@
 export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
+export const fetchCache = 'force-no-store'
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/db/prisma'
 
 export async function GET(req: NextRequest) {
   try {
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+    const { prisma } = await import('@/lib/db/prisma')
+
     const session = await getSessionFromRequest(req)
     if (!session) {
       return NextResponse.json({ success: false, error: 'Not authenticated' }, { status: 401 })
@@ -34,6 +35,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: user })
   } catch (error) {
+    console.error('Me error:', error)
     return NextResponse.json({ success: false, error: 'Failed to fetch user' }, { status: 500 })
   }
 }

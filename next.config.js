@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
-  experimental: {
-    optimizePackageImports: ['lucide-react'],
-  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**.amazonaws.com' },
@@ -11,6 +7,9 @@ const nextConfig = {
       { protocol: 'https', hostname: '**.r2.dev' },
       { protocol: 'http', hostname: 'localhost' },
     ],
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
   },
 }
 
