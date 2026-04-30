@@ -1,4 +1,4 @@
-// src/app/[countryCode]/page.tsx
+// src/app/[countryCode]/[citySlug]/page.tsx
 import { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import LocationSidebar from '@/components/layout/LocationSidebar'
@@ -6,32 +6,33 @@ import ModelGrid from '@/components/model/ModelGrid'
 import { prisma } from '@/lib/db/prisma'
 
 interface Props {
-  params: { countryCode: string }
+  params: { countryCode: string; citySlug: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const countryCode = params.countryCode.toUpperCase()
   const profile = await prisma.profile.findFirst({
-    where: { countryCode, isActive: true },
-    select: { country: true },
+    where: { countryCode, citySlug: params.citySlug, isActive: true },
+    select: { country: true, city: true },
   })
 
-  const country = profile?.country || countryCode
+  if (!profile) return { title: 'Models' }
+
   return {
-    title: `Models in ${country}`,
-    description: `Browse professional female models based in ${country}.`,
+    title: `Models in ${profile.city}, ${profile.country}`,
+    description: `Browse professional female models based in ${profile.city}, ${profile.country}.`,
   }
 }
 
-export default async function CountryPage({ params }: Props) {
+export default async function CityPage({ params }: Props) {
   const countryCode = params.countryCode.toUpperCase()
 
-  const countryInfo = await prisma.profile.findFirst({
-    where: { countryCode, isActive: true },
-    select: { country: true },
+  const locationInfo = await prisma.profile.findFirst({
+    where: { countryCode: countryCode, citySlug: params.citySlug, isActive: true },
+    select: { country: true, city: true },
   })
 
-  const country = countryInfo?.country || countryCode
+  const filters = { countryCode: countryCode, citySlug: params.citySlug }
 
   return (
     <div className="min-h-screen">
@@ -44,8 +45,8 @@ export default async function CountryPage({ params }: Props) {
             </div>
           </div>
           <ModelGrid
-            title={`Models in ${country}`}
-            initialFilters={{ countryCode }}
+            title={locationInfo ? `Models in ${locationInfo.city}` : 'Models'}
+            initialFilters={filters}
           />
         </div>
       </div>
