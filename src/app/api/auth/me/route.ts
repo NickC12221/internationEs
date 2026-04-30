@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
-// src/app/api/auth/me/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth/jwt'
 import { prisma } from '@/lib/db/prisma'
@@ -34,7 +34,6 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, data: user })
   } catch (error) {
-    console.error('Me error:', error)
     return NextResponse.json({ success: false, error: 'Failed to fetch user' }, { status: 500 })
   }
 }
