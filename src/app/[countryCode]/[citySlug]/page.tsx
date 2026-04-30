@@ -39,7 +39,7 @@ export default async function CityPage({ params }: Props) {
           </div>
           <ModelGrid
             title={locationInfo ? `Models in ${locationInfo.city}` : 'Models'}
-            initialFilters={{ countryCode: cc }}
+            initialFilters={{ citySlug: params.citySlug }}
           />
         </div>
       </div>
