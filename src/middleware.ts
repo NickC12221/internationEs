@@ -1,3 +1,4 @@
+export const runtime = "nodejs"
 // src/middleware.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyToken } from '@/lib/auth/jwt'
