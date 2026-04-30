@@ -1,11 +1,10 @@
-// src/types/index.ts
 export type Role = 'MODEL' | 'ADMIN'
 export type VerificationStatus = 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED'
 export type AvailabilityStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'TRAVELING' | 'BUSY'
 export type ListingTier = 'FREE' | 'PREMIUM'
 
 export interface JWTPayload {
-  sub: string        // user id
+  sub: string
   email: string
   role: Role
   iat: number
@@ -85,6 +84,7 @@ export interface ApiResponse<T = unknown> {
 
 export interface ProfileFilters {
   country?: string
+  countryCode?: string
   citySlug?: string
   availability?: AvailabilityStatus
   search?: string
