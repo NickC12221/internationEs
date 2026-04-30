@@ -1,0 +1,159 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  MODEL
+  ADMIN
+}
+
+enum VerificationStatus {
+  NONE
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum AvailabilityStatus {
+  AVAILABLE
+  UNAVAILABLE
+  TRAVELING
+  BUSY
+}
+
+enum ListingTier {
+  FREE
+  PREMIUM
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(MODEL)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile             Profile?
+  verificationRequest VerificationRequest?
+  favorites           Favorite[]           @relation("UserFavorites")
+
+  @@map("users")
+}
+
+model Profile {
+  id           String @id @default(cuid())
+  userId       String @unique
+  user         User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Display info
+  displayName  String
+  slug         String   @unique
+  bio          String?  @db.Text
+  age          Int?
+
+  // Location
+  country      String
+  countryCode  String   // ISO 2-letter code
+  city         String
+  citySlug     String   // URL-safe city name
+
+  // Contact
+  email        String?
+  phone        String?
+  instagram    String?
+  twitter      String?
+  website      String?
+
+  // Status
+  availability AvailabilityStatus @default(AVAILABLE)
+  listingTier  ListingTier        @default(FREE)
+  isActive     Boolean            @default(true)
+  isVerified   Boolean            @default(false)
+
+  // Images
+  profileImageUrl String?
+  images          ProfileImage[]
+
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Premium expiry
+  premiumExpiresAt DateTime?
+
+  favorites    Favorite[]
+
+  @@index([country, city])
+  @@index([countryCode, citySlug])
+  @@index([listingTier, createdAt])
+  @@index([slug])
+  @@map("profiles")
+}
+
+model ProfileImage {
+  id         String   @id @default(cuid())
+  profileId  String
+  profile    Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  url        String
+  key        String   // S3 key
+  order      Int      @default(0)
+  isMain     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@map("profile_images")
+}
+
+model VerificationRequest {
+  id        String             @id @default(cuid())
+  userId    String             @unique
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status    VerificationStatus @default(PENDING)
+
+  // Private files - stored in private S3 bucket
+  idImageKey    String?  // Passport/ID image key
+  videoKey      String?  // Short verification video key
+
+  adminNotes    String?  @db.Text
+  reviewedAt    DateTime?
+  reviewedBy    String?  // Admin user ID
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("verification_requests")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  profileId String
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, profileId])
+  @@map("favorites")
+}
+
+model PremiumOrder {
+  id          String   @id @default(cuid())
+  profileId   String
+  amount      Int      // In cents
+  currency    String   @default("USD")
+  status      String   @default("pending") // pending, paid, failed
+  stripePaymentIntentId String?
+  durationDays Int     @default(30)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("premium_orders")
+}
