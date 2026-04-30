@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 
 export default function LoginForm() {
@@ -11,8 +11,6 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') || '/dashboard'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,7 +24,7 @@ export default function LoginForm() {
       })
       const data = await res.json()
       if (data.success) {
-        router.push(redirect)
+        router.push('/dashboard')
         router.refresh()
       } else {
         setError(data.error || 'Sign in failed')
@@ -58,7 +56,7 @@ export default function LoginForm() {
               <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Email</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
-                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email"
+                <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 py-2.5 pl-10 pr-4 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
                   placeholder="you@example.com" />
               </div>
@@ -67,7 +65,7 @@ export default function LoginForm() {
               <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-500" />
-                <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required autoComplete="current-password"
+                <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} required
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 py-2.5 pl-10 pr-10 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
                   placeholder="••••••••" />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300">
