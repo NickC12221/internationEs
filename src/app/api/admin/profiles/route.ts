@@ -1,7 +1,8 @@
-// src/app/api/admin/profiles/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth/jwt'
 import { prisma } from '@/lib/db/prisma'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(req: NextRequest) {
   const session = await getSessionFromRequest(req)
@@ -59,15 +60,10 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const { profileId, updates } = await req.json()
-
     const profile = await prisma.profile.update({
       where: { id: profileId },
-      data: {
-        ...updates,
-        updatedAt: new Date(),
-      },
+      data: { ...updates, updatedAt: new Date() },
     })
-
     return NextResponse.json({ success: true, data: profile })
   } catch (error) {
     return NextResponse.json({ success: false, error: 'Failed to update profile' }, { status: 500 })
