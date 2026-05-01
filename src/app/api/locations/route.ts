@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
   try {
+    const { prisma } = await import('@/lib/db/prisma')
     // Get all active profiles grouped by country/city
     const groups = await prisma.profile.groupBy({
       by: ['country', 'countryCode', 'city', 'citySlug'],

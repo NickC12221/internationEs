@@ -8,6 +8,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
+    const { prisma } = await import('@/lib/db/prisma')
     const session = await getSessionFromRequest(req)
 
     const profile = await prisma.profile.findUnique({
