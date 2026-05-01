@@ -131,6 +131,11 @@ export default function AgencyDashboardPage() {
                 <MapPin className="h-3.5 w-3.5" />
                 <span>{agency?.city}, {agency?.country}</span>
               </div>
+              {agency?.slug && (
+                <a href={`/agencies/${agency.slug}`} target="_blank" className="mt-1 text-xs text-amber-600 hover:text-amber-500">
+                  View public profile →
+                </a>
+              )}
               <div className={`mt-2 text-xs font-medium ${agency?.subscriptionStatus === 'ACTIVE' ? 'text-emerald-400' : 'text-red-400'}`}>
                 Subscription: {agency?.subscriptionStatus}
                 {agency?.subscriptionExpiresAt && (
@@ -146,6 +151,48 @@ export default function AgencyDashboardPage() {
               <div className="mt-1 h-1.5 w-24 overflow-hidden rounded-full bg-stone-700">
                 <div className="h-full rounded-full bg-amber-600 transition-all" style={{ width: `${(slotsUsed / slotsTotal) * 100}%` }} />
               </div>
+            </div>
+          </div>
+        </div>
+
+
+        {/* Banner Upload */}
+        <div className="mb-6 rounded-2xl border border-stone-800 bg-stone-900 p-5">
+          <h3 className="mb-3 text-sm font-medium text-stone-300">Agency Banner / Logo</h3>
+          <div className="flex items-start gap-4">
+            {agency?.logoUrl ? (
+              <div className="relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-lg bg-stone-800">
+                <img src={agency.logoUrl} alt="Agency banner" className="h-full w-full object-cover" />
+              </div>
+            ) : (
+              <div className="flex h-20 w-32 flex-shrink-0 items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 text-stone-600 text-xs text-center px-2">
+                No banner yet
+              </div>
+            )}
+            <div>
+              <p className="text-xs text-stone-500 mb-2">Upload a banner image for your agency profile page. Recommended: 1200×400px.</p>
+              <label className="cursor-pointer">
+                <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) return
+                  const uploadRes = await fetch('/api/upload', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mimeType: file.type, folder: 'profiles', isPrivate: false }),
+                  })
+                  const { data } = await uploadRes.json()
+                  await fetch(data.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+                  await fetch('/api/agency', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ logoUrl: data.publicUrl }),
+                  })
+                  fetchData()
+                }} />
+                <span className="inline-flex items-center gap-2 rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-xs text-stone-400 hover:border-amber-700 hover:text-stone-200 transition-colors">
+                  Upload Banner
+                </span>
+              </label>
             </div>
           </div>
         </div>

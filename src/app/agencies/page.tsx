@@ -148,7 +148,7 @@ export default function AgenciesPage() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {filteredAgencies.map(agency => (
-                  <div key={agency.id} className={`rounded-xl border p-5 transition-all hover:-translate-y-0.5 ${agency.isPremium ? 'border-amber-900/50 bg-amber-950/10' : 'border-stone-800 bg-stone-900'}`}>
+                  <Link key={agency.id} href={`/agencies/${agency.slug}`} className={`block rounded-xl border p-5 transition-all hover:-translate-y-0.5 cursor-pointer ${agency.isPremium ? 'border-amber-900/50 bg-amber-950/10' : 'border-stone-800 bg-stone-900'}`}>
                     <div className="flex items-start gap-4">
                       {agency.logoUrl ? (
                         <img src={agency.logoUrl} alt={agency.name} className="h-12 w-12 rounded-lg object-cover flex-shrink-0" />
@@ -172,12 +172,10 @@ export default function AgenciesPage() {
                             <Users className="h-3.5 w-3.5" />
                             {agency._count.models} models
                           </span>
-                          {agency.website && (
-                            <a href={agency.website} target="_blank" rel="noopener noreferrer"
-                              className="text-xs text-amber-600 hover:text-amber-400">
-                              Visit website →
-                            </a>
-                          )}
+                          <Link href={`/agencies/${agency.slug}`}
+                            className="text-xs text-amber-600 hover:text-amber-400">
+                            View profile →
+                          </Link>
                         </div>
                       </div>
                     </div>
