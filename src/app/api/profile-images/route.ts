@@ -2,7 +2,10 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function POST(req: NextRequest) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const { getSessionFromRequest } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
@@ -11,8 +14,6 @@ export async function POST(req: NextRequest) {
     if (!session) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
-
-    const { key, url, order, isMain } = await req.json()
 
     const profile = await prisma.profile.findUnique({
       where: { userId: session.id },
@@ -23,31 +24,31 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Profile not found' }, { status: 404 })
     }
 
-    const count = await prisma.profileImage.count({ where: { profileId: profile.id } })
-    if (count >= 20) {
-      return NextResponse.json({ success: false, error: 'Maximum 20 images allowed' }, { status: 400 })
-    }
-
-    if (isMain) {
-      await prisma.profile.update({
-        where: { id: profile.id },
-        data: { profileImageUrl: url },
-      })
-    }
-
-    const image = await prisma.profileImage.create({
-      data: {
-        profileId: profile.id,
-        url,
-        key,
-        order: order ?? count,
-        isMain: isMain ?? count === 0,
-      },
+    const image = await prisma.profileImage.findUnique({
+      where: { id: params.id },
     })
 
-    return NextResponse.json({ success: true, data: image })
-  } catch (error) {
-    console.error('Save image error:', error)
-    return NextResponse.json({ success: false, error: 'Failed to save image' }, { status: 500 })
+    if (!image || image.profileId !== profile.id) {
+      return NextResponse.json({ success: false, error: 'Image not found' }, { status: 404 })
+    }
+
+    await prisma.profileImage.updateMany({
+      where: { profileId: profile.id },
+      data: { isMain: false },
+    })
+
+    await prisma.profileImage.update({
+      where: { id: params.id },
+      data: { isMain: true },
+    })
+
+    await prisma.profile.update({
+      where: { id: profile.id },
+      data: { profileImageUrl: image.url },
+    })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
