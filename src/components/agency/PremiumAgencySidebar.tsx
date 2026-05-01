@@ -1,15 +1,14 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Building2, Star, MapPin, Users } from 'lucide-react'
+import Link from 'next/link'
+import { Star, Users } from 'lucide-react'
 
 interface PremiumAgency {
   id: string
   name: string
+  slug: string
   city: string
-  country: string
   logoUrl: string | null
-  website: string | null
-  email: string | null
   bio: string | null
   _count: { models: number }
 }
@@ -45,7 +44,11 @@ export default function PremiumAgencySidebar({ countryCode, citySlug }: Props) {
         </div>
         <div className="space-y-3">
           {agencies.map(agency => (
-            <div key={agency.id} className="rounded-xl border border-amber-900/40 bg-amber-950/10 p-3">
+            <Link
+              key={agency.id}
+              href={`/agencies/${agency.slug}`}
+              className="block rounded-xl border border-amber-900/40 bg-amber-950/10 p-3 transition-colors hover:border-amber-700"
+            >
               <div className="flex items-center gap-2.5">
                 {agency.logoUrl ? (
                   <img src={agency.logoUrl} alt={agency.name} className="h-9 w-9 rounded-lg object-cover flex-shrink-0" />
@@ -65,18 +68,8 @@ export default function PremiumAgencySidebar({ countryCode, citySlug }: Props) {
               {agency.bio && (
                 <p className="mt-2 text-xs text-stone-500 line-clamp-2">{agency.bio}</p>
               )}
-              {agency.website && (
-                <a href={agency.website} target="_blank" rel="noopener noreferrer"
-                  className="mt-2 block text-xs text-amber-600 hover:text-amber-400 truncate">
-                  {agency.website.replace(/^https?:\/\//, '')}
-                </a>
-              )}
-              {agency.email && !agency.website && (
-                <a href={`mailto:${agency.email}`} className="mt-2 block text-xs text-amber-600 hover:text-amber-400 truncate">
-                  {agency.email}
-                </a>
-              )}
-            </div>
+              <p className="mt-2 text-xs text-amber-600">View agency →</p>
+            </Link>
           ))}
         </div>
       </div>
