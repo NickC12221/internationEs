@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // src/app/[countryCode]/[citySlug]/[slug]/page.tsx
 import { Metadata, ResolvingMetadata } from 'next'
 import { notFound } from 'next/navigation'
