@@ -52,3 +52,7 @@ export async function PATCH(
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
+
+export async function generateStaticParams() {
+  return []
+}
