@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/locations/route.ts
 import { NextResponse } from 'next/server'

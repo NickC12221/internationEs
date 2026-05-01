@@ -1,4 +1,4 @@
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/premium/checkout/route.ts
 import { NextRequest, NextResponse } from 'next/server'
