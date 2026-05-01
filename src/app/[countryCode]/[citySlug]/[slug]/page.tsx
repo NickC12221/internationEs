@@ -10,15 +10,19 @@ import {
   Phone, Mail, ArrowLeft, Calendar
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
-import { prisma } from '@/lib/db/prisma'
 import { getAvailabilityLabel, getAvailabilityColor } from '@/lib/utils'
 
 interface Props {
   params: { countryCode: string; citySlug: string; slug: string }
 }
 
+async function getPrisma() {
+  const { prisma } = await import('@/lib/db/prisma')
+  return prisma
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const profile = await prisma.profile.findUnique({
+  const profile = await (await getPrisma()).profile.findUnique({
     where: { slug: params.slug, isActive: true },
     select: { displayName: true, city: true, country: true, bio: true, profileImageUrl: true },
   })
@@ -35,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ModelProfilePage({ params }: Props) {
-  const profile = await prisma.profile.findUnique({
+  const profile = await (await getPrisma()).profile.findUnique({
     where: { slug: params.slug, isActive: true },
     include: {
       images: { orderBy: { order: 'asc' } },

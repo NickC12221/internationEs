@@ -5,15 +5,19 @@ import { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import LocationSidebar from '@/components/layout/LocationSidebar'
 import ModelGrid from '@/components/model/ModelGrid'
-import { prisma } from '@/lib/db/prisma'
 
 interface Props {
   params: { countryCode: string; citySlug: string }
 }
 
+async function getPrisma() {
+  const { prisma } = await import('@/lib/db/prisma')
+  return prisma
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const countryCode = params.countryCode.toUpperCase()
-  const profile = await prisma.profile.findFirst({
+  const profile = await (await getPrisma()).profile.findFirst({
     where: { countryCode, citySlug: params.citySlug, isActive: true },
     select: { country: true, city: true },
   })
@@ -29,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CityPage({ params }: Props) {
   const countryCode = params.countryCode.toUpperCase()
 
-  const locationInfo = await prisma.profile.findFirst({
+  const locationInfo = await (await getPrisma()).profile.findFirst({
     where: { countryCode: countryCode, citySlug: params.citySlug, isActive: true },
     select: { country: true, city: true },
   })
