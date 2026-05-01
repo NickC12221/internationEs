@@ -24,6 +24,7 @@ export async function GET() {
         role: true,
         createdAt: true,
         profile: { include: { images: { orderBy: { order: 'asc' } } } },
+        agency: { select: { name: true, slug: true } },
         verificationRequest: { select: { status: true, createdAt: true } },
       },
     })
