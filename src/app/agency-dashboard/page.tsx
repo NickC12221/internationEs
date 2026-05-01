@@ -16,8 +16,6 @@ interface AgencyModel {
   profileImageUrl: string | null
   images: { url: string }[]
   slug: string
-  countryCode: string
-  citySlug: string
 }
 
 interface Agency {
@@ -35,6 +33,72 @@ interface Agency {
   phone: string | null
   website: string | null
   instagram: string | null
+}
+
+
+const COUNTRIES_WITH_CITIES: Record<string, string[]> = {
+  "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah"],
+  "United Kingdom": ["London", "Manchester", "Birmingham", "Glasgow", "Liverpool", "Edinburgh", "Bristol", "Leeds"],
+  "United States": ["New York", "Los Angeles", "Chicago", "Miami", "Las Vegas", "Dallas", "Seattle", "Boston", "Atlanta"],
+  "France": ["Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Bordeaux"],
+  "Germany": ["Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt", "Stuttgart"],
+  "Italy": ["Rome", "Milan", "Naples", "Turin", "Florence", "Venice"],
+  "Spain": ["Madrid", "Barcelona", "Valencia", "Seville", "Málaga", "Ibiza", "Marbella"],
+  "Australia": ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast"],
+  "Canada": ["Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton", "Ottawa"],
+  "Brazil": ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza"],
+  "Russia": ["Moscow", "Saint Petersburg", "Novosibirsk", "Sochi"],
+  "Japan": ["Tokyo", "Osaka", "Kyoto", "Yokohama", "Fukuoka"],
+  "South Korea": ["Seoul", "Busan", "Incheon", "Jeju"],
+  "Thailand": ["Bangkok", "Phuket", "Pattaya", "Chiang Mai", "Koh Samui"],
+  "Turkey": ["Istanbul", "Ankara", "Antalya", "Bodrum", "Izmir"],
+  "Morocco": ["Casablanca", "Marrakech", "Rabat", "Fes", "Tangier", "Agadir"],
+  "Mexico": ["Mexico City", "Guadalajara", "Cancún", "Monterrey"],
+  "Colombia": ["Bogotá", "Medellín", "Cali", "Cartagena"],
+  "Philippines": ["Manila", "Cebu City", "Davao", "Makati"],
+  "South Africa": ["Johannesburg", "Cape Town", "Durban", "Pretoria"],
+  "Saudi Arabia": ["Riyadh", "Jeddah", "Dammam", "Mecca"],
+  "Qatar": ["Doha"],
+  "Kuwait": ["Kuwait City", "Salmiya"],
+  "Bahrain": ["Manama", "Riffa"],
+  "Oman": ["Muscat", "Salalah"],
+  "Singapore": ["Singapore"],
+  "Switzerland": ["Zurich", "Geneva", "Basel", "Lausanne"],
+  "Netherlands": ["Amsterdam", "Rotterdam", "The Hague"],
+  "Sweden": ["Stockholm", "Gothenburg", "Malmö"],
+  "Greece": ["Athens", "Thessaloniki", "Mykonos", "Santorini"],
+  "Portugal": ["Lisbon", "Porto", "Faro"],
+  "Egypt": ["Cairo", "Alexandria", "Sharm el-Sheikh", "Hurghada"],
+  "India": ["Mumbai", "Delhi", "Bangalore", "Goa", "Chennai"],
+  "China": ["Beijing", "Shanghai", "Guangzhou", "Shenzhen"],
+  "Indonesia": ["Jakarta", "Bali", "Surabaya"],
+  "Malaysia": ["Kuala Lumpur", "George Town", "Johor Bahru"],
+  "Vietnam": ["Ho Chi Minh City", "Hanoi", "Da Nang"],
+  "Pakistan": ["Karachi", "Lahore", "Islamabad"],
+  "Nigeria": ["Lagos", "Abuja", "Port Harcourt"],
+  "Kenya": ["Nairobi", "Mombasa"],
+  "Ukraine": ["Kyiv", "Odessa", "Lviv"],
+  "Poland": ["Warsaw", "Kraków", "Gdańsk"],
+  "Romania": ["Bucharest", "Cluj-Napoca"],
+  "Czech Republic": ["Prague", "Brno"],
+  "Hungary": ["Budapest"],
+  "Cyprus": ["Nicosia", "Limassol", "Larnaca", "Paphos"],
+  "Malta": ["Valletta", "St. Julian's"],
+  "Montenegro": ["Podgorica", "Budva", "Kotor"],
+  "Croatia": ["Zagreb", "Split", "Dubrovnik"],
+  "Serbia": ["Belgrade", "Novi Sad"],
+  "Lebanon": ["Beirut"],
+  "Jordan": ["Amman", "Aqaba"],
+  "Israel": ["Tel Aviv", "Jerusalem", "Haifa"],
+  "Ireland": ["Dublin", "Cork", "Galway"],
+  "New Zealand": ["Auckland", "Wellington", "Christchurch", "Queenstown"],
+  "Argentina": ["Buenos Aires", "Córdoba", "Mendoza"],
+  "Chile": ["Santiago", "Valparaíso"],
+  "Peru": ["Lima", "Cusco"],
+  "Ecuador": ["Quito", "Guayaquil"],
+  "Dominican Republic": ["Santo Domingo", "Punta Cana"],
+  "Jamaica": ["Kingston", "Montego Bay"],
+  "Panama": ["Panama City"],
 }
 
 export default function AgencyDashboardPage() {
@@ -297,8 +361,17 @@ export default function AgencyDashboardPage() {
               </div>
               <div>
                 <label className="mb-1 block text-xs text-stone-500">City * (must be in {agency?.country})</label>
-                <input value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="City" />
+                {agency?.country && COUNTRIES_WITH_CITIES[agency.country] ? (
+                  <select value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                    <option value="">Select city...</option>
+                    {COUNTRIES_WITH_CITIES[agency.country].map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                ) : (
+                  <input value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
+                    placeholder="Enter city" />
+                )}
               </div>
               <div>
                 <label className="mb-1 block text-xs text-stone-500">Email (optional)</label>
