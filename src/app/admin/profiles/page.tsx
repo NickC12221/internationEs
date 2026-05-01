@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 'use client'
 // src/app/admin/profiles/page.tsx
 import { useState, useEffect, useCallback } from 'react'
