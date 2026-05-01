@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import LocationSidebar from '@/components/layout/LocationSidebar'

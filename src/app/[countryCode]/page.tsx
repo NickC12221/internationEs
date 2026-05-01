@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 // src/app/[countryCode]/[citySlug]/page.tsx
 import { Metadata } from 'next'
 import Header from '@/components/layout/Header'
