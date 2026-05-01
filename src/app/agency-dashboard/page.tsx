@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Building2, Plus, Edit3, Trash2, Star, Users, MapPin, CheckCircle } from 'lucide-react'
+import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
 interface AgencyModel {
@@ -24,6 +24,7 @@ interface Agency {
   slug: string
   city: string
   country: string
+  logoUrl: string | null
   isPremium: boolean
   subscriptionStatus: string
   subscriptionExpiresAt: string | null
@@ -42,7 +43,6 @@ export default function AgencyDashboardPage() {
   const [addForm, setAddForm] = useState({ displayName: '', city: '', email: '', bio: '', age: '' })
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
-  const [editingModel, setEditingModel] = useState<AgencyModel | null>(null)
 
   const fetchData = async () => {
     try {
@@ -51,7 +51,7 @@ export default function AgencyDashboardPage() {
         fetch('/api/agency/models'),
       ])
       const [agencyData, modelsData] = await Promise.all([agencyRes.json(), modelsRes.json()])
-      if (agencyData.success) setAgency(agencyData.data)
+      if (agencyData.success) setAgency(agencyData.data as Agency)
       if (modelsData.success) setModels(modelsData.data)
     } finally {
       setLoading(false)
@@ -99,21 +99,42 @@ export default function AgencyDashboardPage() {
     fetchData()
   }
 
+  const handleBannerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const uploadRes = await fetch('/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mimeType: file.type, folder: 'profiles', isPrivate: false }),
+    })
+    const { data } = await uploadRes.json()
+    await fetch(data.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+    await fetch('/api/agency', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ logoUrl: data.publicUrl }),
+    })
+    fetchData()
+  }
+
   if (loading) return (
-    <div className="min-h-screen bg-stone-950"><Header />
+    <div className="min-h-screen bg-stone-950">
+      <Header />
       <div className="flex items-center justify-center py-24 text-stone-500">Loading...</div>
     </div>
   )
 
   const slotsUsed = models.length
   const slotsTotal = 20
+  const logoUrl = agency?.logoUrl ?? null
 
   return (
     <div className="min-h-screen bg-stone-950">
       <Header />
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+
         {/* Agency Header */}
-        <div className="mb-8 rounded-2xl border border-stone-800 bg-stone-900 p-6">
+        <div className="mb-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
           <div className="flex items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-2">
@@ -123,7 +144,7 @@ export default function AgencyDashboardPage() {
                 </h1>
                 {agency?.isPremium && (
                   <span className="flex items-center gap-1 rounded-full bg-amber-900/30 px-2 py-0.5 text-xs text-amber-400">
-                    <Star className="h-3 w-3 fill-current" /> Premium Agency
+                    <Star className="h-3 w-3 fill-current" /> Premium
                   </span>
                 )}
               </div>
@@ -155,14 +176,13 @@ export default function AgencyDashboardPage() {
           </div>
         </div>
 
-
         {/* Banner Upload */}
         <div className="mb-6 rounded-2xl border border-stone-800 bg-stone-900 p-5">
           <h3 className="mb-3 text-sm font-medium text-stone-300">Agency Banner / Logo</h3>
           <div className="flex items-start gap-4">
-            {agency?.logoUrl ? (
+            {logoUrl ? (
               <div className="relative h-20 w-32 flex-shrink-0 overflow-hidden rounded-lg bg-stone-800">
-                <img src={agency.logoUrl} alt="Agency banner" className="h-full w-full object-cover" />
+                <img src={logoUrl} alt="Agency banner" className="h-full w-full object-cover" />
               </div>
             ) : (
               <div className="flex h-20 w-32 flex-shrink-0 items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 text-stone-600 text-xs text-center px-2">
@@ -172,23 +192,7 @@ export default function AgencyDashboardPage() {
             <div>
               <p className="text-xs text-stone-500 mb-2">Upload a banner image for your agency profile page. Recommended: 1200×400px.</p>
               <label className="cursor-pointer">
-                <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                  const file = e.target.files?.[0]
-                  if (!file) return
-                  const uploadRes = await fetch('/api/upload', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ mimeType: file.type, folder: 'profiles', isPrivate: false }),
-                  })
-                  const { data } = await uploadRes.json()
-                  await fetch(data.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
-                  await fetch('/api/agency', {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ logoUrl: data.publicUrl }),
-                  })
-                  fetchData()
-                }} />
+                <input type="file" accept="image/*" className="hidden" onChange={handleBannerUpload} />
                 <span className="inline-flex items-center gap-2 rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-xs text-stone-400 hover:border-amber-700 hover:text-stone-200 transition-colors">
                   Upload Banner
                 </span>
@@ -242,25 +246,16 @@ export default function AgencyDashboardPage() {
                     <div className="mt-3 flex gap-2">
                       <button
                         onClick={() => handleUpgradePremium(model.id, model.listingTier)}
-                        className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors ${
-                          model.listingTier === 'PREMIUM'
-                            ? 'bg-amber-900/30 text-amber-400 hover:bg-amber-900/50'
-                            : 'bg-stone-800 text-stone-400 hover:bg-stone-700'
-                        }`}
+                        className={`flex-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors ${model.listingTier === 'PREMIUM' ? 'bg-amber-900/30 text-amber-400 hover:bg-amber-900/50' : 'bg-stone-800 text-stone-400 hover:bg-stone-700'}`}
                       >
                         {model.listingTier === 'PREMIUM' ? '★ Premium' : 'Upgrade'}
                       </button>
-                      <Link
-                        href={`/${model.slug}`}
-                        target="_blank"
-                        className="rounded-lg bg-stone-800 px-3 py-1.5 text-xs text-stone-400 hover:bg-stone-700 transition-colors"
-                      >
+                      <Link href={`/${model.countryCode?.toLowerCase() || 'ae'}/${model.slug}`} target="_blank"
+                        className="rounded-lg bg-stone-800 px-3 py-1.5 text-xs text-stone-400 hover:bg-stone-700 transition-colors">
                         View
                       </Link>
-                      <button
-                        onClick={() => handleDeleteModel(model.id)}
-                        className="rounded-lg bg-red-950/30 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/60 transition-colors"
-                      >
+                      <button onClick={() => handleDeleteModel(model.id)}
+                        className="rounded-lg bg-red-950/30 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/60 transition-colors">
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -271,16 +266,13 @@ export default function AgencyDashboardPage() {
           </div>
         )}
 
-        {/* Premium upgrade CTA */}
         {!agency?.isPremium && (
           <div className="mt-8 rounded-2xl border border-amber-900/40 bg-amber-950/10 p-6">
             <div className="flex items-start gap-4">
               <Star className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-medium text-stone-200">Upgrade to Premium Agency</h3>
-                <p className="mt-1 text-sm text-stone-400">
-                  Get featured in the sidebar on your city page. Boost your agency's visibility and attract more talent.
-                </p>
+                <p className="mt-1 text-sm text-stone-400">Get featured in the sidebar on your city page. Boost visibility and attract more talent.</p>
                 <button className="mt-3 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
                   Upgrade — $49/month
                 </button>
@@ -290,7 +282,6 @@ export default function AgencyDashboardPage() {
         )}
       </div>
 
-      {/* Add Model Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 px-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-stone-800 bg-stone-900 p-6">
@@ -300,32 +291,27 @@ export default function AgencyDashboardPage() {
               <div>
                 <label className="mb-1 block text-xs text-stone-500">Display Name *</label>
                 <input value={addForm.displayName} onChange={e => setAddForm(p => ({ ...p, displayName: e.target.value }))} required
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
-                  placeholder="Model name" />
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="Model name" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-stone-500">City * (must be in {agency?.country})</label>
                 <input value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
-                  placeholder="City in same country as agency" />
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="City" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-stone-500">Email (optional — for model login)</label>
+                <label className="mb-1 block text-xs text-stone-500">Email (optional)</label>
                 <input type="email" value={addForm.email} onChange={e => setAddForm(p => ({ ...p, email: e.target.value }))}
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
-                  placeholder="model@example.com" />
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="model@example.com" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-stone-500">Age (optional)</label>
                 <input type="number" min="18" max="100" value={addForm.age} onChange={e => setAddForm(p => ({ ...p, age: e.target.value }))}
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
-                  placeholder="18" />
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="18" />
               </div>
               <div>
                 <label className="mb-1 block text-xs text-stone-500">Bio (optional)</label>
                 <textarea value={addForm.bio} onChange={e => setAddForm(p => ({ ...p, bio: e.target.value }))} rows={2}
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none"
-                  placeholder="Short bio..." />
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="submit" disabled={adding}
