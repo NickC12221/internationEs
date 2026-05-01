@@ -35,20 +35,18 @@ export default function AgenciesPage() {
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
 
   useEffect(() => {
-    // Load locations from agencies
     fetch('/api/agencies?pageSize=100')
       .then(r => r.json())
       .then(data => {
         if (data.success) {
           setAgencies(data.data)
-          // Build location groups
           const map = new Map<string, LocationGroup>()
           for (const a of data.data) {
             if (!map.has(a.countryCode)) {
               map.set(a.countryCode, { country: a.country, countryCode: a.countryCode, cities: [] })
             }
             const entry = map.get(a.countryCode)!
-            if (!entry.cities.find(c => c.citySlug === a.citySlug)) {
+            if (!entry.cities.find((c: any) => c.citySlug === a.citySlug)) {
               entry.cities.push({ city: a.city, citySlug: a.citySlug })
             }
           }
@@ -77,7 +75,6 @@ export default function AgenciesPage() {
     <div className="min-h-screen bg-stone-950">
       <Header />
 
-      {/* Hero */}
       <div className="border-b border-stone-900 bg-stone-950 px-4 py-10 text-center">
         <div className="flex items-center justify-center gap-2 mb-2">
           <Building2 className="h-5 w-5 text-amber-500" />
@@ -91,21 +88,18 @@ export default function AgenciesPage() {
 
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6">
         <div className="flex gap-8">
-          {/* Sidebar */}
           <aside className="hidden lg:block w-56 flex-shrink-0">
             <div className="sticky top-24">
               <div className="mb-4 flex items-center gap-2">
                 <Globe className="h-4 w-4 text-stone-500" />
                 <span className="text-xs font-medium uppercase tracking-widest text-stone-500">Filter by Location</span>
               </div>
-
               <button
                 onClick={() => { setSelectedCountry(''); setSelectedCity('') }}
                 className={`w-full text-left rounded-lg px-3 py-2 text-sm transition-colors ${!selectedCountry ? 'bg-amber-900/30 text-amber-400' : 'text-stone-400 hover:bg-stone-900 hover:text-stone-100'}`}
               >
                 All Countries
               </button>
-
               <div className="mt-2 space-y-0.5">
                 {locations.map(loc => (
                   <div key={loc.countryCode}>
@@ -118,7 +112,7 @@ export default function AgenciesPage() {
                     </button>
                     {expanded.has(loc.countryCode) && (
                       <div className="ml-3 mt-0.5 space-y-0.5 border-l border-stone-800 pl-3">
-                        {loc.cities.map(city => (
+                        {loc.cities.map((city: any) => (
                           <button
                             key={city.citySlug}
                             onClick={() => { setSelectedCity(city.citySlug); setSelectedCountry(loc.countryCode) }}
@@ -135,10 +129,8 @@ export default function AgenciesPage() {
             </div>
           </aside>
 
-          {/* Agency grid */}
           <div className="flex-1 min-w-0">
             <p className="mb-6 text-sm text-stone-500">{filteredAgencies.length} {filteredAgencies.length === 1 ? 'agency' : 'agencies'} found</p>
-
             {loading ? (
               <div className="grid gap-4 sm:grid-cols-2">
                 {[...Array(4)].map((_, i) => <div key={i} className="h-40 rounded-xl bg-stone-900 animate-pulse" />)}
@@ -148,7 +140,7 @@ export default function AgenciesPage() {
             ) : (
               <div className="grid gap-4 sm:grid-cols-2">
                 {filteredAgencies.map(agency => (
-                  <Link key={agency.id} href={`/agencies/${agency.slug}`} className={`block rounded-xl border p-5 transition-all hover:-translate-y-0.5 cursor-pointer ${agency.isPremium ? 'border-amber-900/50 bg-amber-950/10' : 'border-stone-800 bg-stone-900'}`}>
+                  <Link key={agency.id} href={`/agencies/${agency.slug}`} className={`block rounded-xl border p-5 transition-all hover:-translate-y-0.5 cursor-pointer ${agency.isPremium ? 'border-amber-900/50 bg-amber-950/10' : 'border-stone-800 bg-stone-900 hover:border-stone-700'}`}>
                     <div className="flex items-start gap-4">
                       {agency.logoUrl ? (
                         <img src={agency.logoUrl} alt={agency.name} className="h-12 w-12 rounded-lg object-cover flex-shrink-0" />
@@ -172,14 +164,11 @@ export default function AgenciesPage() {
                             <Users className="h-3.5 w-3.5" />
                             {agency._count.models} models
                           </span>
-                          <Link href={`/agencies/${agency.slug}`}
-                            className="text-xs text-amber-600 hover:text-amber-400">
-                            View profile →
-                          </Link>
+                          <span className="text-xs text-amber-600">View profile →</span>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
