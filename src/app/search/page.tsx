@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 'use client'
 // src/app/search/page.tsx
 import { useSearchParams } from 'next/navigation'
