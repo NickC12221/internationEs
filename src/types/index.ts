@@ -1,4 +1,4 @@
-export type Role = 'MODEL' | 'ADMIN'
+export type Role = 'MODEL' | 'AGENCY' | 'ADMIN'
 export type VerificationStatus = 'NONE' | 'PENDING' | 'APPROVED' | 'REJECTED'
 export type AvailabilityStatus = 'AVAILABLE' | 'UNAVAILABLE' | 'TRAVELING' | 'BUSY'
 export type ListingTier = 'FREE' | 'PREMIUM'
