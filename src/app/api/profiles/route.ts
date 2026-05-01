@@ -1,12 +1,10 @@
-export const dynamic = 'force-dynamic' // force-rebuild
+export const dynamic = 'force-dynamic'
 
-// src/app/api/profiles/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
   try {
+    const { prisma } = await import('@/lib/db/prisma')
     const { searchParams } = new URL(req.url)
     const country = searchParams.get('country')
     const countryCode = searchParams.get('countryCode')
@@ -16,15 +14,9 @@ export async function GET(req: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = Math.min(parseInt(searchParams.get('pageSize') || '24'), 48)
 
-    const session = await getSessionFromRequest(req)
-
-    const where: Record<string, unknown> = {
-      isActive: true,
-    }
-
+    const where: any = { isActive: true }
     if (countryCode) where.countryCode = countryCode.toUpperCase()
     else if (country) where.country = { contains: country, mode: 'insensitive' }
-
     if (citySlug) where.citySlug = citySlug
     if (availability) where.availability = availability
     if (search) {
@@ -40,38 +32,18 @@ export async function GET(req: NextRequest) {
       prisma.profile.findMany({
         where,
         include: {
-          images: {
-            orderBy: { order: 'asc' },
-            take: 5,
-          },
+          images: { orderBy: { order: 'asc' }, take: 5 },
+          agencyModel: { include: { agency: { select: { name: true, slug: true } } } },
         },
-        orderBy: [
-          { listingTier: 'desc' },  // PREMIUM sorts first alphabetically since P > F
-          { createdAt: 'desc' },
-        ],
+        orderBy: [{ listingTier: 'desc' }, { createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
       }),
     ])
 
-    // If user is logged in, get their favorites
-    let favoriteIds: Set<string> = new Set()
-    if (session) {
-      const favorites = await prisma.favorite.findMany({
-        where: { userId: session.id },
-        select: { profileId: true },
-      })
-      favoriteIds = new Set(favorites.map((f) => f.profileId))
-    }
-
-    const data = profiles.map((p) => ({
-      ...p,
-      isFavorited: favoriteIds.has(p.id),
-    }))
-
     return NextResponse.json({
       success: true,
-      data,
+      data: profiles,
       total,
       page,
       pageSize,
@@ -83,30 +55,20 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// Update current user's profile
 export async function PATCH(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
   try {
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+    const { prisma } = await import('@/lib/db/prisma')
     const session = await getSessionFromRequest(req)
-    if (!session) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
-
+    if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     const body = await req.json()
-
     const profile = await prisma.profile.update({
       where: { userId: session.id },
-      data: {
-        ...body,
-        updatedAt: new Date(),
-      },
+      data: { ...body, updatedAt: new Date() },
       include: { images: true },
     })
-
     return NextResponse.json({ success: true, data: profile })
   } catch (error) {
-    console.error('Update profile error:', error)
     return NextResponse.json({ success: false, error: 'Failed to update profile' }, { status: 500 })
   }
 }

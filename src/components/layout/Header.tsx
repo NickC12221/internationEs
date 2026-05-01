@@ -21,7 +21,7 @@ export default function Header() {
   const pathname = usePathname()
 
   useEffect(() => {
-    fetch('/api/user')
+    fetch('/api/auth/me')
       .then((r) => r.json())
       .then((data) => {
         if (data.success) setUser(data.data)
@@ -75,6 +75,7 @@ export default function Header() {
           <nav className="hidden items-center gap-6 text-sm font-medium text-stone-400 md:flex">
             <Link href="/" className="hover:text-stone-100 transition-colors">Browse</Link>
             <Link href="/search" className="hover:text-stone-100 transition-colors">Search</Link>
+            <Link href="/agencies" className="hover:text-stone-100 transition-colors">Agencies</Link>
           </nav>
 
           {/* Right side */}
@@ -94,7 +95,7 @@ export default function Header() {
                 {userMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 rounded-lg border border-stone-800 bg-stone-900 py-1 shadow-xl">
                     <Link
-                      href="/dashboard"
+                      href={user?.role === 'AGENCY' ? '/agency-dashboard' : '/dashboard'}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
                       onClick={() => setUserMenuOpen(false)}
                     >
