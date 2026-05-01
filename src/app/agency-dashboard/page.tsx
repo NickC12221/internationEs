@@ -16,6 +16,8 @@ interface AgencyModel {
   profileImageUrl: string | null
   images: { url: string }[]
   slug: string
+  countryCode: string
+  citySlug: string
 }
 
 interface Agency {
