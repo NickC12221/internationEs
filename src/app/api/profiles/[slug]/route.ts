@@ -8,6 +8,7 @@ export async function GET(
   { params }: { params: { slug: string } }
 ) {
   try {
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
     const session = await getSessionFromRequest(req)
 
