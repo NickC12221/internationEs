@@ -25,12 +25,12 @@ export default function SignupPage() {
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const handleCountryChange = (e) => {
+  const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected = COUNTRIES.find((c) => c.code === e.target.value)
     setForm((p) => ({ ...p, country: selected?.name || '', countryCode: e.target.value }))
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
