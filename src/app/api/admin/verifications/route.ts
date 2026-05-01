@@ -5,6 +5,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPrivateSignedUrl } from '@/lib/storage/s3'
 
 export async function GET(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   const session = await getSessionFromRequest(req)
   if (!session || session.role !== 'ADMIN') {
     return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
@@ -37,6 +39,8 @@ export async function GET(req: NextRequest) {
 
 // Review a verification request
 export async function PATCH(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   const session = await getSessionFromRequest(req)
   if (!session || session.role !== 'ADMIN') {
     return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })

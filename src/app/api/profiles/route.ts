@@ -4,6 +4,8 @@ export const dynamic = 'force-dynamic' // force-rebuild
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   try {
     const { searchParams } = new URL(req.url)
     const country = searchParams.get('country')
@@ -83,6 +85,8 @@ export async function GET(req: NextRequest) {
 
 // Update current user's profile
 export async function PATCH(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   try {
     const session = await getSessionFromRequest(req)
     if (!session) {

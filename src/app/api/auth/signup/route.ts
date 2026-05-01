@@ -9,6 +9,8 @@ import { generateProfileSlug, slugify } from '@/lib/utils'
 import { rateLimit, getClientIp, createRateLimitResponse } from '@/lib/utils/rateLimit'
 
 export async function POST(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   // Rate limit: 10 signups per 15 minutes per IP
   const ip = getClientIp(req)
   if (!rateLimit(`signup:${ip}`, 'auth')) {

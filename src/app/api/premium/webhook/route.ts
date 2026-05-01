@@ -8,6 +8,8 @@ export const dynamic = 'force-dynamic' // force-rebuild
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   const body = await req.text()
   const sig = req.headers.get('stripe-signature')
 

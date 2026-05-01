@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic' // force-rebuild
 import { NextResponse } from 'next/server'
 
 export async function POST() {
+  const { prisma } = await import('@/lib/db/prisma')
   const response = NextResponse.json({ success: true })
   response.cookies.delete('femme_session')
   return response

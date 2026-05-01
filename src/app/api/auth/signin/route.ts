@@ -8,6 +8,8 @@ import { signInSchema } from '@/lib/utils/validation'
 import { rateLimit, getClientIp, createRateLimitResponse } from '@/lib/utils/rateLimit'
 
 export async function POST(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   const ip = getClientIp(req)
   if (!rateLimit(`signin:${ip}`, 'auth')) {
     return createRateLimitResponse()

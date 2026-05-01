@@ -10,6 +10,8 @@ const PLANS = {
 }
 
 export async function POST(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   const session = await getSessionFromRequest(req)
   if (!session) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })

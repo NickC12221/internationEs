@@ -3,6 +3,8 @@ export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   try {
     const { getSessionFromRequest } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
@@ -37,6 +39,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+  const { prisma } = await import('@/lib/db/prisma')
   try {
     const { getSessionFromRequest } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
