@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/locations/route.ts
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/db/prisma'
 
 export async function GET() {
   try {

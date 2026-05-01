@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 // src/app/api/auth/signin/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/db/prisma'
 import { signToken } from '@/lib/auth/jwt'
 import { signInSchema } from '@/lib/utils/validation'
 import { rateLimit, getClientIp, createRateLimitResponse } from '@/lib/utils/rateLimit'

@@ -2,8 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/admin/users/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/db/prisma'
 
 export async function GET(req: NextRequest) {
   const session = await getSessionFromRequest(req)

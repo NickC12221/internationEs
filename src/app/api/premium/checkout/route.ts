@@ -2,8 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/premium/checkout/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/db/prisma'
 
 const PLANS = {
   '30': { price: 2900, label: '1 Month' },

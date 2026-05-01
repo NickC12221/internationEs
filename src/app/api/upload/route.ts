@@ -2,7 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/upload/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
 import { getPresignedUploadUrl } from '@/lib/storage/s3'
 import { rateLimit, getClientIp, createRateLimitResponse } from '@/lib/utils/rateLimit'
 

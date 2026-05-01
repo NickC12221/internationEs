@@ -6,7 +6,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 // and upgrades the model's listing tier automatically.
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db/prisma'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()

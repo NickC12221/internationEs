@@ -2,8 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/profiles/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/db/prisma'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
 
 export async function GET(req: NextRequest) {
   try {

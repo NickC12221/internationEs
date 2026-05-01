@@ -2,8 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { verifyToken } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/db/prisma'
 
 export async function GET() {
   try {

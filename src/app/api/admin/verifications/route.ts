@@ -2,8 +2,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 
 // src/app/api/admin/verifications/route.ts
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/db/prisma'
 import { getPrivateSignedUrl } from '@/lib/storage/s3'
 
 export async function GET(req: NextRequest) {

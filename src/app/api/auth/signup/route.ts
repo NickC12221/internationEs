@@ -3,7 +3,6 @@ export const dynamic = 'force-dynamic' // force-rebuild
 // src/app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
-import { prisma } from '@/lib/db/prisma'
 import { signToken, setSessionCookie } from '@/lib/auth/jwt'
 import { signUpSchema } from '@/lib/utils/validation'
 import { generateProfileSlug, slugify } from '@/lib/utils'
