@@ -1,11 +1,12 @@
 export const dynamic = 'force-dynamic' // force-rebuild
 
-// src/app/api/profile-images/[id]/main/route.ts
+// src/app/api/profile-images/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionFromRequest } from '@/lib/auth/jwt'
 import { prisma } from '@/lib/db/prisma'
+import { deleteFile } from '@/lib/storage/s3'
 
-export async function PATCH(
+export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
@@ -32,27 +33,35 @@ export async function PATCH(
       return NextResponse.json({ success: false, error: 'Image not found' }, { status: 404 })
     }
 
-    // Unset all main flags for this profile
-    await prisma.profileImage.updateMany({
-      where: { profileId: profile.id },
-      data: { isMain: false },
-    })
+    // Delete from S3
+    await deleteFile(image.key, false)
 
-    // Set new main
-    await prisma.profileImage.update({
-      where: { id: params.id },
-      data: { isMain: true },
-    })
+    // Delete from database
+    await prisma.profileImage.delete({ where: { id: params.id } })
 
-    // Update profile's main image URL
-    await prisma.profile.update({
-      where: { id: profile.id },
-      data: { profileImageUrl: image.url },
-    })
+    // If this was the main image, update profile
+    if (image.isMain) {
+      const nextImage = await prisma.profileImage.findFirst({
+        where: { profileId: profile.id },
+        orderBy: { order: 'asc' },
+      })
+
+      await prisma.profile.update({
+        where: { id: profile.id },
+        data: { profileImageUrl: nextImage?.url || null },
+      })
+
+      if (nextImage) {
+        await prisma.profileImage.update({
+          where: { id: nextImage.id },
+          data: { isMain: true },
+        })
+      }
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Set main image error:', error)
-    return NextResponse.json({ success: false, error: 'Failed to set main image' }, { status: 500 })
+    console.error('Delete image error:', error)
+    return NextResponse.json({ success: false, error: 'Failed to delete image' }, { status: 500 })
   }
 }
