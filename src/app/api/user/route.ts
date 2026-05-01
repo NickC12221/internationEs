@@ -5,6 +5,7 @@ import { cookies } from 'next/headers'
 
 export async function GET() {
   try {
+    const { verifyToken } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
     const cookieStore = cookies()
     const token = cookieStore.get('femme_session')?.value
