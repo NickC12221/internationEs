@@ -2,148 +2,145 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { User, Building2, CheckCircle } from 'lucide-react'
 
 const COUNTRIES_WITH_CITIES: Record<string, { code: string; cities: string[] }> = {
-  "Afghanistan": { code: "AF", cities: ["Kabul", "Kandahar", "Herat", "Mazar-i-Sharif"] },
-  "Albania": { code: "AL", cities: ["Tirana", "Durrës", "Vlorë", "Shkodër"] },
-  "Algeria": { code: "DZ", cities: ["Algiers", "Oran", "Constantine", "Annaba"] },
-  "Argentina": { code: "AR", cities: ["Buenos Aires", "Córdoba", "Rosario", "Mendoza", "Mar del Plata"] },
+  "Afghanistan": { code: "AF", cities: ["Kabul", "Kandahar", "Herat"] },
+  "Albania": { code: "AL", cities: ["Tirana", "Durrës", "Vlorë"] },
+  "Algeria": { code: "DZ", cities: ["Algiers", "Oran", "Constantine"] },
+  "Argentina": { code: "AR", cities: ["Buenos Aires", "Córdoba", "Rosario", "Mendoza"] },
   "Australia": { code: "AU", cities: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast", "Canberra"] },
-  "Austria": { code: "AT", cities: ["Vienna", "Graz", "Linz", "Salzburg", "Innsbruck"] },
-  "Azerbaijan": { code: "AZ", cities: ["Baku", "Ganja", "Sumqayit"] },
-  "Bahrain": { code: "BH", cities: ["Manama", "Riffa", "Muharraq", "Hamad Town"] },
-  "Bangladesh": { code: "BD", cities: ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna"] },
-  "Belarus": { code: "BY", cities: ["Minsk", "Gomel", "Mogilev", "Vitebsk"] },
-  "Belgium": { code: "BE", cities: ["Brussels", "Antwerp", "Ghent", "Bruges", "Liège"] },
-  "Bolivia": { code: "BO", cities: ["La Paz", "Santa Cruz", "Cochabamba", "Sucre"] },
-  "Bosnia and Herzegovina": { code: "BA", cities: ["Sarajevo", "Banja Luka", "Mostar"] },
-  "Brazil": { code: "BR", cities: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", "Belo Horizonte", "Manaus", "Curitiba", "Recife", "Porto Alegre"] },
-  "Bulgaria": { code: "BG", cities: ["Sofia", "Plovdiv", "Varna", "Burgas"] },
-  "Cambodia": { code: "KH", cities: ["Phnom Penh", "Siem Reap", "Battambang"] },
-  "Cameroon": { code: "CM", cities: ["Douala", "Yaoundé", "Bamenda"] },
-  "Canada": { code: "CA", cities: ["Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton", "Ottawa", "Quebec City", "Winnipeg", "Hamilton"] },
-  "Chile": { code: "CL", cities: ["Santiago", "Valparaíso", "Concepción", "Antofagasta"] },
-  "China": { code: "CN", cities: ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu", "Chongqing", "Wuhan", "Xi'an", "Hangzhou", "Nanjing"] },
+  "Austria": { code: "AT", cities: ["Vienna", "Graz", "Linz", "Salzburg"] },
+  "Azerbaijan": { code: "AZ", cities: ["Baku", "Ganja"] },
+  "Bahrain": { code: "BH", cities: ["Manama", "Riffa", "Muharraq"] },
+  "Bangladesh": { code: "BD", cities: ["Dhaka", "Chittagong", "Sylhet"] },
+  "Belarus": { code: "BY", cities: ["Minsk", "Gomel", "Vitebsk"] },
+  "Belgium": { code: "BE", cities: ["Brussels", "Antwerp", "Ghent", "Bruges"] },
+  "Bolivia": { code: "BO", cities: ["La Paz", "Santa Cruz", "Cochabamba"] },
+  "Brazil": { code: "BR", cities: ["São Paulo", "Rio de Janeiro", "Brasília", "Salvador", "Fortaleza", "Belo Horizonte", "Curitiba", "Recife", "Porto Alegre"] },
+  "Bulgaria": { code: "BG", cities: ["Sofia", "Plovdiv", "Varna"] },
+  "Cambodia": { code: "KH", cities: ["Phnom Penh", "Siem Reap"] },
+  "Canada": { code: "CA", cities: ["Toronto", "Montreal", "Vancouver", "Calgary", "Edmonton", "Ottawa", "Quebec City", "Winnipeg"] },
+  "Chile": { code: "CL", cities: ["Santiago", "Valparaíso", "Concepción"] },
+  "China": { code: "CN", cities: ["Beijing", "Shanghai", "Guangzhou", "Shenzhen", "Chengdu", "Wuhan", "Xi'an", "Hangzhou", "Nanjing"] },
   "Colombia": { code: "CO", cities: ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena"] },
-  "Croatia": { code: "HR", cities: ["Zagreb", "Split", "Rijeka", "Osijek", "Dubrovnik"] },
-  "Cuba": { code: "CU", cities: ["Havana", "Santiago de Cuba", "Camagüey"] },
+  "Croatia": { code: "HR", cities: ["Zagreb", "Split", "Dubrovnik"] },
   "Cyprus": { code: "CY", cities: ["Nicosia", "Limassol", "Larnaca", "Paphos"] },
-  "Czech Republic": { code: "CZ", cities: ["Prague", "Brno", "Ostrava", "Plzeň"] },
-  "Denmark": { code: "DK", cities: ["Copenhagen", "Aarhus", "Odense", "Aalborg"] },
+  "Czech Republic": { code: "CZ", cities: ["Prague", "Brno", "Ostrava"] },
+  "Denmark": { code: "DK", cities: ["Copenhagen", "Aarhus", "Odense"] },
   "Dominican Republic": { code: "DO", cities: ["Santo Domingo", "Santiago", "Punta Cana"] },
-  "Ecuador": { code: "EC", cities: ["Quito", "Guayaquil", "Cuenca"] },
+  "Ecuador": { code: "EC", cities: ["Quito", "Guayaquil"] },
   "Egypt": { code: "EG", cities: ["Cairo", "Alexandria", "Giza", "Sharm el-Sheikh", "Hurghada", "Luxor"] },
-  "Estonia": { code: "EE", cities: ["Tallinn", "Tartu", "Narva"] },
-  "Ethiopia": { code: "ET", cities: ["Addis Ababa", "Dire Dawa", "Mekelle"] },
-  "Finland": { code: "FI", cities: ["Helsinki", "Espoo", "Tampere", "Oulu"] },
-  "France": { code: "FR", cities: ["Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg", "Montpellier", "Bordeaux", "Lille"] },
-  "Georgia": { code: "GE", cities: ["Tbilisi", "Batumi", "Kutaisi"] },
-  "Germany": { code: "DE", cities: ["Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt", "Stuttgart", "Düsseldorf", "Leipzig", "Dortmund", "Dresden"] },
-  "Ghana": { code: "GH", cities: ["Accra", "Kumasi", "Tamale"] },
-  "Greece": { code: "GR", cities: ["Athens", "Thessaloniki", "Patras", "Heraklion", "Mykonos", "Santorini"] },
-  "Hungary": { code: "HU", cities: ["Budapest", "Debrecen", "Miskolc", "Pécs"] },
+  "Estonia": { code: "EE", cities: ["Tallinn", "Tartu"] },
+  "Finland": { code: "FI", cities: ["Helsinki", "Espoo", "Tampere"] },
+  "France": { code: "FR", cities: ["Paris", "Marseille", "Lyon", "Toulouse", "Nice", "Nantes", "Strasbourg", "Bordeaux", "Lille"] },
+  "Georgia": { code: "GE", cities: ["Tbilisi", "Batumi"] },
+  "Germany": { code: "DE", cities: ["Berlin", "Hamburg", "Munich", "Cologne", "Frankfurt", "Stuttgart", "Düsseldorf", "Leipzig", "Dresden"] },
+  "Ghana": { code: "GH", cities: ["Accra", "Kumasi"] },
+  "Greece": { code: "GR", cities: ["Athens", "Thessaloniki", "Patras", "Mykonos", "Santorini"] },
+  "Hungary": { code: "HU", cities: ["Budapest", "Debrecen"] },
   "India": { code: "IN", cities: ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", "Pune", "Ahmedabad", "Jaipur", "Goa"] },
-  "Indonesia": { code: "ID", cities: ["Jakarta", "Surabaya", "Bandung", "Medan", "Bali", "Yogyakarta"] },
-  "Iran": { code: "IR", cities: ["Tehran", "Mashhad", "Isfahan", "Tabriz", "Shiraz"] },
-  "Iraq": { code: "IQ", cities: ["Baghdad", "Basra", "Mosul", "Erbil"] },
+  "Indonesia": { code: "ID", cities: ["Jakarta", "Surabaya", "Bandung", "Bali", "Yogyakarta"] },
+  "Iran": { code: "IR", cities: ["Tehran", "Mashhad", "Isfahan"] },
+  "Iraq": { code: "IQ", cities: ["Baghdad", "Basra", "Erbil"] },
   "Ireland": { code: "IE", cities: ["Dublin", "Cork", "Limerick", "Galway"] },
-  "Israel": { code: "IL", cities: ["Tel Aviv", "Jerusalem", "Haifa", "Beer Sheva"] },
-  "Italy": { code: "IT", cities: ["Rome", "Milan", "Naples", "Turin", "Palermo", "Genoa", "Bologna", "Florence", "Venice", "Bari"] },
-  "Jamaica": { code: "JM", cities: ["Kingston", "Montego Bay", "Ocho Rios"] },
-  "Japan": { code: "JP", cities: ["Tokyo", "Osaka", "Yokohama", "Nagoya", "Sapporo", "Fukuoka", "Kobe", "Kyoto", "Hiroshima"] },
-  "Jordan": { code: "JO", cities: ["Amman", "Zarqa", "Irbid", "Aqaba"] },
-  "Kazakhstan": { code: "KZ", cities: ["Almaty", "Nur-Sultan", "Shymkent"] },
-  "Kenya": { code: "KE", cities: ["Nairobi", "Mombasa", "Kisumu"] },
-  "Kuwait": { code: "KW", cities: ["Kuwait City", "Hawalli", "Salmiya"] },
-  "Latvia": { code: "LV", cities: ["Riga", "Daugavpils", "Liepāja"] },
-  "Lebanon": { code: "LB", cities: ["Beirut", "Tripoli", "Sidon"] },
-  "Libya": { code: "LY", cities: ["Tripoli", "Benghazi", "Misrata"] },
-  "Lithuania": { code: "LT", cities: ["Vilnius", "Kaunas", "Klaipėda"] },
-  "Luxembourg": { code: "LU", cities: ["Luxembourg City", "Esch-sur-Alzette"] },
-  "Malaysia": { code: "MY", cities: ["Kuala Lumpur", "George Town", "Ipoh", "Johor Bahru", "Kota Kinabalu"] },
+  "Israel": { code: "IL", cities: ["Tel Aviv", "Jerusalem", "Haifa"] },
+  "Italy": { code: "IT", cities: ["Rome", "Milan", "Naples", "Turin", "Florence", "Venice", "Bologna"] },
+  "Jamaica": { code: "JM", cities: ["Kingston", "Montego Bay"] },
+  "Japan": { code: "JP", cities: ["Tokyo", "Osaka", "Yokohama", "Nagoya", "Sapporo", "Fukuoka", "Kyoto", "Hiroshima"] },
+  "Jordan": { code: "JO", cities: ["Amman", "Zarqa", "Aqaba"] },
+  "Kazakhstan": { code: "KZ", cities: ["Almaty", "Nur-Sultan"] },
+  "Kenya": { code: "KE", cities: ["Nairobi", "Mombasa"] },
+  "Kuwait": { code: "KW", cities: ["Kuwait City", "Salmiya"] },
+  "Latvia": { code: "LV", cities: ["Riga", "Daugavpils"] },
+  "Lebanon": { code: "LB", cities: ["Beirut", "Tripoli"] },
+  "Lithuania": { code: "LT", cities: ["Vilnius", "Kaunas"] },
+  "Luxembourg": { code: "LU", cities: ["Luxembourg City"] },
+  "Malaysia": { code: "MY", cities: ["Kuala Lumpur", "George Town", "Johor Bahru", "Kota Kinabalu"] },
   "Maldives": { code: "MV", cities: ["Malé"] },
-  "Malta": { code: "MT", cities: ["Valletta", "Birkirkara", "St. Julian's"] },
-  "Mexico": { code: "MX", cities: ["Mexico City", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "Cancún", "León", "Mérida"] },
-  "Moldova": { code: "MD", cities: ["Chișinău", "Tiraspol", "Bălți"] },
+  "Malta": { code: "MT", cities: ["Valletta", "St. Julian's"] },
+  "Mexico": { code: "MX", cities: ["Mexico City", "Guadalajara", "Monterrey", "Puebla", "Tijuana", "Cancún", "Mérida"] },
+  "Moldova": { code: "MD", cities: ["Chișinău"] },
   "Monaco": { code: "MC", cities: ["Monaco"] },
-  "Mongolia": { code: "MN", cities: ["Ulaanbaatar"] },
   "Montenegro": { code: "ME", cities: ["Podgorica", "Budva", "Kotor"] },
   "Morocco": { code: "MA", cities: ["Casablanca", "Rabat", "Marrakech", "Fes", "Tangier", "Agadir"] },
-  "Netherlands": { code: "NL", cities: ["Amsterdam", "Rotterdam", "The Hague", "Utrecht", "Eindhoven"] },
-  "New Zealand": { code: "NZ", cities: ["Auckland", "Wellington", "Christchurch", "Hamilton", "Queenstown"] },
-  "Nigeria": { code: "NG", cities: ["Lagos", "Abuja", "Kano", "Ibadan", "Port Harcourt"] },
-  "North Macedonia": { code: "MK", cities: ["Skopje", "Bitola", "Ohrid"] },
-  "Norway": { code: "NO", cities: ["Oslo", "Bergen", "Stavanger", "Trondheim"] },
-  "Oman": { code: "OM", cities: ["Muscat", "Salalah", "Sohar"] },
-  "Pakistan": { code: "PK", cities: ["Karachi", "Lahore", "Islamabad", "Rawalpindi", "Faisalabad", "Peshawar"] },
-  "Panama": { code: "PA", cities: ["Panama City", "Colón", "David"] },
-  "Peru": { code: "PE", cities: ["Lima", "Arequipa", "Trujillo", "Cusco"] },
-  "Philippines": { code: "PH", cities: ["Manila", "Cebu City", "Davao", "Quezon City", "Makati"] },
-  "Poland": { code: "PL", cities: ["Warsaw", "Kraków", "Łódź", "Wrocław", "Poznań", "Gdańsk"] },
-  "Portugal": { code: "PT", cities: ["Lisbon", "Porto", "Braga", "Coimbra", "Faro"] },
-  "Qatar": { code: "QA", cities: ["Doha", "Al Wakrah", "Al Khor"] },
-  "Romania": { code: "RO", cities: ["Bucharest", "Cluj-Napoca", "Timișoara", "Iași", "Constanța"] },
-  "Russia": { code: "RU", cities: ["Moscow", "Saint Petersburg", "Novosibirsk", "Yekaterinburg", "Kazan", "Sochi"] },
-  "Saudi Arabia": { code: "SA", cities: ["Riyadh", "Jeddah", "Mecca", "Medina", "Dammam", "Khobar"] },
-  "Serbia": { code: "RS", cities: ["Belgrade", "Novi Sad", "Niš"] },
+  "Netherlands": { code: "NL", cities: ["Amsterdam", "Rotterdam", "The Hague", "Utrecht"] },
+  "New Zealand": { code: "NZ", cities: ["Auckland", "Wellington", "Christchurch", "Queenstown"] },
+  "Nigeria": { code: "NG", cities: ["Lagos", "Abuja", "Kano", "Port Harcourt"] },
+  "Norway": { code: "NO", cities: ["Oslo", "Bergen", "Stavanger"] },
+  "Oman": { code: "OM", cities: ["Muscat", "Salalah"] },
+  "Pakistan": { code: "PK", cities: ["Karachi", "Lahore", "Islamabad", "Peshawar"] },
+  "Panama": { code: "PA", cities: ["Panama City"] },
+  "Peru": { code: "PE", cities: ["Lima", "Arequipa", "Cusco"] },
+  "Philippines": { code: "PH", cities: ["Manila", "Cebu City", "Davao", "Makati"] },
+  "Poland": { code: "PL", cities: ["Warsaw", "Kraków", "Łódź", "Wrocław", "Gdańsk"] },
+  "Portugal": { code: "PT", cities: ["Lisbon", "Porto", "Braga", "Faro"] },
+  "Qatar": { code: "QA", cities: ["Doha", "Al Wakrah"] },
+  "Romania": { code: "RO", cities: ["Bucharest", "Cluj-Napoca", "Timișoara"] },
+  "Russia": { code: "RU", cities: ["Moscow", "Saint Petersburg", "Novosibirsk", "Kazan", "Sochi"] },
+  "Saudi Arabia": { code: "SA", cities: ["Riyadh", "Jeddah", "Mecca", "Medina", "Dammam"] },
+  "Serbia": { code: "RS", cities: ["Belgrade", "Novi Sad"] },
   "Singapore": { code: "SG", cities: ["Singapore"] },
-  "Slovakia": { code: "SK", cities: ["Bratislava", "Košice", "Prešov"] },
-  "Slovenia": { code: "SI", cities: ["Ljubljana", "Maribor", "Celje"] },
-  "South Africa": { code: "ZA", cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Port Elizabeth"] },
-  "South Korea": { code: "KR", cities: ["Seoul", "Busan", "Incheon", "Daegu", "Daejeon", "Jeju"] },
-  "Spain": { code: "ES", cities: ["Madrid", "Barcelona", "Valencia", "Seville", "Zaragoza", "Málaga", "Bilbao", "Ibiza", "Marbella"] },
+  "Slovakia": { code: "SK", cities: ["Bratislava", "Košice"] },
+  "Slovenia": { code: "SI", cities: ["Ljubljana", "Maribor"] },
+  "South Africa": { code: "ZA", cities: ["Johannesburg", "Cape Town", "Durban", "Pretoria"] },
+  "South Korea": { code: "KR", cities: ["Seoul", "Busan", "Incheon", "Daegu", "Jeju"] },
+  "Spain": { code: "ES", cities: ["Madrid", "Barcelona", "Valencia", "Seville", "Málaga", "Bilbao", "Ibiza", "Marbella"] },
   "Sri Lanka": { code: "LK", cities: ["Colombo", "Kandy", "Galle"] },
-  "Sweden": { code: "SE", cities: ["Stockholm", "Gothenburg", "Malmö", "Uppsala"] },
+  "Sweden": { code: "SE", cities: ["Stockholm", "Gothenburg", "Malmö"] },
   "Switzerland": { code: "CH", cities: ["Zurich", "Geneva", "Basel", "Bern", "Lausanne"] },
-  "Syria": { code: "SY", cities: ["Damascus", "Aleppo", "Homs"] },
-  "Taiwan": { code: "TW", cities: ["Taipei", "Kaohsiung", "Taichung", "Tainan"] },
+  "Taiwan": { code: "TW", cities: ["Taipei", "Kaohsiung", "Taichung"] },
   "Tanzania": { code: "TZ", cities: ["Dar es Salaam", "Zanzibar", "Arusha"] },
   "Thailand": { code: "TH", cities: ["Bangkok", "Chiang Mai", "Pattaya", "Phuket", "Koh Samui"] },
   "Tunisia": { code: "TN", cities: ["Tunis", "Sfax", "Sousse"] },
-  "Turkey": { code: "TR", cities: ["Istanbul", "Ankara", "Izmir", "Bursa", "Antalya", "Bodrum"] },
-  "Uganda": { code: "UG", cities: ["Kampala", "Gulu", "Mbarara"] },
-  "Ukraine": { code: "UA", cities: ["Kyiv", "Kharkiv", "Odessa", "Dnipro", "Lviv"] },
+  "Turkey": { code: "TR", cities: ["Istanbul", "Ankara", "Izmir", "Antalya", "Bodrum"] },
+  "Ukraine": { code: "UA", cities: ["Kyiv", "Kharkiv", "Odessa", "Lviv"] },
   "United Arab Emirates": { code: "AE", cities: ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah"] },
-  "United Kingdom": { code: "GB", cities: ["London", "Manchester", "Birmingham", "Glasgow", "Liverpool", "Edinburgh", "Bristol", "Leeds", "Sheffield"] },
-  "United States": { code: "US", cities: ["New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego", "Dallas", "Miami", "Las Vegas", "Seattle", "Boston", "Atlanta", "Denver"] },
+  "United Kingdom": { code: "GB", cities: ["London", "Manchester", "Birmingham", "Glasgow", "Liverpool", "Edinburgh", "Bristol", "Leeds"] },
+  "United States": { code: "US", cities: ["New York", "Los Angeles", "Chicago", "Houston", "Miami", "Las Vegas", "Seattle", "Boston", "Atlanta", "Dallas"] },
   "Uruguay": { code: "UY", cities: ["Montevideo", "Punta del Este"] },
-  "Uzbekistan": { code: "UZ", cities: ["Tashkent", "Samarkand", "Bukhara"] },
-  "Venezuela": { code: "VE", cities: ["Caracas", "Maracaibo", "Valencia"] },
-  "Vietnam": { code: "VN", cities: ["Ho Chi Minh City", "Hanoi", "Da Nang", "Hoi An"] },
-  "Yemen": { code: "YE", cities: ["Sana'a", "Aden", "Taiz"] },
+  "Uzbekistan": { code: "UZ", cities: ["Tashkent", "Samarkand"] },
+  "Venezuela": { code: "VE", cities: ["Caracas", "Maracaibo"] },
+  "Vietnam": { code: "VN", cities: ["Ho Chi Minh City", "Hanoi", "Da Nang"] },
   "Zimbabwe": { code: "ZW", cities: ["Harare", "Bulawayo"] },
 }
 
 const SORTED_COUNTRIES = Object.keys(COUNTRIES_WITH_CITIES).sort()
 
+type AccountType = 'model' | 'agency' | null
+
 export default function SignupPage() {
-  const [form, setForm] = useState({ email: '', password: '', displayName: '', country: '', countryCode: '', city: '' })
+  const [accountType, setAccountType] = useState<AccountType>(null)
+  const [form, setForm] = useState({ name: '', email: '', password: '', country: '', countryCode: '', city: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
 
-  const selectedCountryData = form.country ? COUNTRIES_WITH_CITIES[form.country] : null
-  const cities = selectedCountryData?.cities || []
+  const cities = form.country ? (COUNTRIES_WITH_CITIES[form.country]?.cities || []) : []
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const countryName = e.target.value
     const data = COUNTRIES_WITH_CITIES[countryName]
-    setForm((p) => ({ ...p, country: countryName, countryCode: data?.code || '', city: '' }))
+    setForm(p => ({ ...p, country: countryName, countryCode: data?.code || '', city: '' }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
+    const endpoint = accountType === 'agency' ? '/api/auth/agency-signup' : '/api/auth/signup'
+    const body = accountType === 'agency'
+      ? { name: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
+      : { displayName: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
     try {
-      const res = await fetch('/api/auth/signup', {
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (data.success) {
-        router.push('/dashboard')
+        router.push(accountType === 'agency' ? '/agency-dashboard' : '/dashboard')
         router.refresh()
       } else {
         setError(data.error || 'Signup failed')
@@ -162,60 +159,125 @@ export default function SignupPage() {
           <Link href="/">
             <span className="text-4xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>FEMME</span>
           </Link>
-          <p className="mt-2 text-sm text-stone-500">Create your model profile</p>
+          <p className="mt-2 text-sm text-stone-500">Create your account</p>
         </div>
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-stone-800 bg-stone-900 p-8">
-          {error && <div className="mb-4 rounded-lg bg-red-950 border border-red-900 px-4 py-3 text-sm text-red-400">{error}</div>}
-          <div className="space-y-4">
-            <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Display Name</label>
-              <input type="text" value={form.displayName} onChange={(e) => setForm((p) => ({ ...p, displayName: e.target.value }))} required minLength={2}
-                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
-                placeholder="Your professional name" />
+
+        {/* Account type selection */}
+        {!accountType ? (
+          <div className="rounded-2xl border border-stone-800 bg-stone-900 p-8">
+            <h2 className="mb-6 text-center text-lg font-light text-stone-200" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+              I am joining as...
+            </h2>
+            <div className="space-y-3">
+              <button
+                onClick={() => setAccountType('model')}
+                className="flex w-full items-center gap-4 rounded-xl border border-stone-700 bg-stone-800 p-4 text-left transition-all hover:border-amber-700 hover:bg-stone-750"
+              >
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-stone-700">
+                  <User className="h-6 w-6 text-stone-300" />
+                </div>
+                <div>
+                  <p className="font-medium text-stone-200">Independent Model</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Create your own profile and be discovered</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => setAccountType('agency')}
+                className="flex w-full items-center gap-4 rounded-xl border border-stone-700 bg-stone-800 p-4 text-left transition-all hover:border-amber-700"
+              >
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-amber-900/40">
+                  <Building2 className="h-6 w-6 text-amber-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-stone-200">Model Agency</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Manage a roster of models and get featured</p>
+                </div>
+              </button>
             </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Email</label>
-              <input type="email" value={form.email} onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} required
-                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
-                placeholder="you@example.com" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Password</label>
-              <input type="password" value={form.password} onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} required minLength={8}
-                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
-                placeholder="Min 8 characters" />
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Country</label>
-              <select value={form.country} onChange={handleCountryChange} required
-                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
-                <option value="">Select country...</option>
-                {SORTED_COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">City</label>
-              {cities.length > 0 ? (
-                <select value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} required
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
-                  <option value="">Select city...</option>
-                  {cities.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              ) : (
-                <input type="text" value={form.city} onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))} required
-                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
-                  placeholder={form.country ? "Enter your city" : "Select a country first"} />
-              )}
-            </div>
+
+            <p className="mt-6 text-center text-sm text-stone-500">
+              Already have an account?{' '}
+              <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>
+            </p>
           </div>
-          <button type="submit" disabled={loading}
-            className="mt-6 w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
-            {loading ? 'Creating account...' : 'Create Profile'}
-          </button>
-          <p className="mt-4 text-center text-sm text-stone-500">
-            Already have an account? <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>
-          </p>
-        </form>
+        ) : (
+          <div className="rounded-2xl border border-stone-800 bg-stone-900 p-8">
+            {/* Back button + type indicator */}
+            <div className="mb-6 flex items-center gap-3">
+              <button onClick={() => { setAccountType(null); setError('') }} className="text-stone-500 hover:text-stone-300 text-sm">
+                ← Back
+              </button>
+              <span className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${accountType === 'agency' ? 'bg-amber-900/30 text-amber-400' : 'bg-stone-800 text-stone-400'}`}>
+                {accountType === 'agency' ? <Building2 className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
+                {accountType === 'agency' ? 'Agency Account' : 'Model Account'}
+              </span>
+            </div>
+
+            {accountType === 'agency' && (
+              <div className="mb-4 rounded-xl border border-amber-900/50 bg-amber-950/20 px-4 py-3 text-xs text-amber-400">
+                Agency accounts include a 30-day free trial. Subscription required to remain active.
+              </div>
+            )}
+
+            {error && <div className="mb-4 rounded-lg bg-red-950 border border-red-900 px-4 py-3 text-sm text-red-400">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">
+                  {accountType === 'agency' ? 'Agency Name' : 'Display Name'}
+                </label>
+                <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required minLength={2}
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                  placeholder={accountType === 'agency' ? 'Your agency name' : 'Your professional name'} />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Email</label>
+                <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                  placeholder="you@example.com" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Password</label>
+                <input type="password" value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required minLength={8}
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                  placeholder="Min 8 characters" />
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Country</label>
+                <select value={form.country} onChange={handleCountryChange} required
+                  className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                  <option value="">Select country...</option>
+                  {SORTED_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">City</label>
+                {cities.length > 0 ? (
+                  <select value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                    <option value="">Select city...</option>
+                    {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                ) : (
+                  <input type="text" value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                    placeholder={form.country ? 'Enter your city' : 'Select a country first'} />
+                )}
+              </div>
+
+              <button type="submit" disabled={loading}
+                className="mt-2 w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
+                {loading ? 'Creating account...' : accountType === 'agency' ? 'Create Agency Account' : 'Create Profile'}
+              </button>
+
+              <p className="text-center text-sm text-stone-500">
+                Already have an account?{' '}
+                <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>
+              </p>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   )
