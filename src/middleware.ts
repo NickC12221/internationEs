@@ -51,6 +51,7 @@ export async function middleware(req: NextRequest) {
   return NextResponse.next()
 }
 
+// This ensures /api/* routes are never caught by dynamic page segments
 export const config = {
   matcher: [
     '/dashboard/:path*',
