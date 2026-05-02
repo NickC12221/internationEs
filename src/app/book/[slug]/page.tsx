@@ -172,10 +172,11 @@ export default function BookPage() {
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-xs font-medium text-stone-400">Phone (optional)</label>
-                  <input value={form.contactPhone} onChange={e => setForm(p => ({ ...p, contactPhone: e.target.value }))}
+                  <label className="mb-1 block text-xs font-medium text-stone-400">Phone Number *</label>
+                  <input type="tel" value={form.contactPhone} onChange={e => setForm(p => ({ ...p, contactPhone: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
                     placeholder="+1 234 567 890" />
+                  <p className="mt-1 text-xs text-stone-600">So the model can contact you directly to confirm</p>
                 </div>
               </div>
             </div>

@@ -11,8 +11,8 @@ export async function POST(req: NextRequest) {
 
     const { profileId, date, duration, message, contactName, contactEmail, contactPhone } = await req.json()
 
-    if (!profileId || !date || !duration || !contactName || !contactEmail) {
-      return NextResponse.json({ success: false, error: 'Missing required fields' }, { status: 400 })
+    if (!profileId || !date || !duration || !contactName || !contactEmail || !contactPhone) {
+      return NextResponse.json({ success: false, error: 'Phone number is required' }, { status: 400 })
     }
 
     const profile = await prisma.profile.findUnique({

@@ -115,15 +115,15 @@ function ModelBookingsView() {
                         {booking.message && (
                           <p className="mt-2 text-sm text-stone-400 leading-relaxed">{booking.message}</p>
                         )}
-                        <div className="mt-3 flex items-center gap-4 text-xs text-stone-500">
-                          <a href={`mailto:${booking.contactEmail}`} className="flex items-center gap-1 hover:text-amber-400 transition-colors">
-                            <Mail className="h-3.5 w-3.5" />{booking.contactEmail}
-                          </a>
+                        <div className="mt-3 space-y-1.5">
                           {booking.contactPhone && (
-                            <a href={`tel:${booking.contactPhone}`} className="flex items-center gap-1 hover:text-amber-400 transition-colors">
-                              <Phone className="h-3.5 w-3.5" />{booking.contactPhone}
+                            <a href={`tel:${booking.contactPhone}`} className="flex items-center gap-2 text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors">
+                              <Phone className="h-4 w-4" />{booking.contactPhone}
                             </a>
                           )}
+                          <a href={`mailto:${booking.contactEmail}`} className="flex items-center gap-2 text-xs text-stone-500 hover:text-amber-400 transition-colors">
+                            <Mail className="h-3.5 w-3.5" />{booking.contactEmail}
+                          </a>
                         </div>
                         <p className="mt-1 text-xs text-stone-600">Received {new Date(booking.createdAt).toLocaleDateString()}</p>
                       </div>
@@ -167,6 +167,11 @@ function ModelBookingsView() {
                               {new Date(booking.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                             <span>{booking.duration}h</span>
+                            {booking.contactPhone && (
+                              <a href={`tel:${booking.contactPhone}`} className="flex items-center gap-1 text-amber-500 hover:text-amber-400">
+                                <Phone className="h-3.5 w-3.5" />{booking.contactPhone}
+                              </a>
+                            )}
                             <a href={`mailto:${booking.contactEmail}`} className="hover:text-amber-400">{booking.contactEmail}</a>
                           </div>
                           {booking.review && (
