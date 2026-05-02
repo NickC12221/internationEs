@@ -9,17 +9,16 @@ export async function GET(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
-    const agency = session.role === 'AGENCY'
-      ? await prisma.agency.findUnique({ where: { userId: session.id }, select: { id: true } })
-      : null
+    const [notifications, unreadCount] = await Promise.all([
+      prisma.notification.findMany({
+        where: { userId: session.id },
+        orderBy: { createdAt: 'desc' },
+        take: 20
+      }),
+      prisma.notification.count({ where: { userId: session.id, isRead: false } })
+    ])
 
-    const notifications = await prisma.notification.findMany({
-      where: agency ? { agencyId: agency.id } : { userId: session.id },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-    })
-
-    return NextResponse.json({ success: true, data: notifications })
+    return NextResponse.json({ success: true, data: notifications, unreadCount })
   } catch (err) {
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
@@ -32,12 +31,8 @@ export async function PATCH(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
-    const agency = session.role === 'AGENCY'
-      ? await prisma.agency.findUnique({ where: { userId: session.id }, select: { id: true } })
-      : null
-
     await prisma.notification.updateMany({
-      where: agency ? { agencyId: agency.id } : { userId: session.id },
+      where: { userId: session.id, isRead: false },
       data: { isRead: true }
     })
 

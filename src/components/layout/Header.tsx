@@ -2,7 +2,8 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
-import { Search, Menu, X, User, LogOut, Settings, Shield, Building2 } from 'lucide-react'
+import { Search, Menu, X, User, LogOut, Settings, Shield, Building2, MessageSquare } from 'lucide-react'
+import NotificationBell from '@/components/messaging/NotificationBell'
 
 interface UserData {
   id: string
@@ -114,6 +115,20 @@ export default function Header() {
                     >
                       {user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
                       {user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
+                    </Link>
+                    <Link
+                      href="/dashboard/inbox"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      <MessageSquare className="h-4 w-4" /> Inbox
+                    </Link>
+                    <Link
+                      href="/dashboard/bookings"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      📅 My Bookings
                     </Link>
                     {user.role === 'ADMIN' && (
                       <Link

@@ -9,6 +9,7 @@ datasource db {
 }
 
 enum Role {
+  GUEST      // Regular site visitor / booker
   MODEL
   AGENCY
   ADMIN
@@ -33,11 +34,6 @@ enum ListingTier {
   PREMIUM
 }
 
-enum AgencyPlan {
-  FREE
-  PREMIUM
-}
-
 enum SubscriptionStatus {
   ACTIVE
   EXPIRED
@@ -46,16 +42,20 @@ enum SubscriptionStatus {
 
 enum BookingStatus {
   PENDING
-  CONFIRMED
+  ACCEPTED
   REJECTED
+  COMPLETED
   CANCELLED
 }
+
+// ─── Users ───────────────────────────────────────────────────────────────────
 
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
-  role      Role     @default(MODEL)
+  role      Role     @default(GUEST)
+  name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -63,62 +63,141 @@ model User {
   agency              Agency?
   verificationRequest VerificationRequest?
   favorites           Favorite[]           @relation("UserFavorites")
+
+  // Messaging
+  sentMessages        Message[]            @relation("SentMessages")
+  conversations       ConversationMember[]
+
+  // Bookings
+  bookingsAsGuest     Booking[]            @relation("GuestBookings")
+
+  // Reviews
+  reviewsWritten      Review[]
+
+  // Notifications
   notifications       Notification[]
 
   @@map("users")
 }
 
-model Agency {
-  id          String     @id @default(cuid())
-  userId      String     @unique
-  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+// ─── Conversations & Messages ─────────────────────────────────────────────────
 
-  name        String
-  slug        String     @unique
-  bio         String?    @db.Text
-  website     String?
-  instagram   String?
-  phone       String?
-  email       String?
-
-  country     String
-  countryCode String
-  city        String
-  citySlug    String
-
-  logoUrl     String?
-
-  plan                  AgencyPlan         @default(FREE)
-  subscriptionStatus    SubscriptionStatus @default(ACTIVE)
-  subscriptionExpiresAt DateTime?
-
-  isPremium   Boolean    @default(false)
-  premiumExpiresAt DateTime?
-
-  isActive    Boolean    @default(true)
-
-  models      AgencyModel[]
-  bookings    Booking[]
-  notifications Notification[]
-
+model Conversation {
+  id          String   @id @default(cuid())
+  subject     String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([countryCode, citySlug])
-  @@index([isPremium])
-  @@map("agencies")
+  members     ConversationMember[]
+  messages    Message[]
+
+  // Context (optional - links to a booking or profile)
+  profileId   String?
+  bookingId   String?
+
+  @@map("conversations")
 }
 
-model AgencyModel {
+model ConversationMember {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  @@unique([conversationId, userId])
+  @@map("conversation_members")
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String
+  sender         User         @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  content        String       @db.Text
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+
+  @@index([conversationId, createdAt])
+  @@map("messages")
+}
+
+// ─── Bookings ─────────────────────────────────────────────────────────────────
+
+model Booking {
+  id          String        @id @default(cuid())
+  profileId   String
+  profile     Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  guestId     String
+  guest       User          @relation("GuestBookings", fields: [guestId], references: [id], onDelete: Cascade)
+
+  date        DateTime
+  duration    Int           // hours
+  message     String?       @db.Text
+  contactName String
+  contactEmail String
+  contactPhone String?
+
+  status      BookingStatus @default(PENDING)
+  totalAmount Int?          // in cents
+  currency    String        @default("USD")
+
+  adminNotes  String?       @db.Text
+  respondedAt DateTime?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  review      Review?
+
+  @@index([profileId, status])
+  @@index([guestId])
+  @@map("bookings")
+}
+
+// ─── Reviews ─────────────────────────────────────────────────────────────────
+
+model Review {
   id        String   @id @default(cuid())
-  agencyId  String
-  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-  profileId String   @unique
+  profileId String
   profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookingId String   @unique
+  booking   Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  rating    Int      // 1-5
+  content   String   @db.Text
+  isVisible Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([profileId])
+  @@map("reviews")
+}
+
+// ─── Notifications ────────────────────────────────────────────────────────────
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // new_message, new_booking, booking_accepted, booking_rejected, new_review
+  title     String
+  body      String
+  link      String?
+  isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  @@map("agency_models")
+  @@index([userId, isRead])
+  @@map("notifications")
 }
+
+// ─── Profiles ─────────────────────────────────────────────────────────────────
 
 model Profile {
   id           String @id @default(cuid())
@@ -135,7 +214,6 @@ model Profile {
   city         String
   citySlug     String
 
-  email        String?
   phone        String?
   instagram    String?
   twitter      String?
@@ -149,9 +227,6 @@ model Profile {
   profileImageUrl String?
   images          ProfileImage[]
 
-  // Pricing stored as JSON: { "1h": 150, "2h": 280, ... }
-  pricing      Json?
-
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -160,6 +235,7 @@ model Profile {
   favorites    Favorite[]
   agencyModel  AgencyModel?
   bookings     Booking[]
+  reviews      Review[]
 
   @@index([country, city])
   @@index([countryCode, citySlug])
@@ -181,69 +257,69 @@ model ProfileImage {
   @@map("profile_images")
 }
 
-model Booking {
-  id        String        @id @default(cuid())
-  profileId String
-  profile   Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  agencyId  String?
-  agency    Agency?       @relation(fields: [agencyId], references: [id])
+// ─── Agencies ────────────────────────────────────────────────────────────────
 
-  // Contact info
-  clientName  String
-  clientEmail String
-  clientPhone String
+model Agency {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Booking details
-  date        DateTime
-  duration    Int       // in hours
-  totalPrice  Float?
-  notes       String?   @db.Text
+  name        String
+  slug        String   @unique
+  bio         String?  @db.Text
+  website     String?
+  instagram   String?
+  phone       String?
+  email       String?
 
-  status      BookingStatus @default(PENDING)
+  country     String
+  countryCode String
+  city        String
+  citySlug    String
+
+  logoUrl     String?
+
+  subscriptionStatus SubscriptionStatus @default(ACTIVE)
+  subscriptionExpiresAt DateTime?
+
+  isPremium   Boolean  @default(false)
+  premiumExpiresAt DateTime?
+
+  isActive    Boolean  @default(true)
+
+  models      AgencyModel[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@index([profileId])
-  @@index([agencyId])
-  @@index([status])
-  @@map("bookings")
+  @@index([countryCode, citySlug])
+  @@index([isPremium])
+  @@map("agencies")
 }
 
-model Notification {
+model AgencyModel {
   id        String   @id @default(cuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  agencyId  String?
-  agency    Agency?  @relation(fields: [agencyId], references: [id], onDelete: Cascade)
-
-  title     String
-  message   String
-  type      String   @default("info") // info, booking, system
-  isRead    Boolean  @default(false)
-  link      String?
-
+  agencyId  String
+  agency    Agency   @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  profileId String   @unique
+  profile   Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@index([userId])
-  @@index([agencyId])
-  @@map("notifications")
+  @@map("agency_models")
 }
+
+// ─── Other ────────────────────────────────────────────────────────────────────
 
 model VerificationRequest {
   id        String             @id @default(cuid())
   userId    String             @unique
   user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   status    VerificationStatus @default(PENDING)
-
   idImageKey    String?
   videoKey      String?
-
   adminNotes    String?  @db.Text
   reviewedAt    DateTime?
   reviewedBy    String?
-
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
