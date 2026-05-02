@@ -85,6 +85,7 @@ export interface ApiResponse<T = unknown> {
 
 export interface ProfileFilters {
   country?: string
+  countryCode?: string
   citySlug?: string
   availability?: AvailabilityStatus
   search?: string
