@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import Link from 'next/link'
 import { CheckCircle, Star, MapPin, Instagram, Globe, Phone, Building2 } from 'lucide-react'
 import Header from '@/components/layout/Header'
