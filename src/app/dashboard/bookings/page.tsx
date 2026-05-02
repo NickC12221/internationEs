@@ -27,6 +27,7 @@ interface ModelBooking {
   contactPhone: string | null
   status: string
   createdAt: string
+  guestId: string
   guest: { name: string | null; email: string }
   review: { rating: number } | null
 }
@@ -155,35 +156,63 @@ function ModelBookingsView() {
                   const cfg = STATUS_CONFIG[booking.status] || STATUS_CONFIG.PENDING
                   const Icon = cfg.icon
                   return (
-                    <div key={booking.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
-                      <div className="flex items-start justify-between gap-4">
-                        <div>
-                          <div className="flex items-center gap-2">
+                    <div key={booking.id} className="rounded-xl border border-stone-800 bg-stone-900 p-5">
+                      <div className="flex items-start justify-between gap-4 flex-wrap">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <p className="font-medium text-stone-200">{booking.contactName}</p>
+                            <span className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${cfg.color}`}>
+                              <Icon className="h-3.5 w-3.5" />{cfg.label}
+                            </span>
                           </div>
-                          <div className="flex items-center gap-3 mt-1 text-xs text-stone-500 flex-wrap">
+                          <div className="flex items-center gap-3 mt-2 text-xs text-stone-500 flex-wrap">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3.5 w-3.5" />
-                              {new Date(booking.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                              {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
-                            <span>{booking.duration}h</span>
+                            <span className="flex items-center gap-1">
+                              <Clock className="h-3.5 w-3.5" />{booking.duration} hour{booking.duration !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-3">
                             {booking.contactPhone && (
-                              <a href={`tel:${booking.contactPhone}`} className="flex items-center gap-1 text-amber-500 hover:text-amber-400">
-                                <Phone className="h-3.5 w-3.5" />{booking.contactPhone}
+                              <a href={`tel:${booking.contactPhone}`} className="flex items-center gap-1.5 text-sm font-medium text-amber-400 hover:text-amber-300 transition-colors">
+                                <Phone className="h-4 w-4" />{booking.contactPhone}
                               </a>
                             )}
-                            <a href={`mailto:${booking.contactEmail}`} className="hover:text-amber-400">{booking.contactEmail}</a>
+                            <a href={`mailto:${booking.contactEmail}`} className="flex items-center gap-1.5 text-xs text-stone-500 hover:text-amber-400 transition-colors">
+                              <Mail className="h-3.5 w-3.5" />{booking.contactEmail}
+                            </a>
                           </div>
+                          {booking.message && (
+                            <p className="mt-2 text-sm text-stone-400 leading-relaxed border-l-2 border-stone-700 pl-3 italic">
+                              "{booking.message}"
+                            </p>
+                          )}
                           {booking.review && (
-                            <div className="mt-1 flex items-center gap-1">
+                            <div className="mt-2 flex items-center gap-1">
                               {[1,2,3,4,5].map(s => <Star key={s} className={`h-3.5 w-3.5 ${s <= booking.review!.rating ? 'text-amber-400 fill-current' : 'text-stone-700'}`} />)}
-                              <span className="text-xs text-stone-500 ml-1">Review left</span>
+                              <span className="text-xs text-stone-500 ml-1">Review submitted</span>
                             </div>
                           )}
                         </div>
-                        <span className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${cfg.color}`}>
-                          <Icon className="h-3.5 w-3.5" />{cfg.label}
-                        </span>
+                        <div className="flex-shrink-0">
+                          <a href={`/contact/${booking.guestSlug || '#'}`}
+                            onClick={async (e) => {
+                              e.preventDefault()
+                              // Start a conversation with the guest
+                              const res = await fetch('/api/messages', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ recipientUserId: booking.guestId, initialMessage: `Hi ${booking.contactName}, following up on your booking request.` })
+                              })
+                              const data = await res.json()
+                              if (data.success) window.location.href = `/dashboard/inbox#${data.data.conversationId}`
+                            }}
+                            className="flex items-center gap-1.5 rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors cursor-pointer">
+                            <MessageSquare className="h-3.5 w-3.5" /> Message
+                          </a>
+                        </div>
                       </div>
                     </div>
                   )

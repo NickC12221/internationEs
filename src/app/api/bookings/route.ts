@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
       if (!profile) return NextResponse.json({ success: false, error: 'Profile not found' }, { status: 404 })
       bookings = await prisma.booking.findMany({
         where: { profileId: profile.id },
-        include: { guest: { select: { name: true, email: true } }, review: { select: { rating: true } } },
+        include: { guest: { select: { id: true, name: true, email: true } }, review: { select: { rating: true } } },
         orderBy: { createdAt: 'desc' }
       })
     } else if (role === 'agency') {
