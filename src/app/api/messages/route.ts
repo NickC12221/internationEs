@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
-    const { recipientUserId, profileId, initialMessage } = await req.json()
+    let { recipientUserId, profileId, initialMessage } = await req.json()
 
     if (!recipientUserId || !initialMessage?.trim()) {
       return NextResponse.json({ success: false, error: 'Recipient and message required' }, { status: 400 })
@@ -55,6 +55,19 @@ export async function POST(req: NextRequest) {
     if (recipientUserId === session.id) {
       return NextResponse.json({ success: false, error: 'Cannot message yourself' }, { status: 400 })
     }
+
+    // If the recipient is an agency model, route messages to the agency instead
+    let finalRecipientId = recipientUserId
+    if (profileId) {
+      const agencyModel = await prisma.agencyModel.findFirst({
+        where: { profileId },
+        include: { agency: { select: { userId: true } } }
+      })
+      if (agencyModel?.agency?.userId) {
+        finalRecipientId = agencyModel.agency.userId
+      }
+    }
+    recipientUserId = finalRecipientId
 
     // Check if conversation already exists between these two users
     const existing = await prisma.conversation.findFirst({

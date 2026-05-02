@@ -65,7 +65,7 @@ interface Agency {
   phone: string | null; website: string | null; instagram: string | null
 }
 
-type Tab = 'models' | 'settings'
+type Tab = 'models' | 'bookings' | 'settings'
 
 export default function AgencyDashboardPage() {
   const [agency, setAgency] = useState<Agency | null>(null)
@@ -88,6 +88,8 @@ export default function AgencyDashboardPage() {
   const [uploadingImage, setUploadingImage] = useState(false)
 
   // Agency settings
+  const [agencyBookings, setAgencyBookings] = useState<any[]>([])
+  const [loadingBookings, setLoadingBookings] = useState(false)
   const [settingsForm, setSettingsForm] = useState({ bio: '', phone: '', website: '', instagram: '' })
   const [savingSettings, setSavingSettings] = useState(false)
   const [settingsSaved, setSettingsSaved] = useState(false)
@@ -108,6 +110,16 @@ export default function AgencyDashboardPage() {
   }
 
   useEffect(() => { fetchData() }, [])
+
+  useEffect(() => {
+    if (tab === 'bookings' && agencyBookings.length === 0) {
+      setLoadingBookings(true)
+      fetch('/api/bookings?role=agency')
+        .then(r => r.json())
+        .then(d => { if (d.success) setAgencyBookings(d.data) })
+        .finally(() => setLoadingBookings(false))
+    }
+  }, [tab])
 
   const openEdit = async (model: AgencyModel) => {
     setEditingModel(model)
@@ -292,10 +304,10 @@ export default function AgencyDashboardPage() {
 
         {/* Tabs */}
         <div className="mb-6 flex gap-1 rounded-xl border border-stone-800 bg-stone-900 p-1">
-          {(['models', 'settings'] as Tab[]).map(t => (
+          {(['models', 'bookings', 'settings'] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`flex-1 rounded-lg py-2 text-sm font-medium transition-colors capitalize ${tab === t ? 'bg-stone-800 text-stone-100' : 'text-stone-500 hover:text-stone-300'}`}>
-              {t === 'models' ? `Models (${slotsUsed})` : 'Agency Settings'}
+{t === 'models' ? `Models (${slotsUsed})` : t === 'bookings' ? 'Bookings' : 'Agency Settings'}
             </button>
           ))}
         </div>
@@ -398,6 +410,60 @@ export default function AgencyDashboardPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* BOOKINGS TAB */}
+        {tab === 'bookings' && (
+          <div>
+            {loadingBookings ? (
+              <div className="flex justify-center py-16 text-stone-500">Loading...</div>
+            ) : agencyBookings.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-stone-700 py-16 text-center">
+                <p className="text-stone-400">No booking requests yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {agencyBookings.map((booking: any) => (
+                  <div key={booking.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
+                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                      <div>
+                        <p className="font-medium text-stone-200">{booking.contactName}</p>
+                        <p className="text-xs text-stone-500 mt-0.5">For: {booking.profile?.displayName}</p>
+                        <p className="text-xs text-stone-500">
+                          {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {booking.duration}h
+                        </p>
+                        {booking.message && <p className="mt-1 text-xs text-stone-400 line-clamp-2">{booking.message}</p>}
+                        <p className="mt-1 text-xs text-stone-600">{booking.contactEmail}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                          booking.status === 'PENDING' ? 'bg-amber-900/30 text-amber-400' :
+                          booking.status === 'ACCEPTED' ? 'bg-emerald-900/30 text-emerald-400' :
+                          'bg-red-900/30 text-red-400'
+                        }`}>{booking.status}</span>
+                        {booking.status === 'PENDING' && (
+                          <div className="flex gap-2">
+                            <button onClick={async () => {
+                              await fetch('/api/bookings/' + booking.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ACCEPTED' }) })
+                              setAgencyBookings((prev: any[]) => prev.map(b => b.id === booking.id ? { ...b, status: 'ACCEPTED' } : b))
+                            }} className="rounded-lg bg-emerald-900/30 px-3 py-1 text-xs text-emerald-400 hover:bg-emerald-900/50">
+                              Accept
+                            </button>
+                            <button onClick={async () => {
+                              await fetch('/api/bookings/' + booking.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'REJECTED' }) })
+                              setAgencyBookings((prev: any[]) => prev.map(b => b.id === booking.id ? { ...b, status: 'REJECTED' } : b))
+                            }} className="rounded-lg bg-red-900/30 px-3 py-1 text-xs text-red-400 hover:bg-red-900/50">
+                              Decline
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* SETTINGS TAB */}

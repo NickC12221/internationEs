@@ -39,6 +39,7 @@ export async function GET(req: NextRequest) {
           instagram: true,
           email: true,
           phone: true,
+          userId: true,
           createdAt: true,
           _count: { select: { models: true } },
         },

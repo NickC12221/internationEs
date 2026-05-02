@@ -107,11 +107,12 @@ const COUNTRIES_WITH_CITIES: Record<string, { code: string; cities: string[] }> 
 
 const SORTED_COUNTRIES = Object.keys(COUNTRIES_WITH_CITIES).sort()
 
-type AccountType = 'model' | 'agency' | null
+type AccountType = 'model' | 'agency' | 'guest' | null
 
 export default function SignupPage() {
   const [accountType, setAccountType] = useState<AccountType>(null)
   const [agencyPlan, setAgencyPlan] = useState<'free' | 'premium'>('free')
+  const [agencyPlan, setAgencyPlan] = useState<'FREE' | 'PREMIUM'>('FREE')
   const [form, setForm] = useState({ name: '', email: '', password: '', country: '', countryCode: '', city: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -129,7 +130,7 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const endpoint = accountType === 'agency' ? '/api/auth/agency-signup' : '/api/auth/signup'
+    const endpoint = accountType === 'agency' ? '/api/auth/agency-signup' : accountType === 'guest' ? '/api/auth/guest-signup' : '/api/auth/signup'
     const body = accountType === 'agency'
       ? { name: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city, isPremium: agencyPlan === 'premium' }
       : { displayName: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
@@ -195,6 +196,19 @@ export default function SignupPage() {
                   <p className="text-xs text-stone-500 mt-0.5">Manage a roster of models and get featured</p>
                 </div>
               </button>
+
+              <button
+                onClick={() => setAccountType('guest')}
+                className="flex w-full items-center gap-4 rounded-xl border border-stone-700 bg-stone-800 p-4 text-left transition-all hover:border-amber-700"
+              >
+                <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-stone-700">
+                  <User className="h-6 w-6 text-stone-400" />
+                </div>
+                <div>
+                  <p className="font-medium text-stone-200">Client / Guest</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Book models and send enquiries</p>
+                </div>
+              </button>
             </div>
 
             <p className="mt-6 text-center text-sm text-stone-500">
@@ -258,7 +272,7 @@ export default function SignupPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
                   placeholder="Min 8 characters" />
               </div>
-              <div>
+              {accountType !== 'guest' && <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Country</label>
                 <select value={form.country} onChange={handleCountryChange} required
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">

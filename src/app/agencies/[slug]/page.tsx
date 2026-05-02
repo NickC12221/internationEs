@@ -4,7 +4,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Globe, Instagram, Phone, Star, Users, CheckCircle } from 'lucide-react'
+import { MapPin, Globe, Instagram, Phone, Star, Users, CheckCircle, MessageSquare } from 'lucide-react'
+import AgencyContactButton from '@/components/messaging/AgencyContactButton'
 import Header from '@/components/layout/Header'
 
 interface Props {
@@ -34,6 +35,7 @@ export default async function AgencyProfilePage({ params }: Props) {
   const agency = await prisma.agency.findUnique({
     where: { slug: params.slug, isActive: true },
     include: {
+      user: { select: { id: true } },
       models: {
         include: {
           profile: {

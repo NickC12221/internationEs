@@ -85,6 +85,7 @@ export default function Header() {
 
           {/* Right side */}
           <div className="flex items-center gap-3">
+            {user && <NotificationBell />}
             {user ? (
               <div className="relative">
                 <button
@@ -105,7 +106,7 @@ export default function Header() {
                     <div className="px-4 py-2 border-b border-stone-800">
                       <p className="text-xs text-stone-500 truncate">{user.email}</p>
                       <p className={`text-xs font-medium mt-0.5 ${user.role === 'AGENCY' ? 'text-amber-400' : user.role === 'ADMIN' ? 'text-red-400' : 'text-stone-400'}`}>
-                        {user.role === 'AGENCY' ? '🏢 Agency' : user.role === 'ADMIN' ? '🛡 Admin' : '👤 Model'}
+                        {user.role === 'AGENCY' ? '🏢 Agency' : user.role === 'ADMIN' ? '🛡 Admin' : user.role === 'GUEST' ? '👤 Guest' : '👤 Model'}
                       </p>
                     </div>
                     <Link

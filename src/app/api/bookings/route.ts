@@ -17,7 +17,12 @@ export async function POST(req: NextRequest) {
 
     const profile = await prisma.profile.findUnique({
       where: { id: profileId, isActive: true },
-      select: { id: true, displayName: true, userId: true }
+      select: {
+        id: true,
+        displayName: true,
+        userId: true,
+        agencyModel: { select: { agency: { select: { id: true, userId: true, name: true } } } }
+      }
     })
     if (!profile) return NextResponse.json({ success: false, error: 'Profile not found' }, { status: 404 })
 
@@ -35,16 +40,29 @@ export async function POST(req: NextRequest) {
       }
     })
 
-    // Notify model/profile owner
-    await prisma.notification.create({
-      data: {
-        userId: profile.userId,
-        type: 'new_booking',
-        title: 'New booking request',
-        body: `${contactName} wants to book ${profile.displayName} on ${new Date(date).toLocaleDateString()}`,
-        link: `/dashboard/bookings`,
-      }
-    })
+    const notifData = {
+      type: 'new_booking',
+      title: 'New booking request',
+      body: `${contactName} wants to book ${profile.displayName} on ${new Date(date).toLocaleDateString()}`,
+      link: `/dashboard/bookings`,
+    }
+
+    // Notify model owner
+    await prisma.notification.create({ data: { userId: profile.userId, ...notifData } })
+
+    // If agency model, also notify the agency
+    const agencyUserId = profile.agencyModel?.agency?.userId
+    if (agencyUserId && agencyUserId !== profile.userId) {
+      await prisma.notification.create({
+        data: {
+          userId: agencyUserId,
+          type: 'new_booking',
+          title: 'New booking request',
+          body: `${contactName} wants to book ${profile.displayName} (your model)`,
+          link: `/agency-dashboard`,
+        }
+      })
+    }
 
     return NextResponse.json({ success: true, data: booking })
   } catch (err) {
@@ -61,23 +79,38 @@ export async function GET(req: NextRequest) {
     if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
     const { searchParams } = new URL(req.url)
-    const role = searchParams.get('role') // 'guest' or 'model'
+    const role = searchParams.get('role')
 
     let bookings
+
     if (role === 'model') {
-      // Model/Agency viewing their received bookings
       const profile = await prisma.profile.findUnique({ where: { userId: session.id }, select: { id: true } })
       if (!profile) return NextResponse.json({ success: false, error: 'Profile not found' }, { status: 404 })
       bookings = await prisma.booking.findMany({
         where: { profileId: profile.id },
+        include: { guest: { select: { name: true, email: true } }, review: { select: { rating: true } } },
+        orderBy: { createdAt: 'desc' }
+      })
+    } else if (role === 'agency') {
+      // Get all bookings for all models managed by this agency
+      const agency = await prisma.agency.findUnique({ where: { userId: session.id }, select: { id: true } })
+      if (!agency) return NextResponse.json({ success: false, error: 'Agency not found' }, { status: 404 })
+      const agencyModels = await prisma.agencyModel.findMany({
+        where: { agencyId: agency.id },
+        select: { profileId: true }
+      })
+      const profileIds = agencyModels.map(m => m.profileId)
+      bookings = await prisma.booking.findMany({
+        where: { profileId: { in: profileIds } },
         include: {
           guest: { select: { name: true, email: true } },
+          profile: { select: { displayName: true, profileImageUrl: true } },
           review: { select: { rating: true } }
         },
         orderBy: { createdAt: 'desc' }
       })
     } else {
-      // Guest viewing their sent bookings
+      // Guest viewing their own bookings
       bookings = await prisma.booking.findMany({
         where: { guestId: session.id },
         include: {
