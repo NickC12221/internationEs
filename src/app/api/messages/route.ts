@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
         type: 'new_message',
         title: 'New message',
         body: `${senderName} sent you a message${modelContext}`,
-        link: `/dashboard/inbox`,
+        link: `/dashboard/inbox#${conversationId}`,
       }
     })
 

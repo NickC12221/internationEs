@@ -134,7 +134,7 @@ export default function NotificationsPage() {
                           <p className="text-sm text-stone-400 mt-0.5 leading-relaxed">{notif.body}</p>
                           {notif.link && (
                             <p className="text-xs text-amber-600 mt-1.5">
-                              {notif.type === 'new_message' ? 'View conversation →' :
+                              {notif.type === 'new_message' ? 'Open inbox →' :
                                notif.type === 'new_booking' ? 'View booking request →' :
                                notif.type.includes('booking') ? 'View booking →' : 'View →'}
                             </p>

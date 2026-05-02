@@ -116,7 +116,11 @@ export default function InboxPage() {
       if (!d.success) { router.push('/login'); return }
       setCurrentUserId(d.data.id)
     })
-    fetchConversations()
+    fetchConversations().then(() => {
+      // Auto-open conversation from URL hash
+      const hash = window.location.hash.replace('#', '')
+      if (hash) openConversation(hash)
+    })
   }, [])
 
   const fetchConversations = async () => {
