@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const { slugify } = await import('@/lib/utils')
     const bcrypt = await import('bcryptjs')
 
-    const { name, email, password, country, countryCode, city } = await req.json()
+    const { name, email, password, country, countryCode, city, plan } = await req.json()
 
     if (!name || !email || !password || !country || !countryCode || !city) {
       return NextResponse.json({ success: false, error: 'All fields are required' }, { status: 400 })
@@ -40,6 +40,8 @@ export async function POST(req: NextRequest) {
             city,
             citySlug,
             email,
+            plan: plan === 'PREMIUM' ? 'PREMIUM' : 'FREE',
+            isPremium: plan === 'PREMIUM',
             subscriptionStatus: 'ACTIVE',
             subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
           }

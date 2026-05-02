@@ -111,6 +111,7 @@ type AccountType = 'model' | 'agency' | null
 
 export default function SignupPage() {
   const [accountType, setAccountType] = useState<AccountType>(null)
+  const [agencyPlan, setAgencyPlan] = useState<'FREE' | 'PREMIUM'>('FREE')
   const [form, setForm] = useState({ name: '', email: '', password: '', country: '', countryCode: '', city: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

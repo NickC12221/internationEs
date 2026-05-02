@@ -33,9 +33,21 @@ enum ListingTier {
   PREMIUM
 }
 
+enum AgencyPlan {
+  FREE
+  PREMIUM
+}
+
 enum SubscriptionStatus {
   ACTIVE
   EXPIRED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
   CANCELLED
 }
 
@@ -51,18 +63,19 @@ model User {
   agency              Agency?
   verificationRequest VerificationRequest?
   favorites           Favorite[]           @relation("UserFavorites")
+  notifications       Notification[]
 
   @@map("users")
 }
 
 model Agency {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id          String     @id @default(cuid())
+  userId      String     @unique
+  user        User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   name        String
-  slug        String   @unique
-  bio         String?  @db.Text
+  slug        String     @unique
+  bio         String?    @db.Text
   website     String?
   instagram   String?
   phone       String?
@@ -75,15 +88,18 @@ model Agency {
 
   logoUrl     String?
 
-  subscriptionStatus SubscriptionStatus @default(ACTIVE)
+  plan                  AgencyPlan         @default(FREE)
+  subscriptionStatus    SubscriptionStatus @default(ACTIVE)
   subscriptionExpiresAt DateTime?
 
-  isPremium   Boolean  @default(false)
+  isPremium   Boolean    @default(false)
   premiumExpiresAt DateTime?
 
-  isActive    Boolean  @default(true)
+  isActive    Boolean    @default(true)
 
   models      AgencyModel[]
+  bookings    Booking[]
+  notifications Notification[]
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -133,6 +149,9 @@ model Profile {
   profileImageUrl String?
   images          ProfileImage[]
 
+  // Pricing stored as JSON: { "1h": 150, "2h": 280, ... }
+  pricing      Json?
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -140,6 +159,7 @@ model Profile {
 
   favorites    Favorite[]
   agencyModel  AgencyModel?
+  bookings     Booking[]
 
   @@index([country, city])
   @@index([countryCode, citySlug])
@@ -159,6 +179,55 @@ model ProfileImage {
   createdAt  DateTime @default(now())
 
   @@map("profile_images")
+}
+
+model Booking {
+  id        String        @id @default(cuid())
+  profileId String
+  profile   Profile       @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  agencyId  String?
+  agency    Agency?       @relation(fields: [agencyId], references: [id])
+
+  // Contact info
+  clientName  String
+  clientEmail String
+  clientPhone String
+
+  // Booking details
+  date        DateTime
+  duration    Int       // in hours
+  totalPrice  Float?
+  notes       String?   @db.Text
+
+  status      BookingStatus @default(PENDING)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([profileId])
+  @@index([agencyId])
+  @@index([status])
+  @@map("bookings")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agencyId  String?
+  agency    Agency?  @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  title     String
+  message   String
+  type      String   @default("info") // info, booking, system
+  isRead    Boolean  @default(false)
+  link      String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([agencyId])
+  @@map("notifications")
 }
 
 model VerificationRequest {

@@ -2,22 +2,21 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 
-// Update a model
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { getSessionFromRequest } = await import('@/lib/auth/jwt')
     const { prisma } = await import('@/lib/db/prisma')
-    const { slugify } = await import('@/lib/utils')
 
     const session = await getSessionFromRequest(req)
     if (!session || session.role !== 'AGENCY') {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     }
 
+    const slugify = (t: string) => t.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '')
+
     const agency = await prisma.agency.findUnique({ where: { userId: session.id } })
     if (!agency) return NextResponse.json({ success: false, error: 'Agency not found' }, { status: 404 })
 
-    // Verify model belongs to this agency
     const agencyModel = await prisma.agencyModel.findFirst({
       where: { agencyId: agency.id, profileId: params.id }
     })
@@ -28,26 +27,27 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
     if (body.displayName) updates.displayName = body.displayName
     if (body.bio !== undefined) updates.bio = body.bio
-    if (body.age !== undefined) updates.age = body.age
+    if (body.age !== undefined) updates.age = body.age ? parseInt(body.age) : null
     if (body.availability) updates.availability = body.availability
-    if (body.email !== undefined) updates.email = body.email
-    if (body.phone !== undefined) updates.phone = body.phone
-    if (body.instagram !== undefined) updates.instagram = body.instagram
+    if (body.email !== undefined) updates.email = body.email || null
+    if (body.phone !== undefined) updates.phone = body.phone || null
+    if (body.instagram !== undefined) updates.instagram = body.instagram || null
+    if (body.profileImageUrl !== undefined) updates.profileImageUrl = body.profileImageUrl || null
+    if (body.pricing !== undefined) updates.pricing = body.pricing
 
-    // City update — must be same country as agency
     if (body.city) {
       updates.city = body.city
       updates.citySlug = slugify(body.city)
-      // country stays locked to agency country
       updates.country = agency.country
       updates.countryCode = agency.countryCode
     }
 
-    // Agency can upgrade model to premium
     if (body.listingTier) {
       updates.listingTier = body.listingTier
       if (body.listingTier === 'PREMIUM') {
         updates.premiumExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+      } else {
+        updates.premiumExpiresAt = null
       }
     }
 
@@ -56,16 +56,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     const profile = await prisma.profile.update({
       where: { id: params.id },
       data: updates,
-      include: { images: { take: 1, orderBy: { order: 'asc' } } }
+      include: { images: { take: 3, orderBy: { order: 'asc' } } }
     })
 
     return NextResponse.json({ success: true, data: profile })
   } catch (err) {
+    console.error(err)
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
 
-// Remove a model from agency
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { getSessionFromRequest } = await import('@/lib/auth/jwt')
@@ -84,7 +84,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     })
     if (!agencyModel) return NextResponse.json({ success: false, error: 'Model not found' }, { status: 404 })
 
-    // Remove agency link and deactivate profile
     await prisma.agencyModel.delete({ where: { id: agencyModel.id } })
     await prisma.profile.update({ where: { id: params.id }, data: { isActive: false } })
 
