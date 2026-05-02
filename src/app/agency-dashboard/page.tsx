@@ -196,12 +196,8 @@ export default function AgencyDashboardPage() {
     fetchData()
   }
 
-  const handlePremiumModel = async (profileId: string, current: string) => {
-    if (current !== 'PREMIUM') {
-      alert('Premium model upgrade is a paid feature. Stripe integration coming soon.')
-      return
-    }
-    // Allow downgrade for free
+  const handleDowngradePremium = async (profileId: string) => {
+    if (!confirm('Remove premium status from this model?')) return
     await fetch(`/api/agency/models/${profileId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ listingTier: 'FREE' }) })
     fetchData()
   }
