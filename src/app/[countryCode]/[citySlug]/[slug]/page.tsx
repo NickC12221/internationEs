@@ -1,8 +1,3 @@
-export const dynamic = 'force-dynamic'
-
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { CheckCircle, Star, MapPin, Instagram, Globe, Phone, Building2 } from 'lucide-react'
 import Header from '@/components/layout/Header'
@@ -178,15 +173,10 @@ export default async function ModelProfilePage({ params }: Props) {
             )}
 
             {/* Contact */}
-            {(profile.email || profile.phone || profile.instagram || profile.website) && (
+            {(profile.phone || profile.instagram || profile.website) && (
               <div className="rounded-xl border border-stone-800 bg-stone-900 p-4">
                 <p className="mb-3 text-xs font-medium uppercase tracking-wider text-stone-500">Contact</p>
                 <div className="space-y-2.5">
-                  {profile.email && (
-                    <a href={`mailto:${profile.email}`} className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
-                      <Mail className="h-4 w-4 flex-shrink-0" /><span className="truncate">{profile.email}</span>
-                    </a>
-                  )}
                   {profile.phone && (
                     <a href={`tel:${profile.phone}`} className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
                       <Phone className="h-4 w-4 flex-shrink-0" /><span>{profile.phone}</span>
