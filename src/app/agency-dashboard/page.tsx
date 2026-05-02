@@ -357,7 +357,7 @@ export default function AgencyDashboardPage() {
                             className="flex items-center justify-center gap-1 rounded-lg bg-stone-800 py-1.5 text-xs text-stone-400 hover:bg-stone-700 transition-colors">
                             <Edit3 className="h-3.5 w-3.5" /> Edit
                           </button>
-                          <button onClick={() => handlePremiumModel(model.id, model.listingTier)}
+                          <button onClick={() => handleDowngradePremium(model.id)}
                             className={`rounded-lg px-1 py-1.5 text-xs font-medium transition-colors ${model.listingTier === 'PREMIUM' ? 'bg-amber-900/30 text-amber-400 hover:bg-amber-900/50' : 'bg-stone-800 text-stone-500 hover:bg-stone-700'}`}>
                             {model.listingTier === 'PREMIUM' ? '★ Premium' : '★ Upgrade'}
                           </button>
