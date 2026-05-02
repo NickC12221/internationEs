@@ -197,7 +197,7 @@ function ModelBookingsView() {
                           )}
                         </div>
                         <div className="flex-shrink-0">
-                          <a href={`/contact/${booking.guestSlug || '#'}`}
+                          <a href="#"
                             onClick={async (e) => {
                               e.preventDefault()
                               // Start a conversation with the guest
