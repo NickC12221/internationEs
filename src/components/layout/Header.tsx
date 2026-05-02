@@ -125,6 +125,13 @@ export default function Header() {
                       <MessageSquare className="h-4 w-4" /> Inbox
                     </Link>
                     <Link
+                      href="/dashboard/notifications"
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      🔔 Notifications
+                    </Link>
+                    <Link
                       href="/dashboard/bookings"
                       className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
                       onClick={() => setUserMenuOpen(false)}
