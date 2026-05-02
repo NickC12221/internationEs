@@ -29,6 +29,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
+  // Prevent API routes being caught by dynamic segment
+  if (params.countryCode === 'api' || params.countryCode === '_next') {
+    const { notFound } = await import('next/navigation')
+    notFound()
+  }
   const cc = params.countryCode.toUpperCase()
   let locationInfo = null
   try {
