@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ArrowLeft, Star, CheckCircle, Loader2, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Star, CheckCircle, Loader2 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
 interface Review {
@@ -18,19 +18,29 @@ export default function ModelReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([])
   const [averageRating, setAverageRating] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [profileId, setProfileId] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
-    fetch('/api/user').then(r => r.json()).then(async d => {
-      if (!d.success) { router.push('/login'); return }
-      const res = await fetch(`/api/reviews?userId=${d.data.id}`)
+    const init = async () => {
+      const userRes = await fetch('/api/user')
+      const userData = await userRes.json()
+      if (!userData.success) { router.push('/login'); return }
+
+      const pid = userData.data.profile?.id
+      if (!pid) { setLoading(false); return }
+      setProfileId(pid)
+
+      // Fetch reviews by profileId to avoid routing issues
+      const res = await fetch(`/api/reviews?profileId=${pid}`)
       const data = await res.json()
       if (data.success) {
         setReviews(data.data)
         setAverageRating(data.averageRating)
       }
       setLoading(false)
-    })
+    }
+    init()
   }, [])
 
   return (
@@ -42,12 +52,11 @@ export default function ModelReviewsPage() {
           <h1 className="text-2xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>My Reviews</h1>
         </div>
 
-        {/* Summary */}
         {!loading && reviews.length > 0 && (
           <div className="mb-6 rounded-xl border border-stone-800 bg-stone-900 p-5 flex items-center gap-6">
             <div className="text-center">
               <p className="text-4xl font-light text-amber-400">{averageRating.toFixed(1)}</p>
-              <div className="flex mt-1">
+              <div className="flex mt-1 justify-center">
                 {[1,2,3,4,5].map(s => (
                   <Star key={s} className={`h-4 w-4 ${s <= Math.round(averageRating) ? 'text-amber-400 fill-current' : 'text-stone-700'}`} />
                 ))}
@@ -66,21 +75,21 @@ export default function ModelReviewsPage() {
           <div className="rounded-2xl border border-dashed border-stone-700 py-20 text-center">
             <Star className="mx-auto h-10 w-10 text-stone-700 mb-3" />
             <p className="text-stone-400">No reviews yet</p>
-            <p className="text-stone-600 text-sm mt-1">Reviews appear here after clients complete verified bookings</p>
+            <p className="text-stone-600 text-sm mt-1">Reviews appear after clients complete verified bookings</p>
           </div>
         ) : (
           <div className="space-y-4">
             {reviews.map(review => {
-              const reviewerName = review.user.profile?.displayName || review.user.name || 'Verified Client'
+              const name = review.user.profile?.displayName || review.user.name || 'Verified Client'
               return (
                 <div key={review.id} className="rounded-xl border border-stone-800 bg-stone-900 p-5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-full bg-stone-800 text-sm font-medium text-stone-400 flex-shrink-0">
-                        {reviewerName[0].toUpperCase()}
+                        {name[0].toUpperCase()}
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-stone-200">{reviewerName}</p>
+                        <p className="text-sm font-medium text-stone-200">{name}</p>
                         <div className="flex items-center gap-2 mt-0.5">
                           <div className="flex">
                             {[1,2,3,4,5].map(s => (

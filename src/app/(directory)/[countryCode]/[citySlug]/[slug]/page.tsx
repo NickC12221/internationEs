@@ -8,6 +8,7 @@ import { CheckCircle, Star, MapPin, Instagram, Globe, Phone, Building2, Calendar
 import Header from '@/components/layout/Header'
 import BookContactButtons from '@/components/booking/BookContactButtons'
 import ProfileReviews from '@/components/model/ProfileReviews'
+import ProfileRating from '@/components/model/ProfileRating'
 
 interface Props {
   params: { countryCode: string; citySlug: string; slug: string }
@@ -138,6 +139,8 @@ export default async function ModelProfilePage({ params }: Props) {
                 </div>
 
               </div>
+
+              <ProfileRating profileId={profile.id} />
 
               {/* Agency badge */}
               {agency && (

@@ -34,22 +34,23 @@ export default function ProfileReviews({ profileId }: Props) {
   if (loading || reviews.length === 0) return null
 
   return (
-    <div className="mt-8">
+    <div className="mt-10 border-t border-stone-800 pt-8">
       {/* Rating summary */}
-      <div className="mb-5 flex items-center gap-4">
-        <div>
-          <h2 className="text-2xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-            Reviews
-          </h2>
-        </div>
-        <div className="flex items-center gap-2 ml-2">
+      <div className="mb-6 flex items-center gap-4">
+        <h2 className="text-2xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          Reviews
+        </h2>
+        <div className="flex items-center gap-2">
           <div className="flex">
             {[1,2,3,4,5].map(s => (
               <Star key={s} className={`h-4 w-4 ${s <= Math.round(avgRating) ? 'text-amber-400 fill-current' : 'text-stone-700'}`} />
             ))}
           </div>
           <span className="text-sm text-stone-400">
-            {avgRating.toFixed(1)} <span className="text-stone-600">({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})</span>
+            {avgRating.toFixed(1)}
+          </span>
+          <span className="text-sm text-stone-600">
+            ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
           </span>
         </div>
       </div>
