@@ -250,7 +250,7 @@ function GuestBookingsView() {
     if (!reviewingBooking) return
     setSubmittingReview(true)
     setReviewError('')
-    const res = await fetch('/api/reviews', {
+    const res = await fetch('/api/submit-review', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookingId: reviewingBooking.id, rating: reviewForm.rating, content: reviewForm.content })
