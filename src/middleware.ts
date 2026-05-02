@@ -14,6 +14,12 @@ const GUEST_ONLY_ROUTES = ['/login', '/signup']
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+
+  // Always pass API routes through without interference
+  if (pathname.startsWith('/api/')) {
+    return NextResponse.next()
+  }
+
   const token = req.cookies.get(COOKIE_NAME)?.value
 
   let session = null
@@ -54,6 +60,7 @@ export async function middleware(req: NextRequest) {
 // This ensures /api/* routes are never caught by dynamic page segments
 export const config = {
   matcher: [
+    '/api/:path*',
     '/dashboard/:path*',
     '/profile/:path*',
     '/verify/:path*',
