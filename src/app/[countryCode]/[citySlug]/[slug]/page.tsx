@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { CheckCircle, Star, MapPin, Instagram, Globe, Phone, Building2, Calendar, MessageSquare } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import BookContactButtons from '@/components/booking/BookContactButtons'
+import ProfileReviews from '@/components/model/ProfileReviews'
 
 interface Props {
   params: { countryCode: string; citySlug: string; slug: string }
@@ -33,27 +34,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ModelProfilePage({ params }: Props) {
   const { prisma } = await import('@/lib/db/prisma')
 
-  const [profile, reviewsData] = await Promise.all([
-    prisma.profile.findUnique({
-      where: { slug: params.slug, isActive: true },
-      include: {
-        images: { orderBy: { order: 'asc' } },
-        agencyModel: { include: { agency: { select: { name: true, slug: true } } } },
-      },
-    }),
-    prisma.review.findMany({
-      where: { profile: { slug: params.slug }, isVisible: true },
-      include: { user: { select: { name: true, profile: { select: { displayName: true } } } } },
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-    })
-  ])
+  const profile = await prisma.profile.findUnique({
+    where: { slug: params.slug, isActive: true },
+    include: {
+      images: { orderBy: { order: 'asc' } },
+      agencyModel: { include: { agency: { select: { name: true, slug: true } } } },
+    },
+  })
+  const reviewsData: any[] = []
+  const avgRating = 0
 
   if (!profile) notFound()
 
-  const avgRating = reviewsData.length > 0
-    ? reviewsData.reduce((sum, r) => sum + r.rating, 0) / reviewsData.length
-    : 0
+
 
   const countryUrl = `/${profile.countryCode.toLowerCase()}`
   const cityUrl = `/${profile.countryCode.toLowerCase()}/${profile.citySlug}`
@@ -125,50 +118,7 @@ export default async function ModelProfilePage({ params }: Props) {
               </div>
             )}
 
-            {/* Reviews section */}
-            {reviewsData.length > 0 && (
-              <div className="mt-8">
-                <div className="mb-4 flex items-center gap-3">
-                  <h2 className="text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>Reviews</h2>
-                  <div className="flex items-center gap-2">
-                    <div className="flex">
-                      {[1,2,3,4,5].map(s => (
-                        <Star key={s} className={`h-4 w-4 ${s <= Math.round(avgRating) ? 'text-amber-400 fill-current' : 'text-stone-700'}`} />
-                      ))}
-                    </div>
-                    <span className="text-sm text-stone-400">{avgRating.toFixed(1)} ({reviewsData.length} review{reviewsData.length !== 1 ? 's' : ''})</span>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  {reviewsData.map(review => (
-                    <div key={review.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-stone-800 text-xs font-medium text-stone-400">
-                            {(review.user.profile?.displayName || review.user.name || 'U')[0].toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="text-sm font-medium text-stone-300">{review.user.profile?.displayName || review.user.name || 'Verified User'}</p>
-                            <div className="flex items-center gap-1.5">
-                              <div className="flex">
-                                {[1,2,3,4,5].map(s => (
-                                  <Star key={s} className={`h-3 w-3 ${s <= review.rating ? 'text-amber-400 fill-current' : 'text-stone-700'}`} />
-                                ))}
-                              </div>
-                              <span className="flex items-center gap-1 text-xs text-emerald-400">
-                                <CheckCircle className="h-3 w-3" /> Verified Booking
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-stone-600">{new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</p>
-                      </div>
-                      <p className="mt-3 text-sm text-stone-400 leading-relaxed">{review.content}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <ProfileReviews profileId={profile.id} />
           </div>
 
           {/* Right - Details */}
@@ -186,12 +136,7 @@ export default async function ModelProfilePage({ params }: Props) {
                   <span>·</span>
                   <Link href={countryUrl} className="hover:text-amber-400 transition-colors">{profile.country}</Link>
                 </div>
-                {reviewsData.length > 0 && (
-                  <div className="mt-2 flex items-center gap-1">
-                    {[1,2,3,4,5].map(s => <Star key={s} className={`h-3.5 w-3.5 ${s <= Math.round(avgRating) ? 'text-amber-400 fill-current' : 'text-stone-700'}`} />)}
-                    <span className="ml-1 text-xs text-stone-500">{avgRating.toFixed(1)} ({reviewsData.length})</span>
-                  </div>
-                )}
+
               </div>
 
               {/* Agency badge */}

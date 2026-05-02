@@ -272,6 +272,14 @@ function ModelDashboard({ user }: { user: any }) {
             </p>
           </div>
         </Link>
+        <Link href="/dashboard/reviews"
+          className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
+          <Star className="h-5 w-5 text-amber-400" />
+          <div>
+            <p className="text-sm font-medium text-stone-200">My Reviews</p>
+            <p className="text-xs text-stone-500">Reviews from verified bookings</p>
+          </div>
+        </Link>
       </div>
     </div>
   )

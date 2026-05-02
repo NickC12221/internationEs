@@ -7,12 +7,26 @@ export async function GET(req: NextRequest) {
     const { prisma } = await import('@/lib/db/prisma')
     const { searchParams } = new URL(req.url)
     const profileId = searchParams.get('profileId')
-    if (!profileId) return NextResponse.json({ success: false, error: 'profileId required' }, { status: 400 })
+    const userId = searchParams.get('userId') // for model's own reviews page
+
+    if (!profileId && !userId) {
+      return NextResponse.json({ success: false, error: 'profileId or userId required' }, { status: 400 })
+    }
+
+    const where: any = { isVisible: true }
+    if (profileId) where.profileId = profileId
+    if (userId) {
+      // Get reviews for the model's profile
+      const profile = await prisma.profile.findUnique({ where: { userId }, select: { id: true } })
+      if (!profile) return NextResponse.json({ success: true, data: [], averageRating: 0, total: 0 })
+      where.profileId = profile.id
+    }
 
     const reviews = await prisma.review.findMany({
-      where: { profileId, isVisible: true },
+      where,
       include: {
-        user: { select: { name: true, profile: { select: { displayName: true } } } }
+        user: { select: { name: true, profile: { select: { displayName: true } } } },
+        booking: { select: { date: true, duration: true } }
       },
       orderBy: { createdAt: 'desc' }
     })
@@ -21,8 +35,14 @@ export async function GET(req: NextRequest) {
       ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
       : 0
 
-    return NextResponse.json({ success: true, data: reviews, averageRating: Math.round(avg * 10) / 10, total: reviews.length })
+    return NextResponse.json({
+      success: true,
+      data: reviews,
+      averageRating: Math.round(avg * 10) / 10,
+      total: reviews.length
+    })
   } catch (err) {
+    console.error(err)
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
@@ -43,11 +63,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'Rating must be 1-5' }, { status: 400 })
     }
 
-    // Verify booking belongs to this user and is accepted/completed
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      select: { guestId: true, profileId: true, status: true, review: true }
+      include: {
+        review: true,
+        profile: { select: { displayName: true, userId: true } }
+      }
     })
+
     if (!booking) return NextResponse.json({ success: false, error: 'Booking not found' }, { status: 404 })
     if (booking.guestId !== session.id) return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
     if (!['ACCEPTED', 'COMPLETED'].includes(booking.status)) {
@@ -56,11 +79,30 @@ export async function POST(req: NextRequest) {
     if (booking.review) return NextResponse.json({ success: false, error: 'Already reviewed' }, { status: 409 })
 
     const review = await prisma.review.create({
-      data: { profileId: booking.profileId, userId: session.id, bookingId, rating, content: content.trim() }
+      data: {
+        profileId: booking.profileId,
+        userId: session.id,
+        bookingId,
+        rating,
+        content: content.trim()
+      }
+    })
+
+    // Notify the model
+    const stars = '★'.repeat(rating) + '☆'.repeat(5 - rating)
+    await prisma.notification.create({
+      data: {
+        userId: booking.profile.userId,
+        type: 'new_review',
+        title: 'New review received',
+        body: `${stars} — Someone left you a ${rating}-star review`,
+        link: `/dashboard/reviews`,
+      }
     })
 
     return NextResponse.json({ success: true, data: review })
   } catch (err) {
+    console.error(err)
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
