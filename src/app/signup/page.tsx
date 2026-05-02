@@ -111,6 +111,7 @@ type AccountType = 'model' | 'agency' | null
 
 export default function SignupPage() {
   const [accountType, setAccountType] = useState<AccountType>(null)
+  const [agencyPlan, setAgencyPlan] = useState<'free' | 'premium'>('free')
   const [agencyPlan, setAgencyPlan] = useState<'FREE' | 'PREMIUM'>('FREE')
   const [form, setForm] = useState({ name: '', email: '', password: '', country: '', countryCode: '', city: '' })
   const [loading, setLoading] = useState(false)
@@ -131,7 +132,7 @@ export default function SignupPage() {
     setLoading(true)
     const endpoint = accountType === 'agency' ? '/api/auth/agency-signup' : '/api/auth/signup'
     const body = accountType === 'agency'
-      ? { name: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
+      ? { name: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city, isPremium: agencyPlan === 'premium' }
       : { displayName: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
     try {
       const res = await fetch(endpoint, {
@@ -216,8 +217,22 @@ export default function SignupPage() {
             </div>
 
             {accountType === 'agency' && (
-              <div className="mb-4 rounded-xl border border-amber-900/50 bg-amber-950/20 px-4 py-3 text-xs text-amber-400">
-                Agency accounts include a 30-day free trial. Subscription required to remain active.
+              <div className="mb-5">
+                <p className="mb-3 text-xs font-medium uppercase tracking-wider text-stone-500">Choose your plan</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <label className={`cursor-pointer rounded-xl border p-3 text-center transition-all ${agencyPlan === 'free' ? 'border-amber-700 bg-amber-950/20' : 'border-stone-700 bg-stone-800 hover:border-stone-600'}`}>
+                    <input type="radio" name="plan" value="free" checked={agencyPlan === 'free'} onChange={() => setAgencyPlan('free')} className="hidden" />
+                    <p className="font-medium text-stone-200 text-sm">Free</p>
+                    <p className="text-lg font-light text-stone-100 mt-1">$0</p>
+                    <p className="text-xs text-stone-500 mt-1">Standard listing</p>
+                  </label>
+                  <label className={`cursor-pointer rounded-xl border p-3 text-center transition-all ${agencyPlan === 'premium' ? 'border-amber-700 bg-amber-950/20' : 'border-stone-700 bg-stone-800 hover:border-stone-600'}`}>
+                    <input type="radio" name="plan" value="premium" checked={agencyPlan === 'premium'} onChange={() => setAgencyPlan('premium')} className="hidden" />
+                    <p className="font-medium text-amber-400 text-sm">Premium</p>
+                    <p className="text-lg font-light text-stone-100 mt-1">$49<span className="text-xs text-stone-500">/mo</span></p>
+                    <p className="text-xs text-stone-500 mt-1">Featured in city sidebar</p>
+                  </label>
+                </div>
               </div>
             )}
 
