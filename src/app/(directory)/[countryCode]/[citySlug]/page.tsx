@@ -29,6 +29,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
+  if (["api", "_next", "dashboard", "admin", "agencies", "book", "contact", "search", "login", "signup"].includes(params.countryCode)) {
+    const { notFound } = await import("next/navigation")
+    notFound()
+  }
   // Prevent API routes being caught by dynamic segment
   if (['api', '_next', 'dashboard', 'admin', 'agencies', 'book', 'contact', 'search', 'login', 'signup'].includes(params.countryCode)) {
     const { notFound } = await import('next/navigation')
