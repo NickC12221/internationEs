@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Globe, Instagram, Phone, Mail, Star, Users, CheckCircle } from 'lucide-react'
+import { MapPin, Globe, Instagram, Phone, Star, Users, CheckCircle } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
 interface Props {
@@ -229,15 +229,7 @@ export default async function AgencyProfilePage({ params }: Props) {
                       <span>{agency.phone}</span>
                     </a>
                   )}
-                  {agency.email && (
-                    <a
-                      href={`mailto:${agency.email}`}
-                      className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors"
-                    >
-                      <Mail className="h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">{agency.email}</span>
-                    </a>
-                  )}
+
                   {!agency.website && !agency.instagram && !agency.phone && !agency.email && (
                     <p className="text-sm text-stone-600">No contact info provided</p>
                   )}

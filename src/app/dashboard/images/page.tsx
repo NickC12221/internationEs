@@ -23,7 +23,7 @@ export default function ImagesPage() {
   const [uploadProgress, setUploadProgress] = useState(0)
 
   useEffect(() => {
-    fetch('/api/user')
+    fetch('/api/auth/me')
       .then((r) => r.json())
       .then((data) => {
         if (data.success) {
@@ -123,7 +123,7 @@ export default function ImagesPage() {
             Photo Gallery
           </h1>
           <span className="ml-auto text-sm text-stone-500">
-            {images.length} / 20 photos
+            {images.length} / 15 photos
           </span>
         </div>
 
@@ -156,7 +156,7 @@ export default function ImagesPage() {
                   {isDragActive ? 'Drop photos here' : 'Drag & drop photos, or click to browse'}
                 </p>
                 <p className="mt-1 text-xs text-stone-600">
-                  JPEG, PNG, WebP · Up to 20 photos · Max 10MB each
+                  JPEG, PNG, WebP · Up to 15 photos · Max 10MB each
                 </p>
               </div>
             </div>
