@@ -114,7 +114,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
         type: 'new_message',
         title: 'New message',
         body: `${senderName}: ${content.trim().substring(0, 60)}${content.length > 60 ? '...' : ''}`,
-        link: `/dashboard/inbox/${params.id}`,
+        link: `/dashboard/inbox#${params.id}`,
       }))
     })
 
