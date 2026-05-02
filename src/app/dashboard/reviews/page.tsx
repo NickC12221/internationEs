@@ -41,7 +41,7 @@ export default function ModelReviewsPage() {
         }
 
         // Fetch reviews for this profile
-        const reviewRes = await fetch(`/api/reviews?profileId=${profileId}`)
+        const reviewRes = await fetch(`/api/model-reviews?profileId=${profileId}`)
         const reviewData = await reviewRes.json()
 
         if (reviewData.success) {

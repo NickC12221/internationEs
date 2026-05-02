@@ -11,7 +11,7 @@ export default function ProfileRating({ profileId }: Props) {
   const [total, setTotal] = useState(0)
 
   useEffect(() => {
-    fetch(`/api/reviews?profileId=${profileId}`)
+    fetch(`/api/model-reviews?profileId=${profileId}`)
       .then(r => r.json())
       .then(d => {
         if (d.success) {

@@ -20,7 +20,7 @@ export default function ProfileReviews({ profileId }: Props) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch(`/api/reviews?profileId=${profileId}`)
+    fetch(`/api/model-reviews?profileId=${profileId}`)
       .then(r => r.json())
       .then(d => {
         if (d.success) {
