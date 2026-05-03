@@ -135,6 +135,7 @@ model Booking {
   guest       User          @relation("GuestBookings", fields: [guestId], references: [id], onDelete: Cascade)
 
   date        DateTime
+  startTime   String?       // e.g. '2:00 PM'
   duration    Int           // hours
   message     String?       @db.Text
   contactName String

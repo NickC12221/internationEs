@@ -7,6 +7,16 @@ import { ArrowLeft, Calendar, Clock, MapPin, CheckCircle, Star, Loader2 } from '
 import Header from '@/components/layout/Header'
 import AuthGateModal from '@/components/messaging/AuthGateModal'
 
+
+const TIME_OPTIONS = [
+  '7:00 AM', '7:30 AM', '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM',
+  '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
+  '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM', '3:00 PM', '3:30 PM',
+  '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM', '6:00 PM', '6:30 PM',
+  '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM', '9:00 PM', '9:30 PM',
+  '10:00 PM', '10:30 PM', '11:00 PM',
+]
+
 const DURATION_OPTIONS = [
   { label: '1 hour', value: 1 },
   { label: '2 hours', value: 2 },
@@ -31,6 +41,7 @@ export default function BookPage() {
 
   const [form, setForm] = useState({
     date: '',
+    time: '',
     duration: 2,
     message: '',
     contactName: '',
@@ -136,6 +147,17 @@ export default function BookPage() {
                     min={new Date().toISOString().split('T')[0]}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                 </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-stone-400 flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" /> Start Time *
+                  </label>
+                  <select value={form.time} onChange={e => setForm(p => ({ ...p, time: e.target.value }))} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                    <option value="">Select start time...</option>
+                    {TIME_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                  </select>
+                </div>
+
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-stone-400 flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5" /> Duration

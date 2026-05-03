@@ -9,7 +9,7 @@ export async function POST(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ success: false, error: 'Login required to book' }, { status: 401 })
 
-    const { profileId, date, duration, message, contactName, contactEmail, contactPhone } = await req.json()
+    const { profileId, date, startTime, duration, message, contactName, contactEmail, contactPhone } = await req.json()
 
     if (!profileId || !date || !duration || !contactName || !contactEmail || !contactPhone) {
       return NextResponse.json({ success: false, error: 'Phone number is required' }, { status: 400 })
@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
         profileId,
         guestId: session.id,
         date: new Date(date),
+        startTime: startTime || null,
         duration: parseInt(duration),
         message: message || null,
         contactName,
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     const notifData = {
       type: 'new_booking',
       title: 'New booking request',
-      body: `${contactName} wants to book ${profile.displayName} on ${new Date(date).toLocaleDateString()}`,
+      body: `${contactName} wants to book ${profile.displayName} on ${new Date(date).toLocaleDateString()}${startTime ? ` at ${startTime}` : ''}`,
       link: `/dashboard/bookings`,
     }
 

@@ -433,7 +433,7 @@ export default function AgencyDashboardPage() {
                         <p className="font-medium text-stone-200">{booking.contactName}</p>
                         <p className="text-xs text-stone-500 mt-0.5">For: {booking.profile?.displayName}</p>
                         <p className="text-xs text-stone-500">
-                          {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })} · {booking.duration}h
+                          {new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}{booking.startTime && ` at ${booking.startTime}`} · {booking.duration}h
                         </p>
                         {booking.message && <p className="mt-1 text-xs text-stone-400 line-clamp-2">{booking.message}</p>}
                         <p className="mt-1 text-xs text-stone-600">{booking.contactEmail}</p>

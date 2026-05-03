@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header'
 interface GuestBooking {
   id: string
   date: string
+  startTime: string | null
   duration: number
   message: string | null
   contactName: string
@@ -21,6 +22,7 @@ interface ModelBooking {
   id: string
   date: string
   duration: number
+  startTime: string | null
   message: string | null
   contactName: string
   contactEmail: string
@@ -197,7 +199,7 @@ function ModelBookingsView() {
                           )}
                         </div>
                         <div className="flex-shrink-0">
-                          <a href="#"
+                          <a href={`/contact/${booking.guestSlug || '#'}`}
                             onClick={async (e) => {
                               e.preventDefault()
                               // Start a conversation with the guest
@@ -250,7 +252,7 @@ function GuestBookingsView() {
     if (!reviewingBooking) return
     setSubmittingReview(true)
     setReviewError('')
-    const res = await fetch('/api/submit-review', {
+    const res = await fetch('/api/reviews', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ bookingId: reviewingBooking.id, rating: reviewForm.rating, content: reviewForm.content })
@@ -307,6 +309,7 @@ function GuestBookingsView() {
                         </Link>
                         <div className="flex items-center gap-3 mt-1 text-xs text-stone-500">
                           <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5" />{new Date(booking.date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</span>
+                          {booking.startTime && <span className="flex items-center gap-1 text-amber-500/80"><Clock className="h-3.5 w-3.5" />{booking.startTime}</span>}
                           <span className="flex items-center gap-1"><Clock className="h-3.5 w-3.5" />{booking.duration}h</span>
                         </div>
                       </div>
