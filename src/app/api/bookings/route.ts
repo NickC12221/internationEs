@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
       bookings = await prisma.booking.findMany({
         where: { profileId: { in: profileIds } },
         include: {
-          guest: { select: { name: true, email: true } },
+          guest: { select: { id: true, name: true, email: true } },
           profile: { select: { displayName: true, profileImageUrl: true } },
           review: { select: { rating: true } }
         },

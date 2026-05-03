@@ -357,10 +357,17 @@ export default function AgencyDashboardPage() {
                             className="flex items-center justify-center gap-1 rounded-lg bg-stone-800 py-1.5 text-xs text-stone-400 hover:bg-stone-700 transition-colors">
                             <Edit3 className="h-3.5 w-3.5" /> Edit
                           </button>
-                          <button onClick={() => handlePremiumModel(model.id, model.listingTier)}
-                            className={`rounded-lg px-1 py-1.5 text-xs font-medium transition-colors ${model.listingTier === 'PREMIUM' ? 'bg-amber-900/30 text-amber-400 hover:bg-amber-900/50' : 'bg-stone-800 text-stone-500 hover:bg-stone-700'}`}>
-                            {model.listingTier === 'PREMIUM' ? '★ Premium' : '★ Upgrade'}
-                          </button>
+                          {model.listingTier === 'PREMIUM' ? (
+                            <button onClick={() => handleDowngradePremium(model.id)}
+                              className="rounded-lg px-1 py-1.5 text-xs font-medium bg-amber-900/30 text-amber-400 hover:bg-amber-900/50 transition-colors">
+                              ★ Premium
+                            </button>
+                          ) : (
+                            <Link href={`/agency-dashboard/upgrade/${model.id}`}
+                              className="flex items-center justify-center rounded-lg px-1 py-1.5 text-xs font-medium bg-stone-800 text-stone-500 hover:bg-amber-900/20 hover:text-amber-400 transition-colors">
+                              ★ Upgrade
+                            </Link>
+                          )}
                           <button onClick={() => handleDeleteModel(model.id)}
                             className="flex items-center justify-center rounded-lg bg-red-950/30 py-1.5 text-xs text-red-400 hover:bg-red-950/60 transition-colors">
                             <Trash2 className="h-3.5 w-3.5" />
@@ -437,22 +444,35 @@ export default function AgencyDashboardPage() {
                           booking.status === 'ACCEPTED' ? 'bg-emerald-900/30 text-emerald-400' :
                           'bg-red-900/30 text-red-400'
                         }`}>{booking.status}</span>
-                        {booking.status === 'PENDING' && (
-                          <div className="flex gap-2">
-                            <button onClick={async () => {
-                              await fetch('/api/bookings/' + booking.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ACCEPTED' }) })
-                              setAgencyBookings((prev: any[]) => prev.map(b => b.id === booking.id ? { ...b, status: 'ACCEPTED' } : b))
-                            }} className="rounded-lg bg-emerald-900/30 px-3 py-1 text-xs text-emerald-400 hover:bg-emerald-900/50">
-                              Accept
-                            </button>
-                            <button onClick={async () => {
-                              await fetch('/api/bookings/' + booking.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'REJECTED' }) })
-                              setAgencyBookings((prev: any[]) => prev.map(b => b.id === booking.id ? { ...b, status: 'REJECTED' } : b))
-                            }} className="rounded-lg bg-red-900/30 px-3 py-1 text-xs text-red-400 hover:bg-red-900/50">
-                              Decline
-                            </button>
-                          </div>
-                        )}
+                        <div className="flex flex-col gap-2 items-end">
+                          {booking.status === 'PENDING' && (
+                            <div className="flex gap-2">
+                              <button onClick={async () => {
+                                await fetch('/api/bookings/' + booking.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'ACCEPTED' }) })
+                                setAgencyBookings((prev: any[]) => prev.map((b: any) => b.id === booking.id ? { ...b, status: 'ACCEPTED' } : b))
+                              }} className="rounded-lg bg-emerald-900/30 px-3 py-1 text-xs text-emerald-400 hover:bg-emerald-900/50">
+                                Accept
+                              </button>
+                              <button onClick={async () => {
+                                await fetch('/api/bookings/' + booking.id, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status: 'REJECTED' }) })
+                                setAgencyBookings((prev: any[]) => prev.map((b: any) => b.id === booking.id ? { ...b, status: 'REJECTED' } : b))
+                              }} className="rounded-lg bg-red-900/30 px-3 py-1 text-xs text-red-400 hover:bg-red-900/50">
+                                Decline
+                              </button>
+                            </div>
+                          )}
+                          <button onClick={async () => {
+                            const res = await fetch('/api/messages', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ recipientUserId: booking.guestId, initialMessage: `Hi, following up on your booking request for ${booking.profile?.displayName} on ${new Date(booking.date).toLocaleDateString()}.` })
+                            })
+                            const data = await res.json()
+                            if (data.success) window.location.href = `/dashboard/inbox#${data.data.conversationId}`
+                          }} className="flex items-center gap-1.5 rounded-lg bg-stone-800 px-3 py-1 text-xs text-stone-400 hover:bg-stone-700 hover:text-stone-200 transition-colors">
+                            💬 Message Guest
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

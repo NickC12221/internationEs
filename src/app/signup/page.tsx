@@ -96,7 +96,7 @@ type AccountType = 'model' | 'agency' | 'guest' | null
 
 export default function SignupPage() {
   const [accountType, setAccountType] = useState<AccountType>(null)
-  const [form, setForm] = useState({ name: '', email: '', password: '', country: '', countryCode: '', city: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', country: '', countryCode: '', city: '', phone: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -122,7 +122,7 @@ export default function SignupPage() {
       accountType === 'agency'
         ? { name: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
         : accountType === 'guest'
-        ? { name: form.name, email: form.email, password: form.password }
+        ? { name: form.name, email: form.email, password: form.password, phone: form.phone || undefined }
         : { displayName: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
     try {
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
@@ -327,6 +327,17 @@ export default function SignupPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
                   placeholder="Min 8 characters" />
               </div>
+              {accountType === 'guest' && (
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">
+                    Phone <span className="text-stone-600 font-normal normal-case">(optional — shown on bookings)</span>
+                  </label>
+                  <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                    placeholder="+1 234 567 890" />
+                  <p className="mt-1 text-xs text-stone-600">Your name will appear on any reviews you submit and cannot be changed later.</p>
+                </div>
+              )}
               {needsLocation && (
                 <>
                   <div>
