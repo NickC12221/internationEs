@@ -666,12 +666,12 @@ export default function AgencyDashboardPage() {
                       </button>
                     </div>
                   ))}
-                  {addPhotos.length < 5 && (
+                  {addPhotos.length < 15 && (
                     <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 hover:border-amber-700 transition-colors">
                       <Camera className="h-5 w-5 text-stone-600" />
                       <span className="text-xs text-stone-600 mt-1">Add</span>
                       <input type="file" accept="image/*" multiple className="hidden" onChange={e => {
-                        const files = Array.from(e.target.files || []).slice(0, 5 - addPhotos.length)
+                        const files = Array.from(e.target.files || []).slice(0, 15 - addPhotos.length)
                         setAddPhotos(p => [...p, ...files])
                         files.forEach(f => { const r = new FileReader(); r.onload = ev => setAddPhotoUrls(p => [...p, ev.target?.result as string]); r.readAsDataURL(f) })
                         e.target.value = ''
