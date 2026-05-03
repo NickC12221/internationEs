@@ -48,6 +48,7 @@ interface Conversation {
 }
 
 function getDisplayName(user: ConversationMember['user']) {
+  if (user.role === 'ADMIN') return 'Admin Support'
   return user.profile?.displayName || user.agency?.name || user.name || 'Unknown'
 }
 
@@ -116,11 +117,7 @@ export default function InboxPage() {
       if (!d.success) { router.push('/login'); return }
       setCurrentUserId(d.data.id)
     })
-    fetchConversations().then(() => {
-      // Auto-open conversation from URL hash
-      const hash = window.location.hash.replace('#', '')
-      if (hash) openConversation(hash)
-    })
+    fetchConversations()
   }, [])
 
   const fetchConversations = async () => {

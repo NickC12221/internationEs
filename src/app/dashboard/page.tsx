@@ -3,12 +3,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin,
+  User, Camera, CheckCircle, Star, MapPin, Clock,
   Instagram, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
+import ReportButton from '@/components/support/ReportButton'
 
 const AVAILABILITY_OPTIONS = [
   { value: 'AVAILABLE', label: 'Available', color: 'text-emerald-400' },
@@ -98,7 +99,7 @@ function GuestDashboard({ user }: { user: any }) {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <ContactSupportButton />
+        <div className="flex items-center gap-3"><ContactSupportButton /><ReportButton /></div>
       </div>
     </div>
   )

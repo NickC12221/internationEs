@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Instagram, Phone, Mail } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
+import ReportButton from '@/components/support/ReportButton'
 
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
   "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah"],
