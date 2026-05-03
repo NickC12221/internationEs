@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
           include: {
             profile: {
               select: {
-                id: true, displayName: true, profileImageUrl: true, citySlug: true, slug: true, countryCode: true,
+                id: true, displayName: true, profileImageUrl: true, citySlug: true, slug: true, countryCode: true, listingTier: true,
                 _count: { select: { bookings: true } }
               }
             }
