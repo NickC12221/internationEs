@@ -388,8 +388,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
-        <ContactSupportButton />
-        <ReportButton />
-      </div>
-
