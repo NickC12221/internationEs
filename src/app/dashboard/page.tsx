@@ -97,6 +97,11 @@ function GuestDashboard({ user }: { user: any }) {
           </div>
         </Link>
       </div>
+
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+        <ContactSupportButton />
+        <ReportButton />
+      </div>
     </div>
   )
 }
@@ -345,12 +350,12 @@ function ModelDashboard({ user }: { user: any }) {
           </div>
         </Link>
       </div>
-    </div>
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
         <ReportButton />
       </div>
+    </div>
   )
 }
 
