@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
           include: {
             user: {
               select: {
-                id: true, name: true, email: true,
+                id: true, name: true, email: true, role: true,
                 profile: { select: { displayName: true, profileImageUrl: true, slug: true } },
                 agency: { select: { name: true, slug: true, logoUrl: true } }
               }
@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
         type: 'new_message',
         title: 'New message',
         body: `${senderName} sent you a message${modelContext}`,
-        link: `/dashboard/inbox#${conversationId}`,
+        link: `/dashboard/inbox`,
       }
     })
 

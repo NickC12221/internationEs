@@ -150,6 +150,40 @@ function ModelDashboard({ user }: { user: any }) {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+
+      {/* Premium expiry bar */}
+      {isPremium && (() => {
+        const expiresAt = profile?.premiumExpiresAt
+        const days = expiresAt ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86400000) : null
+        const expired = days !== null && days < 0
+        return (
+          <div className={`mb-4 rounded-xl border px-4 py-3 flex items-center justify-between gap-3 flex-wrap ${
+            expired ? 'border-red-900/50 bg-red-950/10'
+            : days !== null && days <= 14 ? 'border-amber-900/50 bg-amber-950/10'
+            : 'border-stone-800 bg-stone-900/60'
+          }`}>
+            <div className="flex items-center gap-3">
+              <Star className={`h-4 w-4 flex-shrink-0 fill-current ${expired ? 'text-red-400' : 'text-amber-400'}`} />
+              <div>
+                <p className={`text-sm font-medium ${expired ? 'text-red-400' : 'text-stone-200'}`}>
+                  {expired ? 'Premium Listing Expired' : days !== null ? `Premium Listing — ${days} day${days !== 1 ? 's' : ''} remaining` : 'Premium Listing Active'}
+                </p>
+                <p className="text-xs text-stone-500">
+                  {expiresAt && `${expired ? 'Expired' : 'Expires'} ${new Date(expiresAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`}
+                </p>
+              </div>
+            </div>
+            <Link href="/dashboard/premium"
+              className={`flex-shrink-0 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                expired ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' : 'border border-amber-800 text-amber-400 hover:bg-amber-900/20'
+              }`}>
+              <Star className="h-3.5 w-3.5" />
+              {expired ? 'Renew Now' : 'Extend'}
+            </Link>
+          </div>
+        )
+      })()}
+
       {/* Status badges */}
       <div className="mb-6 flex flex-wrap items-center gap-3">
         {isPremium && (
