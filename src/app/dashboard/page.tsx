@@ -98,8 +98,9 @@ function GuestDashboard({ user }: { user: any }) {
         </Link>
       </div>
 
-      <div className="mt-8 flex justify-center">
-        <div className="flex items-center gap-3"><ContactSupportButton /><ReportButton /></div>
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+        <ContactSupportButton />
+        <ReportButton />
       </div>
     </div>
   )

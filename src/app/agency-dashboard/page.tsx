@@ -610,8 +610,7 @@ export default function AgencyDashboardPage() {
         )}
       </div>
 
-      {/* Support buttons */}
-      <div className="mt-8 flex items-center justify-center gap-3 border-t border-stone-800 pt-6">
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
         <ReportButton />
       </div>
