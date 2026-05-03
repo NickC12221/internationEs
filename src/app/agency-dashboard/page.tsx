@@ -370,7 +370,7 @@ export default function AgencyDashboardPage() {
                   )}
                 </div>
               </div>
-              <Link href="/agency-dashboard/upgrade-agency"
+              <Link href="/agency-dashboard/upgrades"
                 className={`flex-shrink-0 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                   isPremium
                     ? expired ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' : 'border border-amber-800 text-amber-400 hover:bg-amber-900/20'
