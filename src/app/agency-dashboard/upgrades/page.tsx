@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Star, RefreshCw, Loader2, Check, CreditCard } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
@@ -66,10 +66,8 @@ export default function AgencyUpgradesPage() {
   const [processing, setProcessing] = useState<string | null>(null)
   const [successMsg, setSuccessMsg] = useState('')
   const router = useRouter()
-  const searchParams = useSearchParams()
-
   useEffect(() => {
-    if (searchParams.get('upgraded')) setSuccessMsg('Premium extended successfully!')
+    if (typeof window !== 'undefined' && window.location.search.includes('upgraded')) setSuccessMsg('Premium extended successfully!')
     const load = async () => {
       const [agencyRes, modelsRes] = await Promise.all([
         fetch('/api/agency').then(r => r.json()),
