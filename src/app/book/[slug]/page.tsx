@@ -64,6 +64,7 @@ export default function BookPage() {
           ...p,
           contactName: userData.data.name || userData.data.profile?.displayName || '',
           contactEmail: userData.data.email || '',
+          contactPhone: userData.data.phone || '',
         }))
       }
       setLoading(false)

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   User, Camera, CheckCircle, Star, MapPin,
   Instagram, Globe, Phone, Edit3, Calendar, MessageSquare,
-  Settings, Building2
+  Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
@@ -278,6 +278,14 @@ function ModelDashboard({ user }: { user: any }) {
           <div>
             <p className="text-sm font-medium text-stone-200">My Reviews</p>
             <p className="text-xs text-stone-500">Reviews from verified bookings</p>
+          </div>
+        </Link>
+        <Link href="/dashboard/settings"
+          className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
+          <Settings className="h-5 w-5 text-stone-400" />
+          <div>
+            <p className="text-sm font-medium text-stone-200">Account Settings</p>
+            <p className="text-xs text-stone-500">Email, password & security</p>
           </div>
         </Link>
       </div>

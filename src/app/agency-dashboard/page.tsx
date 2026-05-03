@@ -283,6 +283,7 @@ export default function AgencyDashboardPage() {
               {agency?.slug && (
                 <a href={`/agencies/${agency.slug}`} target="_blank" className="mt-1 inline-block text-xs text-amber-600 hover:text-amber-500">View public profile →</a>
               )}
+              <Link href="/dashboard/settings" className="mt-0.5 inline-block text-xs text-stone-500 hover:text-stone-300">Account settings →</Link>
             </div>
             <div className="text-right">
               <div className={`text-xs font-medium ${agency?.subscriptionStatus === 'ACTIVE' ? 'text-emerald-400' : 'text-red-400'}`}>
