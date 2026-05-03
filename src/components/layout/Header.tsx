@@ -139,14 +139,16 @@ export default function Header() {
                         {user.role === 'AGENCY' ? '🏢 Agency' : user.role === 'ADMIN' ? '🛡 Admin' : user.role === 'GUEST' ? '👤 Guest' : '👤 Model'}
                       </p>
                     </div>
-                    <Link
-                      href={dashboardUrl}
-                      className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
-                      onClick={() => setUserMenuOpen(false)}
-                    >
-                      {user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-                      {user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
-                    </Link>
+                    {user.role !== 'ADMIN' && (
+                      <Link
+                        href={dashboardUrl}
+                        className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        {user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
+                        {user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
+                      </Link>
+                    )}
                     {user.role !== 'ADMIN' && (
                       <>
                         <Link
