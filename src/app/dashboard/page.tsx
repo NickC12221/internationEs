@@ -351,6 +351,11 @@ function ModelDashboard({ user }: { user: any }) {
         </Link>
       </div>
     </div>
+
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+        <ContactSupportButton />
+        <ReportButton />
+      </div>
   )
 }
 
