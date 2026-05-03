@@ -14,7 +14,7 @@ interface GuestBooking {
   contactName: string
   status: string
   createdAt: string
-  profile: { displayName: string; profileImageUrl: string | null; slug: string; countryCode: string; citySlug: string }
+  profile: { id: string; userId: string; displayName: string; profileImageUrl: string | null; slug: string; countryCode: string; citySlug: string }
   review: { id: string; rating: number } | null
 }
 
@@ -199,7 +199,7 @@ function ModelBookingsView() {
                           )}
                         </div>
                         <div className="flex-shrink-0">
-                          <a href="#"
+                          <a href={`/contact/${booking.guestSlug || '#'}`}
                             onClick={async (e) => {
                               e.preventDefault()
                               // Start a conversation with the guest
@@ -318,20 +318,37 @@ function GuestBookingsView() {
                       </span>
                     </div>
                     {booking.message && <p className="mt-2 text-xs text-stone-500 line-clamp-2">{booking.message}</p>}
-                    <div className="mt-2 flex items-center gap-3 text-xs">
-                      <p className="text-stone-600">Requested {new Date(booking.createdAt).toLocaleDateString()}</p>
-                      {booking.review ? (
-                        <span className="flex items-center gap-1 text-amber-400">
-                          <Star className="h-3.5 w-3.5 fill-current" /> Review submitted
-                        </span>
-                      ) : canReview ? (
-                        <button onClick={() => setReviewingBooking(booking)}
-                          className="text-amber-500 hover:text-amber-400 underline underline-offset-2">
-                          Leave a review
-                        </button>
-                      ) : booking.status === 'PENDING' ? (
-                        <span className="text-stone-600">Waiting for model to respond</span>
-                      ) : null}
+                    <div className="mt-2 flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-3 text-xs flex-wrap">
+                        <p className="text-stone-600">Requested {new Date(booking.createdAt).toLocaleDateString()}</p>
+                        {booking.review ? (
+                          <span className="flex items-center gap-1 text-amber-400">
+                            <Star className="h-3.5 w-3.5 fill-current" /> Review submitted
+                          </span>
+                        ) : canReview ? (
+                          <button onClick={() => setReviewingBooking(booking)}
+                            className="text-amber-500 hover:text-amber-400 underline underline-offset-2">
+                            Leave a review
+                          </button>
+                        ) : booking.status === 'PENDING' ? (
+                          <span className="text-stone-600">Waiting for model to respond</span>
+                        ) : null}
+                      </div>
+                      <button onClick={async () => {
+                        const res = await fetch('/api/messages', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({
+                            recipientUserId: booking.profile.userId,
+                            profileId: booking.profile.id,
+                            initialMessage: `Hi, I wanted to follow up on my booking for ${new Date(booking.date).toLocaleDateString()}.`
+                          })
+                        })
+                        const data = await res.json()
+                        if (data.success) window.location.href = `/dashboard/inbox#${data.data.conversationId}`
+                      }} className="flex-shrink-0 flex items-center gap-1.5 rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                        <MessageSquare className="h-3.5 w-3.5" /> Message
+                      </button>
                     </div>
                   </div>
                 </div>

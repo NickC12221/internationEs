@@ -72,12 +72,32 @@ function GuestDashboard({ user }: { user: any }) {
             <p className="text-sm text-stone-500 mt-0.5">Find talent agencies near you</p>
           </div>
         </Link>
+
+        <Link href="/dashboard/settings"
+          className="flex items-start gap-4 rounded-2xl border border-stone-800 bg-stone-900 p-5 hover:border-stone-700 transition-colors">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-stone-800">
+            <Settings className="h-6 w-6 text-stone-400" />
+          </div>
+          <div>
+            <h3 className="font-medium text-stone-200">Account Settings</h3>
+            <p className="text-sm text-stone-500 mt-0.5">Edit your name, email and password</p>
+          </div>
+        </Link>
+
+        <Link href="/dashboard/notifications"
+          className="flex items-start gap-4 rounded-2xl border border-stone-800 bg-stone-900 p-5 hover:border-stone-700 transition-colors">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-stone-800">
+            <Star className="h-6 w-6 text-stone-400" />
+          </div>
+          <div>
+            <h3 className="font-medium text-stone-200">Notifications</h3>
+            <p className="text-sm text-stone-500 mt-0.5">Booking updates and messages</p>
+          </div>
+        </Link>
       </div>
     </div>
   )
 }
-
-// ─── Model Dashboard ─────────────────────────────────────────────────────────
 
 function ModelDashboard({ user }: { user: any }) {
   const [editing, setEditing] = useState(false)

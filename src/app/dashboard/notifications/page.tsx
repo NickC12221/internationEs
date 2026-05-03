@@ -110,12 +110,12 @@ export default function NotificationsPage() {
             {Object.entries(grouped).map(([date, items]) => (
               <div key={date}>
                 <p className="mb-2 text-xs font-medium uppercase tracking-wider text-stone-600">{date}</p>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {items.map(notif => {
                     const cfg = TYPE_CONFIG[notif.type] || TYPE_CONFIG.booking_update
                     const Icon = cfg.icon
                     const inner = (
-                      <div className={`flex items-start gap-4 rounded-xl border p-4 transition-all ${
+                      <div className={`flex items-start gap-4 rounded-xl border p-5 transition-all ${
                         !notif.isRead ? 'border-stone-700 bg-stone-900' : 'border-stone-800/50 bg-stone-900/40'
                       } ${notif.link ? 'hover:border-stone-600' : ''}`}>
                         <div className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full ${cfg.bg}`}>
@@ -134,7 +134,7 @@ export default function NotificationsPage() {
                           <p className="text-sm text-stone-400 mt-0.5 leading-relaxed">{notif.body}</p>
                           {notif.link && (
                             <p className="text-xs text-amber-600 mt-1.5">
-                              {notif.type === 'new_message' ? 'Open inbox →' :
+                              {notif.type === 'new_message' ? 'View conversation →' :
                                notif.type === 'new_booking' ? 'View booking request →' :
                                notif.type.includes('booking') ? 'View booking →' : 'View →'}
                             </p>

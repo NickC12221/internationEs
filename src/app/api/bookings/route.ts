@@ -115,7 +115,7 @@ export async function GET(req: NextRequest) {
       bookings = await prisma.booking.findMany({
         where: { guestId: session.id },
         include: {
-          profile: { select: { displayName: true, profileImageUrl: true, slug: true, countryCode: true, citySlug: true } },
+          profile: { select: { id: true, userId: true, displayName: true, profileImageUrl: true, slug: true, countryCode: true, citySlug: true } },
           review: { select: { id: true, rating: true } }
         },
         orderBy: { createdAt: 'desc' }
