@@ -194,12 +194,12 @@ export default function AgencyDashboardPage() {
         // Upload photos if any
         if (addPhotos.length > 0) {
           for (const photo of addPhotos) {
-            const uploadRes = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'profile', profileId, filename: photo.name, contentType: photo.type }) })
+            const uploadRes = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mimeType: photo.type, folder: 'profiles' }) })
             const uploadData = await uploadRes.json()
-            if (uploadData.uploadUrl) {
-              await fetch(uploadData.uploadUrl, { method: 'PUT', body: photo, headers: { 'Content-Type': photo.type } })
+            if (uploadData.success && uploadData.data?.uploadUrl) {
+              await fetch(uploadData.data.uploadUrl, { method: 'PUT', body: photo, headers: { 'Content-Type': photo.type } })
               const isFirst = addPhotos.indexOf(photo) === 0
-              await fetch('/api/agency/models/' + profileId + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: uploadData.key, url: uploadData.publicUrl, isMain: isFirst }) })
+              await fetch('/api/agency/models/' + profileId + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: uploadData.data.key, url: uploadData.data.publicUrl, isMain: isFirst }) })
             }
           }
         }
@@ -656,7 +656,7 @@ export default function AgencyDashboardPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 15 now)</span></label>
+                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 5 now)</span></label>
                 <div className="grid grid-cols-5 gap-2 mb-2">
                   {addPhotoUrls.map((url, i) => (
                     <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
@@ -667,7 +667,7 @@ export default function AgencyDashboardPage() {
                       </button>
                     </div>
                   ))}
-                  {addPhotos.length < 15 && (
+                  {addPhotos.length < 5 && (
                     <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 hover:border-amber-700 transition-colors">
                       <Camera className="h-5 w-5 text-stone-600" />
                       <span className="text-xs text-stone-600 mt-1">Add</span>
