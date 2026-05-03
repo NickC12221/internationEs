@@ -131,6 +131,21 @@ export default function AdminDashboard() {
     setBroadcasting(false)
   }
 
+  const userAction = async (userId: string, action: string, label: string) => {
+    if (!confirm(`${label}?`)) return
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action })
+    })
+    const data = await res.json()
+    if (data.success) {
+      // Refresh users
+      fetch('/api/admin/users').then(r => r.json()).then(d => { if (d.success) setUsers(d.data) })
+    } else {
+      alert(data.error || 'Action failed')
+    }
+  }
+
   const messageUser = async (userId: string) => {
     const res = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipientUserId: userId, initialMessage: 'Hi, this is Femme Directory admin.' }) })
     const data = await res.json()
@@ -549,26 +564,86 @@ export default function AdminDashboard() {
             {tab === 'Users' && (
               <div className="space-y-2">
                 <p className="text-xs text-stone-600 mb-3">{users.length} total users</p>
-                {users.map((u: any) => (
-                  <div key={u.id} className="flex items-center justify-between rounded-xl border border-stone-800 bg-stone-900 px-4 py-3">
-                    <div>
-                      <p className="text-sm font-medium text-stone-200">{u.name || u.profile?.displayName || u.agency?.name || '—'}</p>
-                      <p className="text-xs text-stone-500">{u.email}</p>
+                {users.map((u: any) => {
+                  const isModel = u.role === 'MODEL'
+                  const isAgency = u.role === 'AGENCY'
+                  const isPremiumModel = u.profile?.listingTier === 'PREMIUM'
+                  const isPremiumAgency = u.agency?.isPremium
+                  const isActive = u.profile?.isActive !== false && u.agency?.isActive !== false
+
+                  return (
+                    <div key={u.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
+                      <div className="flex items-start justify-between gap-3 flex-wrap">
+                        <div>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <p className="text-sm font-medium text-stone-200">
+                              {u.profile?.displayName || u.agency?.name || u.name || u.email.split('@')[0]}
+                            </p>
+                            <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                              u.role === 'ADMIN' ? 'bg-red-900/30 text-red-400' :
+                              u.role === 'MODEL' ? 'bg-blue-900/30 text-blue-400' :
+                              u.role === 'AGENCY' ? 'bg-amber-900/30 text-amber-400' : 'bg-stone-800 text-stone-400'
+                            }`}>{u.role}</span>
+                            {(isPremiumModel || isPremiumAgency) && (
+                              <span className="flex items-center gap-1 text-xs text-amber-400">
+                                <Star className="h-3 w-3 fill-current" /> Premium
+                              </span>
+                            )}
+                            {!isActive && <span className="text-xs text-red-400 bg-red-950/30 rounded px-1.5 py-0.5">Deactivated</span>}
+                          </div>
+                          <p className="text-xs text-stone-500 mt-0.5">{u.email}</p>
+                          {u.profile?.city && <p className="text-xs text-stone-600">{u.profile.city}, {u.profile.country}</p>}
+                          <p className="text-xs text-stone-700 mt-0.5">Joined {new Date(u.createdAt).toLocaleDateString()}</p>
+                        </div>
+                        {u.role !== 'ADMIN' && (
+                          <div className="flex flex-wrap gap-1.5">
+                            <button onClick={() => messageUser(u.id)}
+                              className="rounded-lg border border-stone-700 px-2.5 py-1 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                              💬 Message
+                            </button>
+                            {isModel && (
+                              isPremiumModel ? (
+                                <button onClick={() => userAction(u.id, 'revoke_premium_model', 'Remove premium from this model')}
+                                  className="rounded-lg border border-amber-800 px-2.5 py-1 text-xs text-amber-400 hover:bg-red-950/30 hover:text-red-400 hover:border-red-800 transition-colors">
+                                  ★ Revoke Premium
+                                </button>
+                              ) : (
+                                <button onClick={() => userAction(u.id, 'grant_premium_model', 'Grant 30-day premium to this model')}
+                                  className="rounded-lg border border-stone-700 px-2.5 py-1 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                                  ★ Grant Premium
+                                </button>
+                              )
+                            )}
+                            {isAgency && (
+                              isPremiumAgency ? (
+                                <button onClick={() => userAction(u.id, 'revoke_premium_agency', 'Revoke agency premium')}
+                                  className="rounded-lg border border-amber-800 px-2.5 py-1 text-xs text-amber-400 hover:bg-red-950/30 hover:text-red-400 hover:border-red-800 transition-colors">
+                                  ★ Revoke Premium
+                                </button>
+                              ) : (
+                                <button onClick={() => userAction(u.id, 'grant_premium_agency', 'Grant 30-day agency premium')}
+                                  className="rounded-lg border border-stone-700 px-2.5 py-1 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                                  ★ Grant Premium
+                                </button>
+                              )
+                            )}
+                            {isActive ? (
+                              <button onClick={() => userAction(u.id, isModel ? 'deactivate_profile' : 'deactivate_agency', 'Deactivate this account')}
+                                className="rounded-lg border border-stone-700 px-2.5 py-1 text-xs text-stone-400 hover:border-red-700 hover:text-red-400 transition-colors">
+                                🚫 Deactivate
+                              </button>
+                            ) : (
+                              <button onClick={() => userAction(u.id, isModel ? 'activate_profile' : 'activate_agency', 'Reactivate this account')}
+                                className="rounded-lg border border-stone-700 px-2.5 py-1 text-xs text-stone-400 hover:border-emerald-700 hover:text-emerald-400 transition-colors">
+                                ✓ Reactivate
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                        u.role === 'ADMIN' ? 'bg-red-900/30 text-red-400' :
-                        u.role === 'MODEL' ? 'bg-blue-900/30 text-blue-400' :
-                        u.role === 'AGENCY' ? 'bg-amber-900/30 text-amber-400' : 'bg-stone-800 text-stone-400'
-                      }`}>{u.role}</span>
-                      <button onClick={() => messageUser(u.id)}
-                        className="rounded-lg border border-stone-700 px-2 py-1 text-xs text-stone-500 hover:border-amber-700 hover:text-amber-400 transition-colors">
-                        Message
-                      </button>
-                      <span className="text-xs text-stone-600">{new Date(u.createdAt).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             )}
           </>
