@@ -80,6 +80,7 @@ export default function AgencyDashboardPage() {
   const [addForm, setAddForm] = useState({ displayName: '', city: '', bio: '', age: '' })
   const [addPhotos, setAddPhotos] = useState<File[]>([])
   const [addPhotoUrls, setAddPhotoUrls] = useState<string[]>([])
+  const [mainPhotoIndex, setMainPhotoIndex] = useState(0)
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
 
@@ -198,7 +199,7 @@ export default function AgencyDashboardPage() {
             const uploadData = await uploadRes.json()
             if (uploadData.success && uploadData.data?.uploadUrl) {
               await fetch(uploadData.data.uploadUrl, { method: 'PUT', body: photo, headers: { 'Content-Type': photo.type } })
-              const isFirst = addPhotos.indexOf(photo) === 0
+              const isFirst = addPhotos.indexOf(photo) === mainPhotoIndex
               await fetch('/api/agency/models/' + profileId + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: uploadData.data.key, url: uploadData.data.publicUrl, isMain: isFirst }) })
             }
           }
@@ -207,6 +208,7 @@ export default function AgencyDashboardPage() {
         setAddForm({ displayName: '', city: '', bio: '', age: '' })
         setAddPhotos([])
         setAddPhotoUrls([])
+        setMainPhotoIndex(0)
         fetchData()
       }
       else setAddError(data.error || 'Failed')
@@ -657,14 +659,28 @@ export default function AgencyDashboardPage() {
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 5 now)</span></label>
-                <div className="grid grid-cols-5 gap-2 mb-2">
+                <div className="grid grid-cols-4 gap-2 mb-2">
                   {addPhotoUrls.map((url, i) => (
-                    <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
-                      <img src={url} className="h-full w-full object-cover" alt="" />
-                      <button type="button" onClick={() => { setAddPhotos(p => p.filter((_, j) => j !== i)); setAddPhotoUrls(p => p.filter((_, j) => j !== i)) }}
-                        className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-stone-950/80 text-stone-300 hover:text-white">
-                        ×
-                      </button>
+                    <div key={i} className="flex flex-col gap-1">
+                      <div className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
+                        <img src={url} className="h-full w-full object-cover" alt="" />
+                        {mainPhotoIndex === i && (
+                          <span className="absolute top-1 left-1 rounded-full bg-amber-800/90 px-1.5 py-0.5 text-xs text-amber-200">★ Main</span>
+                        )}
+                        <button type="button" onClick={() => {
+                          setAddPhotos(p => p.filter((_, j) => j !== i))
+                          setAddPhotoUrls(p => p.filter((_, j) => j !== i))
+                          if (mainPhotoIndex >= i) setMainPhotoIndex(Math.max(0, mainPhotoIndex - 1))
+                        }} className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-stone-950/80 text-stone-300 hover:text-white">
+                          ×
+                        </button>
+                      </div>
+                      {i !== mainPhotoIndex && (
+                        <button type="button" onClick={() => setMainPhotoIndex(i)}
+                          className="rounded bg-stone-800 py-0.5 text-xs text-stone-500 hover:text-amber-400 hover:bg-amber-900/20 transition-colors">
+                          Set Main
+                        </button>
+                      )}
                     </div>
                   ))}
                   {addPhotos.length < 5 && (
