@@ -1,10 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 
-// Simple in-memory cache to prevent re-fetching on every navigation
-let cachedUser: any = null
-let cacheTimestamp = 0
-const CACHE_TTL = 60000 // 1 minute
+
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { Search, Menu, X, User, LogOut, Settings, Shield, Building2, MessageSquare } from 'lucide-react'
@@ -19,7 +16,16 @@ interface UserData {
 }
 
 export default function Header() {
-  const [user, setUser] = useState<UserData | null>(null)
+  const [user, setUser] = useState<UserData | null>(() => {
+    // Initialise from localStorage immediately to prevent flicker
+    if (typeof window !== 'undefined') {
+      try {
+        const cached = localStorage.getItem('femme_user')
+        if (cached) return JSON.parse(cached)
+      } catch {}
+    }
+    return null
+  })
   const [menuOpen, setMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
@@ -38,8 +44,7 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await fetch('/api/auth/signout', { method: 'POST' })
-    cachedUser = null
-    cacheTimestamp = 0
+    localStorage.removeItem('femme_user')
     setUser(null)
     setUserMenuOpen(false)
     router.push('/')
