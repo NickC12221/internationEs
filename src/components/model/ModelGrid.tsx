@@ -8,6 +8,7 @@ import type { PublicProfile, ProfileFilters } from '@/types'
 interface ModelGridProps {
   initialFilters?: ProfileFilters
   title?: string
+  pageSize?: number
 }
 
 const AVAILABILITY_OPTIONS = [
@@ -18,7 +19,7 @@ const AVAILABILITY_OPTIONS = [
   { value: 'UNAVAILABLE', label: 'Unavailable' },
 ]
 
-export default function ModelGrid({ initialFilters = {}, title }: ModelGridProps) {
+export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }: ModelGridProps) {
   const [profiles, setProfiles] = useState<PublicProfile[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
@@ -37,13 +38,17 @@ export default function ModelGrid({ initialFilters = {}, title }: ModelGridProps
         if (initialFilters.search) params.set('search', initialFilters.search)
         if (availabilityFilter) params.set('availability', availabilityFilter)
         params.set('page', currentPage.toString())
-        params.set('pageSize', '24')
+        params.set('pageSize', pageSize.toString())
 
         const res = await fetch(`/api/profiles?${params}`)
         const data = await res.json()
 
         if (data.success) {
-          setProfiles(data.data)
+          if (currentPage === 1) {
+            setProfiles(data.data)
+          } else {
+            setProfiles(prev => [...prev, ...data.data])
+          }
           setTotal(data.total)
           setTotalPages(data.totalPages)
           setPage(currentPage)
