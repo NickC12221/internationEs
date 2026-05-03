@@ -365,7 +365,7 @@ export default function AgencyDashboardPage() {
                   ) : (
                     <>
                       <p className="text-sm font-medium text-stone-300">Upgrade to Premium Agency</p>
-                      <p className="text-xs text-stone-500">Priority placement, city sidebar, analytics & up to 20 models</p>
+                      <p className="text-xs text-stone-500">Up to 20 models (free plan: 5), priority placement, city sidebar & analytics</p>
                     </>
                   )}
                 </div>
