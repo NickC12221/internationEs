@@ -1,5 +1,10 @@
 'use client'
 import { useState, useEffect } from 'react'
+
+// Simple in-memory cache to prevent re-fetching on every navigation
+let cachedUser: any = null
+let cacheTimestamp = 0
+const CACHE_TTL = 60000 // 1 minute
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
 import { Search, Menu, X, User, LogOut, Settings, Shield, Building2, MessageSquare } from 'lucide-react'
@@ -33,6 +38,8 @@ export default function Header() {
 
   const handleSignOut = async () => {
     await fetch('/api/auth/signout', { method: 'POST' })
+    cachedUser = null
+    cacheTimestamp = 0
     setUser(null)
     setUserMenuOpen(false)
     router.push('/')
@@ -110,12 +117,12 @@ export default function Header() {
                       </p>
                     </div>
                     <Link
-                      href={user.role === 'ADMIN' ? '/admin' : dashboardUrl}
+                      href={dashboardUrl}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      {user.role === 'ADMIN' ? <Shield className="h-4 w-4" /> : user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-                      {user.role === 'ADMIN' ? 'Admin Panel' : user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
+                      {user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
+                      {user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
                     </Link>
                     {user.role !== 'ADMIN' && (
                       <>
