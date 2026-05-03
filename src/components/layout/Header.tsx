@@ -158,10 +158,7 @@ export default function Header() {
                         <Link href="/dashboard/notifications" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           🔔 Notifications
                         </Link>
-                        <Link href="/agency-dashboard/bookings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
-                          📅 Bookings
-                        </Link>
-                        <Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+<Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           ⚙️ Account Settings
                         </Link>
                       </>
