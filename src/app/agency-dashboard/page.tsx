@@ -655,7 +655,7 @@ export default function AgencyDashboardPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 5 now)</span></label>
+                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 15 now)</span></label>
                 <div className="grid grid-cols-5 gap-2 mb-2">
                   {addPhotoUrls.map((url, i) => (
                     <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
