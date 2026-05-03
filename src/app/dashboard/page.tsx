@@ -8,6 +8,7 @@ import {
   Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
+import ContactSupportButton from '@/components/support/ContactSupportButton'
 
 const AVAILABILITY_OPTIONS = [
   { value: 'AVAILABLE', label: 'Available', color: 'text-emerald-400' },
@@ -94,6 +95,10 @@ function GuestDashboard({ user }: { user: any }) {
             <p className="text-sm text-stone-500 mt-0.5">Booking updates and messages</p>
           </div>
         </Link>
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <ContactSupportButton />
       </div>
     </div>
   )

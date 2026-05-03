@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Instagram, Phone, Mail } from 'lucide-react'
 import Header from '@/components/layout/Header'
+import ContactSupportButton from '@/components/support/ContactSupportButton'
 
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
   "United Arab Emirates": ["Dubai", "Abu Dhabi", "Sharjah", "Ajman", "Ras Al Khaimah", "Fujairah"],
@@ -284,6 +285,9 @@ export default function AgencyDashboardPage() {
                 <a href={`/agencies/${agency.slug}`} target="_blank" className="mt-1 inline-block text-xs text-amber-600 hover:text-amber-500">View public profile →</a>
               )}
               <Link href="/dashboard/settings" className="mt-0.5 inline-block text-xs text-stone-500 hover:text-stone-300">Account settings →</Link>
+              {agency?.isPremium && (
+                <Link href="/agency-dashboard/analytics" className="mt-0.5 inline-block text-xs text-amber-600 hover:text-amber-400">📊 View Analytics →</Link>
+              )}
             </div>
             <div className="text-right">
               <div className={`text-xs font-medium ${agency?.subscriptionStatus === 'ACTIVE' ? 'text-emerald-400' : 'text-red-400'}`}>
