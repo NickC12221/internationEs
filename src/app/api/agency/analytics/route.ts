@@ -77,7 +77,7 @@ export async function GET(req: NextRequest) {
         citySlug: m.profile.citySlug,
         bookings: { total, accepted, pending },
         reviews: { count: modelReviews.length, avg: Math.round(modelAvg * 10) / 10 },
-        listingTier: m.listingTier,
+        listingTier: m.profile.listingTier,
       }
     })
 
