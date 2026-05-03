@@ -2,7 +2,8 @@ export const dynamic = 'force-dynamic'
 
 import { NextRequest, NextResponse } from 'next/server'
 
-const MODEL_LIMIT = 20
+const MODEL_LIMIT_FREE = 5
+const MODEL_LIMIT_PREMIUM = 20
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,8 +25,12 @@ export async function POST(req: NextRequest) {
     if (agency.subscriptionStatus !== 'ACTIVE') {
       return NextResponse.json({ success: false, error: 'Agency subscription is not active' }, { status: 403 })
     }
-    if (agency._count.models >= MODEL_LIMIT) {
-      return NextResponse.json({ success: false, error: `Model limit reached (${MODEL_LIMIT}/${MODEL_LIMIT})` }, { status: 400 })
+    const limit = agency.isPremium ? MODEL_LIMIT_PREMIUM : MODEL_LIMIT_FREE
+    if (agency._count.models >= limit) {
+      const msg = agency.isPremium
+        ? `Model limit reached (${limit}/${limit})`
+        : `Free agencies can add up to ${MODEL_LIMIT_FREE} models. Upgrade to Premium for up to ${MODEL_LIMIT_PREMIUM} models.`
+      return NextResponse.json({ success: false, error: msg }, { status: 400 })
     }
 
     const slugify = (t: string) => t.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '')

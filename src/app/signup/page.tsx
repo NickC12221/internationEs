@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { User, Building2 } from 'lucide-react'
+import { User, Building2, Check, Star } from 'lucide-react'
 
 const COUNTRIES_WITH_CITIES: Record<string, { code: string; cities: string[] }> = {
   "Australia": { code: "AU", cities: ["Sydney", "Melbourne", "Brisbane", "Perth", "Adelaide", "Gold Coast"] },
@@ -74,6 +74,24 @@ const COUNTRIES_WITH_CITIES: Record<string, { code: string; cities: string[] }> 
 
 const SORTED_COUNTRIES = Object.keys(COUNTRIES_WITH_CITIES).sort()
 
+const FREE_FEATURES = [
+  'Agency profile & directory listing',
+  'Add up to 5 models',
+  'Model profiles with photos',
+  'Booking & messaging system',
+  'Client reviews on model profiles',
+]
+
+const PREMIUM_FEATURES = [
+  { icon: '📍', text: 'City Page Sidebar — featured on your city\'s model listing page' },
+  { icon: '⭐', text: 'Premium Badge — gold "Premium Agency" badge builds instant trust' },
+  { icon: '🔝', text: 'Priority Placement — top of agency directory above standard listings' },
+  { icon: '📊', text: 'Profile Analytics — see views on your agency profile and models' },
+  { icon: '✉️', text: 'Newsletter Feature — included in our monthly featured agency newsletter' },
+  { icon: '👥', text: 'Up to 20 models — free accounts limited to 5 models' },
+  { icon: '🌟', text: 'Discounted Model Premium — upgrade models at a reduced rate' },
+]
+
 type AccountType = 'model' | 'agency' | 'guest' | null
 
 export default function SignupPage() {
@@ -84,6 +102,7 @@ export default function SignupPage() {
   const router = useRouter()
 
   const cities = form.country ? (COUNTRIES_WITH_CITIES[form.country]?.cities || []) : []
+  const needsLocation = accountType === 'model' || accountType === 'agency'
 
   const handleCountryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const countryName = e.target.value
@@ -95,25 +114,18 @@ export default function SignupPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     const endpoint =
       accountType === 'agency' ? '/api/auth/agency-signup' :
       accountType === 'guest' ? '/api/auth/guest-signup' :
       '/api/auth/signup'
-
     const body =
       accountType === 'agency'
         ? { name: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
         : accountType === 'guest'
         ? { name: form.name, email: form.email, password: form.password }
         : { displayName: form.name, email: form.email, password: form.password, country: form.country, countryCode: form.countryCode, city: form.city }
-
     try {
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      })
+      const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
       const data = await res.json()
       if (data.success) {
         router.push(accountType === 'agency' ? '/agency-dashboard' : '/dashboard')
@@ -128,11 +140,9 @@ export default function SignupPage() {
     }
   }
 
-  const needsLocation = accountType === 'model' || accountType === 'agency'
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-stone-950 px-4 py-12">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-lg">
         <div className="mb-8 text-center">
           <Link href="/">
             <span className="text-4xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>FEMME</span>
@@ -183,32 +193,127 @@ export default function SignupPage() {
               Already have an account? <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>
             </p>
           </div>
+        ) : accountType === 'agency' ? (
+          /* Agency signup with plan comparison */
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-stone-800 bg-stone-900 p-6">
+              <div className="mb-5 flex items-center gap-3">
+                <button onClick={() => { setAccountType(null); setError('') }} className="text-stone-500 hover:text-stone-300 text-sm">← Back</button>
+                <span className="flex items-center gap-1.5 rounded-full bg-amber-900/30 px-3 py-1 text-xs font-medium text-amber-400">
+                  <Building2 className="h-3.5 w-3.5" /> Agency Account
+                </span>
+              </div>
+
+              {error && <div className="mb-4 rounded-lg bg-red-950 border border-red-900 px-4 py-3 text-sm text-red-400">{error}</div>}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Agency Name</label>
+                  <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required minLength={2}
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                    placeholder="Your agency name" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Email</label>
+                  <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                    placeholder="agency@example.com" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Password</label>
+                  <input type="password" value={form.password} onChange={e => setForm(p => ({ ...p, password: e.target.value }))} required minLength={8}
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                    placeholder="Min 8 characters" />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Country</label>
+                  <select value={form.country} onChange={handleCountryChange} required
+                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                    <option value="">Select country...</option>
+                    {SORTED_COUNTRIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">City</label>
+                  {cities.length > 0 ? (
+                    <select value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} required
+                      className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                      <option value="">Select city...</option>
+                      {cities.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  ) : (
+                    <input type="text" value={form.city} onChange={e => setForm(p => ({ ...p, city: e.target.value }))} required
+                      className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
+                      placeholder={form.country ? 'Enter your city' : 'Select a country first'} />
+                  )}
+                </div>
+                <button type="submit" disabled={loading}
+                  className="w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
+                  {loading ? 'Creating account...' : 'Create Agency Account — Free'}
+                </button>
+                <p className="text-center text-sm text-stone-500">
+                  Already have an account? <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>
+                </p>
+              </form>
+            </div>
+
+            {/* Plan comparison */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {/* Free */}
+              <div className="rounded-2xl border border-stone-800 bg-stone-900 p-5">
+                <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-1">Free</p>
+                <p className="text-2xl font-light text-stone-100 mb-4">$0<span className="text-sm text-stone-500">/mo</span></p>
+                <div className="space-y-2.5">
+                  {FREE_FEATURES.map(f => (
+                    <div key={f} className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-stone-400 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs text-stone-400">{f}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Premium */}
+              <div className="rounded-2xl border border-amber-900/50 bg-amber-950/10 p-5">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-medium uppercase tracking-wider text-amber-500">Premium</p>
+                  <Star className="h-4 w-4 text-amber-500 fill-current" />
+                </div>
+                <p className="text-2xl font-light text-amber-400 mb-4">$49<span className="text-sm text-stone-500">/mo</span></p>
+                <p className="text-xs text-stone-500 mb-3">Everything in Free, plus:</p>
+                <div className="space-y-2.5">
+                  {PREMIUM_FEATURES.map(f => (
+                    <div key={f.text} className="flex items-start gap-2">
+                      <span className="text-sm flex-shrink-0">{f.icon}</span>
+                      <span className="text-xs text-stone-400">{f.text}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-xs text-stone-600">Upgrade anytime from your dashboard</p>
+              </div>
+            </div>
+          </div>
         ) : (
+          /* Model / Guest signup */
           <div className="rounded-2xl border border-stone-800 bg-stone-900 p-8">
             <div className="mb-6 flex items-center gap-3">
               <button onClick={() => { setAccountType(null); setError('') }} className="text-stone-500 hover:text-stone-300 text-sm">← Back</button>
-              <span className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${accountType === 'agency' ? 'bg-amber-900/30 text-amber-400' : 'bg-stone-800 text-stone-400'}`}>
-                {accountType === 'agency' ? <Building2 className="h-3.5 w-3.5" /> : <User className="h-3.5 w-3.5" />}
-                {accountType === 'agency' ? 'Agency Account' : accountType === 'guest' ? 'Client Account' : 'Model Account'}
+              <span className="flex items-center gap-1.5 rounded-full bg-stone-800 px-3 py-1 text-xs font-medium text-stone-400">
+                <User className="h-3.5 w-3.5" />
+                {accountType === 'guest' ? 'Client Account' : 'Model Account'}
               </span>
             </div>
-
-            {accountType === 'agency' && (
-              <div className="mb-4 rounded-xl border border-amber-900/50 bg-amber-950/20 px-4 py-3 text-xs text-amber-400">
-                Agency accounts include a 30-day free trial.
-              </div>
-            )}
 
             {error && <div className="mb-4 rounded-lg bg-red-950 border border-red-900 px-4 py-3 text-sm text-red-400">{error}</div>}
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">
-                  {accountType === 'agency' ? 'Agency Name' : 'Full Name'}
+                  {accountType === 'guest' ? 'Full Name' : 'Display Name'}
                 </label>
                 <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required minLength={2}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
-                  placeholder={accountType === 'agency' ? 'Your agency name' : accountType === 'guest' ? 'Your full name' : 'Your professional name'} />
+                  placeholder={accountType === 'guest' ? 'Your full name' : 'Your professional name'} />
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Email</label>
@@ -222,7 +327,6 @@ export default function SignupPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
                   placeholder="Min 8 characters" />
               </div>
-
               {needsLocation && (
                 <>
                   <div>
@@ -249,10 +353,9 @@ export default function SignupPage() {
                   </div>
                 </>
               )}
-
               <button type="submit" disabled={loading}
                 className="mt-2 w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
-                {loading ? 'Creating account...' : accountType === 'agency' ? 'Create Agency Account' : accountType === 'guest' ? 'Create Account' : 'Create Profile'}
+                {loading ? 'Creating account...' : accountType === 'guest' ? 'Create Account' : 'Create Profile'}
               </button>
               <p className="text-center text-sm text-stone-500">
                 Already have an account? <Link href="/login" className="text-amber-500 hover:text-amber-400">Sign in</Link>

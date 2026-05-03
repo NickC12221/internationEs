@@ -313,7 +313,7 @@ export default function AgencyDashboardPage() {
           <>
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm text-stone-500">{slotsUsed} of 20 model slots used</p>
-              <button onClick={() => slotsUsed < 20 ? setShowAddModal(true) : alert('Model limit reached')}
+              <button onClick={() => { const limit = agency?.isPremium ? 20 : 5; slotsUsed < limit ? setShowAddModal(true) : alert(agency?.isPremium ? 'Model limit reached (20/20)' : 'Free plan limited to 5 models. Upgrade to Premium for up to 20 models.') }}
                 className="flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
                 <Plus className="h-4 w-4" /> Add Model
               </button>
@@ -357,7 +357,7 @@ export default function AgencyDashboardPage() {
                             className="flex items-center justify-center gap-1 rounded-lg bg-stone-800 py-1.5 text-xs text-stone-400 hover:bg-stone-700 transition-colors">
                             <Edit3 className="h-3.5 w-3.5" /> Edit
                           </button>
-                          <button onClick={() => handleDowngradePremium(model.id)}
+                          <button onClick={() => handlePremiumModel(model.id, model.listingTier)}
                             className={`rounded-lg px-1 py-1.5 text-xs font-medium transition-colors ${model.listingTier === 'PREMIUM' ? 'bg-amber-900/30 text-amber-400 hover:bg-amber-900/50' : 'bg-stone-800 text-stone-500 hover:bg-stone-700'}`}>
                             {model.listingTier === 'PREMIUM' ? '★ Premium' : '★ Upgrade'}
                           </button>
