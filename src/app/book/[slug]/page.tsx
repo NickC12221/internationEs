@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowLeft, Calendar, Clock, MapPin, CheckCircle, Star, Loader2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, MapPin, CheckCircle, Star, Loader2, Phone, Instagram, Globe, MessageSquare } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import AuthGateModal from '@/components/messaging/AuthGateModal'
 
@@ -214,32 +214,68 @@ export default function BookPage() {
 
           {/* Profile summary */}
           <div>
-            <div className="sticky top-24 rounded-xl border border-stone-800 bg-stone-900 overflow-hidden">
-              <div className="relative aspect-[4/3]">
-                {profile.profileImageUrl ? (
-                  <Image src={profile.profileImageUrl} alt={profile.displayName} fill className="object-cover" />
-                ) : (
-                  <div className="flex h-full items-center justify-center bg-stone-800 text-4xl text-stone-600">{profile.displayName[0]}</div>
-                )}
-              </div>
-              <div className="p-4">
-                <h3 className="font-medium text-stone-200">{profile.displayName}</h3>
-                {profile.age && <p className="text-xs text-stone-500 mt-0.5">Age {profile.age}</p>}
-                <div className="flex items-center gap-1 text-xs text-stone-500 mt-1">
-                  <MapPin className="h-3.5 w-3.5" />{profile.city}, {profile.country}
+            <div className="sticky top-24 space-y-3">
+              <div className="rounded-xl border border-stone-800 bg-stone-900 overflow-hidden">
+                <div className="relative aspect-[4/3]">
+                  {profile.profileImageUrl ? (
+                    <Image src={profile.profileImageUrl} alt={profile.displayName} fill className="object-cover" />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-stone-800 text-4xl text-stone-600">{profile.displayName[0]}</div>
+                  )}
                 </div>
-                {profile.isVerified && (
-                  <div className="flex items-center gap-1 text-xs text-blue-400 mt-1">
-                    <CheckCircle className="h-3.5 w-3.5" /> Verified model
+                <div className="p-4">
+                  <h3 className="text-lg font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>{profile.displayName}</h3>
+                  {profile.age && <p className="text-xs text-stone-500 mt-0.5">Age {profile.age}</p>}
+                  <div className="flex items-center gap-1 text-xs text-stone-500 mt-1">
+                    <MapPin className="h-3.5 w-3.5" />{profile.city}, {profile.country}
                   </div>
-                )}
-                {profile.listingTier === 'PREMIUM' && (
-                  <div className="flex items-center gap-1 text-xs text-amber-400 mt-1">
-                    <Star className="h-3.5 w-3.5 fill-current" /> Premium listing
+                  <div className="flex items-center gap-2 mt-1.5">
+                    {profile.isVerified && (
+                      <span className="flex items-center gap-1 text-xs text-blue-400">
+                        <CheckCircle className="h-3.5 w-3.5" /> Verified
+                      </span>
+                    )}
+                    {profile.listingTier === 'PREMIUM' && (
+                      <span className="flex items-center gap-1 text-xs text-amber-400">
+                        <Star className="h-3.5 w-3.5 fill-current" /> Premium
+                      </span>
+                    )}
                   </div>
-                )}
-                {profile.bio && <p className="mt-3 text-xs text-stone-400 line-clamp-3">{profile.bio}</p>}
+                  {profile.bio && <p className="mt-2 text-xs text-stone-400 line-clamp-3">{profile.bio}</p>}
+                </div>
               </div>
+
+              {/* Contact & socials */}
+              {(profile.phone || profile.instagram || profile.website) && (
+                <div className="rounded-xl border border-stone-800 bg-stone-900 p-4 space-y-2.5">
+                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500">Contact</p>
+                  {profile.phone && (
+                    <a href={`tel:${profile.phone}`} className="flex items-center gap-2.5 text-sm text-stone-400 hover:text-amber-400 transition-colors">
+                      <Phone className="h-4 w-4 flex-shrink-0" />{profile.phone}
+                    </a>
+                  )}
+                  {profile.instagram && (
+                    <a href={`https://instagram.com/${profile.instagram.replace('@','')}`} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 text-sm text-stone-400 hover:text-amber-400 transition-colors">
+                      <Instagram className="h-4 w-4 flex-shrink-0" />{profile.instagram}
+                    </a>
+                  )}
+                  {profile.website && (
+                    <a href={profile.website} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-2.5 text-sm text-stone-400 hover:text-amber-400 transition-colors">
+                      <Globe className="h-4 w-4 flex-shrink-0" /><span className="truncate">{profile.website.replace(/^https?:\/\//, '')}</span>
+                    </a>
+                  )}
+                </div>
+              )}
+
+              {/* Message button */}
+              <Link href={`/contact/${profile.slug}`}
+                className="flex items-center justify-center gap-2 rounded-xl border border-stone-700 bg-stone-900 py-3 text-sm font-medium text-stone-300 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                <MessageSquare className="h-4 w-4" /> Message {profile.displayName.split(' ')[0]} instead
+              </Link>
+
+              <p className="text-center text-xs text-stone-600">View <Link href={`/${profile.countryCode.toLowerCase()}/${profile.citySlug}/${profile.slug}`} className="text-amber-700 hover:text-amber-500">full profile</Link></p>
             </div>
           </div>
         </div>
