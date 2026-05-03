@@ -78,6 +78,8 @@ export default function AgencyDashboardPage() {
   // Add model
   const [showAddModal, setShowAddModal] = useState(false)
   const [addForm, setAddForm] = useState({ displayName: '', city: '', bio: '', age: '' })
+  const [addPhotos, setAddPhotos] = useState<File[]>([])
+  const [addPhotoUrls, setAddPhotoUrls] = useState<string[]>([])
   const [adding, setAdding] = useState(false)
   const [addError, setAddError] = useState('')
 
@@ -187,7 +189,25 @@ export default function AgencyDashboardPage() {
     try {
       const res = await fetch('/api/agency/models', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ displayName: addForm.displayName, city: addForm.city, bio: addForm.bio || undefined, age: addForm.age ? parseInt(addForm.age) : undefined }) })
       const data = await res.json()
-      if (data.success) { setShowAddModal(false); setAddForm({ displayName: '', city: '', bio: '', age: '' }); fetchData() }
+      if (data.success) {
+        const profileId = data.data.id
+        // Upload photos if any
+        if (addPhotos.length > 0) {
+          for (const photo of addPhotos) {
+            const uploadRes = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'profile', profileId }) })
+            const uploadData = await uploadRes.json()
+            if (uploadData.uploadUrl) {
+              await fetch(uploadData.uploadUrl, { method: 'PUT', body: photo, headers: { 'Content-Type': photo.type } })
+              await fetch('/api/agency/models/' + profileId + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: uploadData.key, url: uploadData.publicUrl }) })
+            }
+          }
+        }
+        setShowAddModal(false)
+        setAddForm({ displayName: '', city: '', bio: '', age: '' })
+        setAddPhotos([])
+        setAddPhotoUrls([])
+        fetchData()
+      }
       else setAddError(data.error || 'Failed')
     } finally { setAdding(false) }
   }
@@ -569,6 +589,33 @@ export default function AgencyDashboardPage() {
                 <label className="mb-1 block text-xs font-medium text-stone-400">Bio</label>
                 <textarea value={addForm.bio} onChange={e => setAddForm(p => ({ ...p, bio: e.target.value }))} rows={2}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 5 now)</span></label>
+                <div className="grid grid-cols-5 gap-2 mb-2">
+                  {addPhotoUrls.map((url, i) => (
+                    <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
+                      <img src={url} className="h-full w-full object-cover" alt="" />
+                      <button type="button" onClick={() => { setAddPhotos(p => p.filter((_, j) => j !== i)); setAddPhotoUrls(p => p.filter((_, j) => j !== i)) }}
+                        className="absolute top-0.5 right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-stone-950/80 text-stone-300 hover:text-white">
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  {addPhotos.length < 5 && (
+                    <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 hover:border-amber-700 transition-colors">
+                      <Camera className="h-5 w-5 text-stone-600" />
+                      <span className="text-xs text-stone-600 mt-1">Add</span>
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={e => {
+                        const files = Array.from(e.target.files || []).slice(0, 5 - addPhotos.length)
+                        setAddPhotos(p => [...p, ...files])
+                        files.forEach(f => { const r = new FileReader(); r.onload = ev => setAddPhotoUrls(p => [...p, ev.target?.result as string]); r.readAsDataURL(f) })
+                        e.target.value = ''
+                      }} />
+                    </label>
+                  )}
+                </div>
+                <p className="text-xs text-stone-600">You can also add more photos after creating the profile via the Edit button.</p>
               </div>
               <div className="flex gap-3 pt-1">
                 <button type="submit" disabled={adding} className="flex-1 rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
