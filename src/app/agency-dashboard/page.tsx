@@ -302,13 +302,24 @@ export default function AgencyDashboardPage() {
               <div className="mt-1 flex items-center gap-1 text-sm text-stone-500">
                 <MapPin className="h-3.5 w-3.5" /><span>{agency?.city}, {agency?.country}</span>
               </div>
-              {agency?.slug && (
-                <a href={`/agencies/${agency.slug}`} target="_blank" className="mt-1 inline-block text-xs text-amber-600 hover:text-amber-500">View public profile →</a>
-              )}
-              <Link href="/dashboard/settings" className="mt-0.5 inline-block text-xs text-stone-500 hover:text-stone-300">Account settings →</Link>
-              {agency?.isPremium && (
-                <Link href="/agency-dashboard/analytics" className="mt-0.5 inline-block text-xs text-amber-600 hover:text-amber-400">📊 View Analytics →</Link>
-              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                {agency?.slug && (
+                  <a href={`/agencies/${agency.slug}`} target="_blank"
+                    className="flex items-center gap-1.5 rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                    👁 View Public Profile
+                  </a>
+                )}
+                <Link href="/dashboard/settings"
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-300 hover:border-stone-500 hover:text-stone-100 transition-colors">
+                  ⚙️ Account Settings
+                </Link>
+                {agency?.isPremium && (
+                  <Link href="/agency-dashboard/analytics"
+                    className="flex items-center gap-1.5 rounded-lg border border-amber-800 px-3 py-1.5 text-xs text-amber-400 hover:bg-amber-900/20 transition-colors">
+                    📊 Analytics
+                  </Link>
+                )}
+              </div>
             </div>
             <div className="text-right">
               <div className={`text-xs font-medium ${agency?.subscriptionStatus === 'ACTIVE' ? 'text-emerald-400' : 'text-red-400'}`}>
@@ -323,6 +334,54 @@ export default function AgencyDashboardPage() {
             </div>
           </div>
         </div>
+
+
+        {/* Premium expiry / upgrade bar */}
+        {(() => {
+          const isPremium = agency?.isPremium
+          const expiresAt = agency?.subscriptionExpiresAt
+          const days = expiresAt ? Math.ceil((new Date(expiresAt).getTime() - Date.now()) / 86400000) : null
+          const expired = days !== null && days < 0
+          return (
+            <div className={`mb-4 rounded-xl border px-4 py-3 flex items-center justify-between gap-3 flex-wrap ${
+              isPremium
+                ? expired ? 'border-red-900/50 bg-red-950/10'
+                : days !== null && days <= 14 ? 'border-amber-900/50 bg-amber-950/10'
+                : 'border-stone-800 bg-stone-900/60'
+                : 'border-stone-800 bg-stone-900/60'
+            }`}>
+              <div className="flex items-center gap-3">
+                <Star className={`h-4 w-4 flex-shrink-0 ${isPremium ? (expired ? 'text-red-400' : 'text-amber-400 fill-current') : 'text-stone-600'}`} />
+                <div>
+                  {isPremium ? (
+                    <>
+                      <p className={`text-sm font-medium ${expired ? 'text-red-400' : 'text-stone-200'}`}>
+                        {expired ? 'Agency Premium Expired' : days !== null ? `Agency Premium — ${days} day${days !== 1 ? 's' : ''} remaining` : 'Agency Premium Active'}
+                      </p>
+                      <p className="text-xs text-stone-500">
+                        {expiresAt && `${expired ? 'Expired' : 'Expires'} ${new Date(expiresAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-medium text-stone-300">Upgrade to Premium Agency</p>
+                      <p className="text-xs text-stone-500">Priority placement, city sidebar, analytics & up to 20 models</p>
+                    </>
+                  )}
+                </div>
+              </div>
+              <Link href="/agency-dashboard/upgrade-agency"
+                className={`flex-shrink-0 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                  isPremium
+                    ? expired ? 'bg-red-900/30 text-red-400 hover:bg-red-900/50' : 'border border-amber-800 text-amber-400 hover:bg-amber-900/20'
+                    : 'bg-amber-700 text-white hover:bg-amber-600'
+                }`}>
+                <Star className="h-3.5 w-3.5" />
+                {isPremium ? (expired ? 'Renew Now' : 'Extend') : 'Upgrade — $49/mo'}
+              </Link>
+            </div>
+          )
+        })()}
 
         {/* Tabs */}
         <div className="mb-6 flex gap-1 rounded-xl border border-stone-800 bg-stone-900 p-1">
