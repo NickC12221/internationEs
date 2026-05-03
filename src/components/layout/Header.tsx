@@ -110,12 +110,12 @@ export default function Header() {
                       </p>
                     </div>
                     <Link
-                      href={dashboardUrl}
+                      href={user.role === 'ADMIN' ? '/admin' : dashboardUrl}
                       className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
                       onClick={() => setUserMenuOpen(false)}
                     >
-                      {user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-                      {user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
+                      {user.role === 'ADMIN' ? <Shield className="h-4 w-4" /> : user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
+                      {user.role === 'ADMIN' ? 'Admin Panel' : user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
                     </Link>
                     {user.role !== 'ADMIN' && (
                       <>
