@@ -101,8 +101,8 @@ export default function NotificationBell() {
             )}
           </div>
           <div className="px-4 py-2 border-t border-stone-800">
-            <Link href="/dashboard/notifications" className="block text-center text-xs text-stone-500 hover:text-stone-300" onClick={() => setOpen(false)}>
-              View all notifications →
+            <Link href="/dashboard/inbox" className="block text-center text-xs text-stone-500 hover:text-stone-300" onClick={() => setOpen(false)}>
+              View all messages →
             </Link>
           </div>
         </div>

@@ -33,18 +33,36 @@ export default function Header() {
   const pathname = usePathname()
 
   useEffect(() => {
+    // Only re-fetch if no cached user or cache is stale (>2 min)
+    const cached = localStorage.getItem('femme_user')
+    const ts = parseInt(localStorage.getItem('femme_user_ts') || '0')
+    const fresh = cached && Date.now() - ts < 120000
+
+    if (fresh) {
+      try { setUser(JSON.parse(cached!)) } catch {}
+      return
+    }
+
     fetch('/api/user')
       .then(r => r.json())
       .then(data => {
-        if (data.success) setUser(data.data)
-        else setUser(null)
+        if (data.success) {
+          localStorage.setItem('femme_user', JSON.stringify(data.data))
+          localStorage.setItem('femme_user_ts', Date.now().toString())
+          setUser(data.data)
+        } else {
+          localStorage.removeItem('femme_user')
+          localStorage.removeItem('femme_user_ts')
+          setUser(null)
+        }
       })
-      .catch(() => setUser(null))
-  }, [pathname])
+      .catch(() => {})
+  }, [])
 
   const handleSignOut = async () => {
     await fetch('/api/auth/signout', { method: 'POST' })
     localStorage.removeItem('femme_user')
+    localStorage.removeItem('femme_user_ts')
     setUser(null)
     setUserMenuOpen(false)
     router.push('/')
