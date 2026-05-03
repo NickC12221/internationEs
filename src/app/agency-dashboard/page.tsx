@@ -194,11 +194,12 @@ export default function AgencyDashboardPage() {
         // Upload photos if any
         if (addPhotos.length > 0) {
           for (const photo of addPhotos) {
-            const uploadRes = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'profile', profileId }) })
+            const uploadRes = await fetch('/api/upload', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'profile', profileId, filename: photo.name, contentType: photo.type }) })
             const uploadData = await uploadRes.json()
             if (uploadData.uploadUrl) {
               await fetch(uploadData.uploadUrl, { method: 'PUT', body: photo, headers: { 'Content-Type': photo.type } })
-              await fetch('/api/agency/models/' + profileId + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: uploadData.key, url: uploadData.publicUrl }) })
+              const isFirst = addPhotos.indexOf(photo) === 0
+              await fetch('/api/agency/models/' + profileId + '/images', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key: uploadData.key, url: uploadData.publicUrl, isMain: isFirst }) })
             }
           }
         }
@@ -326,10 +327,10 @@ export default function AgencyDashboardPage() {
                 {agency?.subscriptionStatus === 'ACTIVE' ? '● Active' : '● Inactive'}
               </div>
               {agency?.subscriptionExpiresAt && <div className="text-xs text-stone-600">Expires {new Date(agency.subscriptionExpiresAt).toLocaleDateString()}</div>}
-              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/{agency?.isPremium ? 20 : 5}</span></div>
+              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/20</span></div>
               <div className="text-xs text-stone-500">Models</div>
               <div className="h-1 w-20 overflow-hidden rounded-full bg-stone-700 mt-1 ml-auto">
-                <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / (agency?.isPremium ? 20 : 5)) * 100}%` }} />
+                <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / 20) * 100}%` }} />
               </div>
             </div>
           </div>
@@ -365,7 +366,7 @@ export default function AgencyDashboardPage() {
                   ) : (
                     <>
                       <p className="text-sm font-medium text-stone-300">Upgrade to Premium Agency</p>
-                      <p className="text-xs text-stone-500">Up to 20 models (free plan: 5), priority placement, city sidebar & analytics</p>
+                      <p className="text-xs text-stone-500">Priority placement, city sidebar, analytics & up to 20 models</p>
                     </>
                   )}
                 </div>
@@ -397,7 +398,7 @@ export default function AgencyDashboardPage() {
         {tab === 'models' && (
           <>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-stone-500">{slotsUsed} of {agency?.isPremium ? 20 : 5} model slots used</p>
+              <p className="text-sm text-stone-500">{slotsUsed} of 20 model slots used</p>
               <button onClick={() => { const limit = agency?.isPremium ? 20 : 5; slotsUsed < limit ? setShowAddModal(true) : alert(agency?.isPremium ? 'Model limit reached (20/20)' : 'Free plan limited to 5 models. Upgrade to Premium for up to 20 models.') }}
                 className="flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
                 <Plus className="h-4 w-4" /> Add Model
@@ -655,7 +656,7 @@ export default function AgencyDashboardPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 15 now)</span></label>
+                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 5 now)</span></label>
                 <div className="grid grid-cols-5 gap-2 mb-2">
                   {addPhotoUrls.map((url, i) => (
                     <div key={i} className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
@@ -666,12 +667,12 @@ export default function AgencyDashboardPage() {
                       </button>
                     </div>
                   ))}
-                  {addPhotos.length < 15 && (
+                  {addPhotos.length < 5 && (
                     <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 hover:border-amber-700 transition-colors">
                       <Camera className="h-5 w-5 text-stone-600" />
                       <span className="text-xs text-stone-600 mt-1">Add</span>
                       <input type="file" accept="image/*" multiple className="hidden" onChange={e => {
-                        const files = Array.from(e.target.files || []).slice(0, 15 - addPhotos.length)
+                        const files = Array.from(e.target.files || []).slice(0, 5 - addPhotos.length)
                         setAddPhotos(p => [...p, ...files])
                         files.forEach(f => { const r = new FileReader(); r.onload = ev => setAddPhotoUrls(p => [...p, ev.target?.result as string]); r.readAsDataURL(f) })
                         e.target.value = ''
@@ -721,15 +722,27 @@ export default function AgencyDashboardPage() {
                     No photos yet. Click "Add Photo" above.
                   </div>
                 ) : (
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-3 gap-3">
                     {modelImages.map(img => (
-                      <div key={img.id} className="group relative aspect-square overflow-hidden rounded-lg bg-stone-800">
-                        <img src={img.url} alt="" className="h-full w-full object-cover" />
-                        {img.isMain && <span className="absolute top-1 left-1 rounded-full bg-amber-800/90 px-1.5 py-0.5 text-xs text-amber-200">Main</span>}
-                        <button onClick={() => handleDeleteModelImage(img.id)}
-                          className="absolute inset-0 flex items-center justify-center bg-stone-950/70 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Trash2 className="h-4 w-4 text-red-400" />
-                        </button>
+                      <div key={img.id} className="flex flex-col gap-1">
+                        <div className="relative aspect-square overflow-hidden rounded-lg bg-stone-800">
+                          <img src={img.url} alt="" className="h-full w-full object-cover" />
+                          {img.isMain && <span className="absolute top-1 left-1 rounded-full bg-amber-800/90 px-1.5 py-0.5 text-xs text-amber-200">★ Main</span>}
+                        </div>
+                        <div className="flex gap-1">
+                          {!img.isMain && (
+                            <button type="button" onClick={async () => {
+                              await fetch(`/api/agency/models/${editingModel?.id}/images`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ imageId: img.id }) })
+                              setModelImages(prev => prev.map(i => ({ ...i, isMain: i.id === img.id })))
+                            }} className="flex-1 rounded bg-stone-800 py-1 text-xs text-stone-400 hover:bg-amber-900/30 hover:text-amber-400 transition-colors">
+                              Set Main
+                            </button>
+                          )}
+                          <button type="button" onClick={() => handleDeleteModelImage(img.id)}
+                            className="flex-1 rounded bg-stone-800 py-1 text-xs text-stone-400 hover:bg-red-950/30 hover:text-red-400 transition-colors">
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

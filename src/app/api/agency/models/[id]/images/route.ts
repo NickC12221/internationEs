@@ -104,3 +104,26 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
+
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+    const { prisma } = await import('@/lib/db/prisma')
+    const session = await getSessionFromRequest(req)
+    if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+
+    const { imageId } = await req.json()
+
+    // Clear all main flags for this profile then set the selected one
+    await prisma.profileImage.updateMany({ where: { profileId: params.id }, data: { isMain: false } })
+    await prisma.profileImage.update({ where: { id: imageId }, data: { isMain: true } })
+
+    // Update profile main image url
+    const image = await prisma.profileImage.findUnique({ where: { id: imageId } })
+    if (image) await prisma.profile.update({ where: { id: params.id }, data: { profileImageUrl: image.url } })
+
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
+  }
+}
