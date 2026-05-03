@@ -1,13 +1,12 @@
 import Header from '@/components/layout/Header'
 import LocationSidebar from '@/components/layout/LocationSidebar'
 import ModelGrid from '@/components/model/ModelGrid'
-import Footer from '@/components/layout/Footer'
 
 export const dynamic = 'force-dynamic'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen">
       <Header />
 
       {/* Hero */}
@@ -26,7 +25,7 @@ export default function HomePage() {
       </div>
 
       {/* Main layout */}
-      <div className="flex-1 mx-auto w-full max-w-screen-xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6">
         <div className="flex gap-8">
           <div className="hidden lg:block">
             <div className="sticky top-24">
@@ -60,7 +59,6 @@ export default function HomePage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   )
 }
