@@ -139,56 +139,74 @@ export default function Header() {
                         {user.role === 'AGENCY' ? '🏢 Agency' : user.role === 'ADMIN' ? '🛡 Admin' : user.role === 'GUEST' ? '👤 Guest' : '👤 Model'}
                       </p>
                     </div>
-                    {user.role !== 'ADMIN' && (
-                      <Link
-                        href={dashboardUrl}
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        {user.role === 'AGENCY' ? <Building2 className="h-4 w-4" /> : <Settings className="h-4 w-4" />}
-                        {user.role === 'AGENCY' ? 'Agency Dashboard' : 'Dashboard'}
+                    {/* ADMIN */}
+                    {user.role === 'ADMIN' && (
+                      <Link href="/admin" className="flex items-center gap-2 px-4 py-2 text-sm text-amber-400 hover:bg-stone-800" onClick={() => setUserMenuOpen(false)}>
+                        <Shield className="h-4 w-4" /> Admin Panel
                       </Link>
                     )}
-                    {user.role !== 'ADMIN' && (
+
+                    {/* AGENCY */}
+                    {user.role === 'AGENCY' && (
                       <>
-                        <Link
-                          href="/dashboard/inbox"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
+                        <Link href="/agency-dashboard" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          <Building2 className="h-4 w-4" /> Agency Dashboard
+                        </Link>
+                        <Link href="/dashboard/inbox" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           <MessageSquare className="h-4 w-4" /> Inbox
                         </Link>
-                        <Link
-                          href="/dashboard/notifications"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
+                        <Link href="/dashboard/notifications" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           🔔 Notifications
                         </Link>
-                        <Link
-                          href="/dashboard/bookings"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
-                          📅 My Bookings
+                        <Link href="/agency-dashboard/bookings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          📅 Bookings
                         </Link>
-                        <Link
-                          href="/dashboard/settings"
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100"
-                          onClick={() => setUserMenuOpen(false)}
-                        >
+                        <Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           ⚙️ Account Settings
                         </Link>
                       </>
                     )}
-                    {user.role === 'ADMIN' && (
-                      <Link
-                        href="/admin"
-                        className="flex items-center gap-2 px-4 py-2 text-sm text-amber-400 hover:bg-stone-800"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        <Shield className="h-4 w-4" /> Admin Panel
-                      </Link>
+
+                    {/* MODEL */}
+                    {user.role === 'MODEL' && (
+                      <>
+                        <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          <Settings className="h-4 w-4" /> Dashboard
+                        </Link>
+                        <Link href="/dashboard/inbox" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          <MessageSquare className="h-4 w-4" /> Inbox
+                        </Link>
+                        <Link href="/dashboard/notifications" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          🔔 Notifications
+                        </Link>
+                        <Link href="/dashboard/bookings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          📅 Booking Requests
+                        </Link>
+                        <Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          ⚙️ Account Settings
+                        </Link>
+                      </>
+                    )}
+
+                    {/* GUEST */}
+                    {user.role === 'GUEST' && (
+                      <>
+                        <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          <Settings className="h-4 w-4" /> Dashboard
+                        </Link>
+                        <Link href="/dashboard/inbox" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          <MessageSquare className="h-4 w-4" /> Inbox
+                        </Link>
+                        <Link href="/dashboard/notifications" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          🔔 Notifications
+                        </Link>
+                        <Link href="/dashboard/bookings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          📅 My Bookings
+                        </Link>
+                        <Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          ⚙️ Account Settings
+                        </Link>
+                      </>
                     )}
                     <hr className="my-1 border-stone-800" />
                     <button
