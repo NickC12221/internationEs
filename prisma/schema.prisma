@@ -317,6 +317,7 @@ model VerificationRequest {
   user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   status    VerificationStatus @default(PENDING)
   idImageKey    String?
+  videoUrl      String?
   videoKey      String?
   adminNotes    String?  @db.Text
   reviewedAt    DateTime?
