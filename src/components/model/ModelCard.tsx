@@ -17,7 +17,7 @@ export default function ModelCard({ profile, onFavoriteToggle }: ModelCardProps)
   const [favoriteLoading, setFavoriteLoading] = useState(false)
 
   const profileUrl = `/${profile.countryCode.toLowerCase()}/${profile.citySlug}/${profile.slug}`
-  const mainImage = profile.images.find((img) => img.isMain) || profile.images[0]
+  const mainImage = profile.profileImageUrl ? { url: profile.profileImageUrl } : (profile.images?.find((img: any) => img.isMain) || profile.images?.[0])
   const imageUrl = profile.profileImageUrl || mainImage?.url
 
   const handleFavorite = async (e: React.MouseEvent) => {
