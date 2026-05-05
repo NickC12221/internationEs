@@ -67,7 +67,7 @@ function ConversationListItem({
   isSelected: boolean
   onClick: () => void
 }) {
-  const other = convo.members.find(m => m.userId !== currentUserId)?.user
+  const other = convo.members?.find(m => m.userId !== currentUserId)?.user
   const lastMsg = convo.messages[0]
   const hasUnread = convo._count.messages > 0
   const avatar = other ? getAvatar(other) : null
@@ -160,9 +160,9 @@ export default function InboxPage() {
     setSending(false)
   }
 
-  const selectedConvo = conversations.find(c => c.id === selected)
+  const selectedConvo = conversations?.find(c => c.id === selected)
   const otherMember = selectedConvo
-    ? selectedConvo.members.find(m => m.userId !== currentUserId)?.user
+    ? selectedConvo.members?.find(m => m.userId !== currentUserId)?.user
     : convoDetails?.members?.find((m: ConversationMember) => m.userId !== currentUserId)?.user
 
   return (
