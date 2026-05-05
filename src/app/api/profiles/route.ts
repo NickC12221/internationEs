@@ -1,7 +1,5 @@
 export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
-import { getSessionFromRequest } from '@/lib/auth/jwt'
-import { prisma } from '@/lib/db/prisma'
 
 export async function GET(req: NextRequest) {
   try {
@@ -49,7 +47,8 @@ export async function GET(req: NextRequest) {
           id: true, displayName: true, slug: true, city: true, country: true,
           countryCode: true, citySlug: true, age: true, availability: true,
           listingTier: true, profileImageUrl: true, isVerified: true,
-
+          nationality: true, ethnicity: true, build: true, services: true,
+          incall: true, outcall: true, languages: true,
         }
       }),
       prisma.profile.count({ where })
@@ -64,12 +63,15 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+    const { prisma } = await import('@/lib/db/prisma')
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
     const data = await req.json()
     const profile = await prisma.profile.update({ where: { userId: session.id }, data })
     return NextResponse.json({ success: true, data: profile })
   } catch (err) {
+    console.error(err)
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
