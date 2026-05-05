@@ -177,6 +177,67 @@ export default async function ModelProfilePage({ params }: Props) {
                   <p className="text-sm leading-relaxed text-stone-300">{profile.bio}</p>
                 </div>
               )}
+              {/* Services */}
+              {(profile as any).services?.length > 0 && (
+                <div className="mt-4">
+                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-2">Services</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {((profile as any).services as string[]).map((s: string) => (
+                      <span key={s} className="rounded-full border border-stone-700 bg-stone-800/50 px-2.5 py-1 text-xs text-stone-300">{s}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Availability */}
+              {((profile as any).incall || (profile as any).outcall || (profile as any).travel) && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(profile as any).incall && <span className="rounded-full bg-emerald-900/30 border border-emerald-900 px-2.5 py-1 text-xs text-emerald-400">✓ Incall</span>}
+                  {(profile as any).outcall && <span className="rounded-full bg-emerald-900/30 border border-emerald-900 px-2.5 py-1 text-xs text-emerald-400">✓ Outcall</span>}
+                  {(profile as any).travel && <span className="rounded-full bg-blue-900/30 border border-blue-900 px-2.5 py-1 text-xs text-blue-400">✈ Travel Available</span>}
+                </div>
+              )}
+
+              {/* Physical details */}
+              {((profile as any).nationality || (profile as any).height || (profile as any).build || (profile as any).ethnicity) && (
+                <div className="mt-4 rounded-xl border border-stone-800 bg-stone-900/50 p-4">
+                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-3">Details</p>
+                  <div className="grid grid-cols-2 gap-y-2 text-sm">
+                    {(profile as any).nationality && <><span className="text-stone-500">Nationality</span><span className="text-stone-300">{(profile as any).nationality}</span></>}
+                    {(profile as any).ethnicity && <><span className="text-stone-500">Ethnicity</span><span className="text-stone-300">{(profile as any).ethnicity}</span></>}
+                    {(profile as any).height && <><span className="text-stone-500">Height</span><span className="text-stone-300">{(profile as any).height}</span></>}
+                    {(profile as any).build && <><span className="text-stone-500">Build</span><span className="text-stone-300">{(profile as any).build}</span></>}
+                    {(profile as any).hairColor && <><span className="text-stone-500">Hair</span><span className="text-stone-300">{(profile as any).hairColor}</span></>}
+                    {(profile as any).eyeColor && <><span className="text-stone-500">Eyes</span><span className="text-stone-300">{(profile as any).eyeColor}</span></>}
+                    {(profile as any).smoker !== null && (profile as any).smoker !== undefined && <><span className="text-stone-500">Smoker</span><span className="text-stone-300">{(profile as any).smoker ? 'Yes' : 'No'}</span></>}
+                  </div>
+                </div>
+              )}
+
+              {/* Languages */}
+              {(profile as any).languages?.length > 0 && (
+                <p className="mt-3 text-xs text-stone-500">Languages: <span className="text-stone-300">{((profile as any).languages as string[]).join(', ')}</span></p>
+              )}
+
+              {/* Rates */}
+              {((profile as any).rateHourly || (profile as any).rateDinner || (profile as any).rateOvernight) && (
+                <div className="mt-4 rounded-xl border border-stone-800 bg-stone-900/50 p-4">
+                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-3">Rates</p>
+                  <div className="space-y-1.5">
+                    {(profile as any).rateHourly && <div className="flex justify-between text-sm"><span className="text-stone-500">Per hour</span><span className="text-amber-400 font-medium">${((profile as any).rateHourly as number).toLocaleString()}</span></div>}
+                    {(profile as any).rateDinner && <div className="flex justify-between text-sm"><span className="text-stone-500">Dinner date</span><span className="text-amber-400 font-medium">${((profile as any).rateDinner as number).toLocaleString()}</span></div>}
+                    {(profile as any).rateOvernight && <div className="flex justify-between text-sm"><span className="text-stone-500">Overnight</span><span className="text-amber-400 font-medium">${((profile as any).rateOvernight as number).toLocaleString()}</span></div>}
+                  </div>
+                </div>
+              )}
+
+              {/* Video */}
+              {(profile as any).videoUrl && (
+                <div className="mt-4">
+                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-2">Video</p>
+                  <video src={(profile as any).videoUrl} controls className="w-full rounded-xl aspect-video bg-stone-900" />
+                </div>
+              )}
 
               {/* Contact */}
               <div className="space-y-3 rounded-xl border border-stone-800 bg-stone-900 p-4">
