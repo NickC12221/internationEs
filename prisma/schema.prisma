@@ -232,6 +232,32 @@ model Profile {
   updatedAt    DateTime @updatedAt
 
   premiumExpiresAt DateTime?
+  // Services & extras
+  services      String[]
+  incall        Boolean   @default(false)
+  outcall       Boolean   @default(false)
+  travel        Boolean   @default(false)
+
+  // Physical attributes
+  height        String?
+  build         String?
+  hairColor     String?
+  eyeColor      String?
+  ethnicity     String?
+  nationality   String?
+  languages     String[]
+
+  // Lifestyle
+  smoker        Boolean?
+
+  // Rates (USD)
+  rateHourly    Int?
+  rateDinner    Int?
+  rateOvernight Int?
+
+  // Video (premium only)
+  videoUrl      String?
+  videoKey      String?
 
   favorites    Favorite[]
   agencyModel  AgencyModel?
@@ -285,6 +311,32 @@ model Agency {
 
   isPremium   Boolean  @default(false)
   premiumExpiresAt DateTime?
+  // Services & extras
+  services      String[]
+  incall        Boolean   @default(false)
+  outcall       Boolean   @default(false)
+  travel        Boolean   @default(false)
+
+  // Physical attributes
+  height        String?
+  build         String?
+  hairColor     String?
+  eyeColor      String?
+  ethnicity     String?
+  nationality   String?
+  languages     String[]
+
+  // Lifestyle
+  smoker        Boolean?
+
+  // Rates (USD)
+  rateHourly    Int?
+  rateDinner    Int?
+  rateOvernight Int?
+
+  // Video (premium only)
+  videoUrl      String?
+  videoKey      String?
 
   isActive    Boolean  @default(true)
 
@@ -317,7 +369,6 @@ model VerificationRequest {
   user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   status    VerificationStatus @default(PENDING)
   idImageKey    String?
-  videoUrl      String?
   videoKey      String?
   adminNotes    String?  @db.Text
   reviewedAt    DateTime?
