@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Instagram, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
+import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
 import ReportButton from '@/components/support/ReportButton'
 
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
@@ -658,7 +659,7 @@ export default function AgencyDashboardPage() {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               <div>
-                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 15 now)</span></label>
+                <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 5 now)</span></label>
                 <div className="grid grid-cols-4 gap-2 mb-2">
                   {addPhotoUrls.map((url, i) => (
                     <div key={i} className="flex flex-col gap-1">
@@ -683,12 +684,12 @@ export default function AgencyDashboardPage() {
                       )}
                     </div>
                   ))}
-                  {addPhotos.length < 15 && (
+                  {addPhotos.length < 5 && (
                     <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 bg-stone-800 hover:border-amber-700 transition-colors">
                       <Camera className="h-5 w-5 text-stone-600" />
                       <span className="text-xs text-stone-600 mt-1">Add</span>
                       <input type="file" accept="image/*" multiple className="hidden" onChange={e => {
-                        const files = Array.from(e.target.files || []).slice(0, 15 - addPhotos.length)
+                        const files = Array.from(e.target.files || []).slice(0, 5 - addPhotos.length)
                         setAddPhotos(p => [...p, ...files])
                         files.forEach(f => { const r = new FileReader(); r.onload = ev => setAddPhotoUrls(p => [...p, ev.target?.result as string]); r.readAsDataURL(f) })
                         e.target.value = ''
