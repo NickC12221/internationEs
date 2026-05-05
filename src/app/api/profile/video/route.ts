@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const allowed = ['video/mp4', 'video/quicktime', 'video/webm']
     if (!allowed.includes(mimeType)) return NextResponse.json({ success: false, error: 'Invalid video format. Use MP4, MOV or WebM.' }, { status: 400 })
 
-    const { uploadUrl, key, publicUrl } = await getPresignedUploadUrl('videos', mimeType, false)
+    const { uploadUrl, key, publicUrl } = await getPresignedUploadUrl('gallery', mimeType, false)
     return NextResponse.json({ success: true, data: { uploadUrl, key, publicUrl } })
   } catch (err) {
     console.error(err)
