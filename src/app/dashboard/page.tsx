@@ -104,6 +104,7 @@ function GuestDashboard({ user }: { user: any }) {
         <h2 className="mb-6 text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
           Services & Profile Details
         </h2>
+        <p className="text-xs text-stone-500 -mt-4 mb-6">These details appear on your public profile to help clients find you.</p>
         <ProfileExtrasForm
           profile={user.profile}
           onSave={async (data) => {
@@ -118,6 +119,96 @@ function GuestDashboard({ user }: { user: any }) {
         <ContactSupportButton />
         <ReportButton />
       </div>
+    </div>
+  )
+}
+
+
+function VideoUploadTile({ isPremium, videoUrl, onUpdate }: { isPremium: boolean; videoUrl?: string | null; onUpdate: () => void }) {
+  const [uploading, setUploading] = useState(false)
+  const [deleting, setDeleting] = useState(false)
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Check duration (max 90s) - we check size as proxy: 90s at ~5Mbps = ~56MB
+    if (file.size > 100 * 1024 * 1024) {
+      alert('Video must be under 100MB (max 90 seconds)')
+      return
+    }
+
+    setUploading(true)
+    try {
+      const res = await fetch('/api/profile/video', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mimeType: file.type })
+      })
+      const data = await res.json()
+      if (!data.success) { alert(data.error); return }
+
+      await fetch(data.data.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+
+      // Save video URL to profile
+      await fetch('/api/profiles', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoUrl: data.data.publicUrl, videoKey: data.data.key })
+      })
+      onUpdate()
+    } catch { alert('Upload failed') }
+    setUploading(false)
+  }
+
+  const handleDelete = async () => {
+    if (!confirm('Remove your profile video?')) return
+    setDeleting(true)
+    await fetch('/api/profile/video', { method: 'DELETE' })
+    onUpdate()
+    setDeleting(false)
+  }
+
+  if (!isPremium) {
+    return (
+      <Link href="/dashboard/premium"
+        className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-amber-700 transition-colors">
+        <Star className="h-5 w-5 text-stone-600" />
+        <div>
+          <p className="text-sm font-medium text-stone-400">Profile Video</p>
+          <p className="text-xs text-amber-600">Premium feature — upgrade to add a video</p>
+        </div>
+      </Link>
+    )
+  }
+
+  return (
+    <div className="rounded-xl border border-stone-800 bg-stone-900 p-4">
+      <div className="flex items-center gap-3 mb-3">
+        <Star className="h-5 w-5 text-amber-400 fill-current" />
+        <div>
+          <p className="text-sm font-medium text-stone-200">Profile Video</p>
+          <p className="text-xs text-stone-500">Max 90 seconds, MP4/MOV/WebM</p>
+        </div>
+      </div>
+      {videoUrl ? (
+        <div className="space-y-2">
+          <video src={videoUrl} className="w-full rounded-lg aspect-video object-cover bg-stone-800" controls />
+          <button onClick={handleDelete} disabled={deleting}
+            className="w-full rounded-lg bg-stone-800 py-1.5 text-xs text-red-400 hover:bg-red-950/30 transition-colors disabled:opacity-50">
+            {deleting ? 'Removing...' : 'Remove Video'}
+          </button>
+        </div>
+      ) : (
+        <label className="flex flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 py-6 cursor-pointer hover:border-amber-700 transition-colors">
+          {uploading ? (
+            <><Loader2 className="h-6 w-6 text-stone-500 animate-spin mb-1" /><p className="text-xs text-stone-500">Uploading...</p></>
+          ) : (
+            <><Camera className="h-6 w-6 text-stone-600 mb-1" /><p className="text-xs text-stone-500">Click to upload video</p></>
+          )}
+          <input type="file" accept="video/mp4,video/quicktime,video/webm" className="hidden" onChange={handleUpload} disabled={uploading} />
+        </label>
+      )}
     </div>
   )
 }
@@ -365,6 +456,8 @@ function ModelDashboard({ user }: { user: any }) {
             <p className="text-xs text-stone-500">Email, password & security</p>
           </div>
         </Link>
+
+        <VideoUploadTile isPremium={isPremium} videoUrl={user.profile?.videoUrl} onUpdate={() => window.location.reload()} />
       </div>
 
       {/* Services & Extras */}
@@ -372,6 +465,7 @@ function ModelDashboard({ user }: { user: any }) {
         <h2 className="mb-6 text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
           Services & Profile Details
         </h2>
+        <p className="text-xs text-stone-500 -mt-4 mb-6">These details appear on your public profile to help clients find you.</p>
         <ProfileExtrasForm
           profile={user.profile}
           onSave={async (data) => {

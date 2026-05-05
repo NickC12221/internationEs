@@ -53,7 +53,7 @@ export default function ProfileExtrasForm({ profile, onSave }: Props) {
   }
 
   const S = "w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
-  const L = "mb-3 block text-xs font-medium uppercase tracking-wider text-stone-500"
+  const L = "mb-3 block text-xs font-medium uppercase tracking-wider text-stone-500 font-sans"
   const Pill = ({ val, active, onClick }: any) => (
     <button type="button" onClick={onClick}
       className={`rounded-full border px-3 py-1 text-xs transition-colors ${active ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-400 hover:border-stone-500'}`}>
@@ -62,7 +62,7 @@ export default function ProfileExtrasForm({ profile, onSave }: Props) {
   )
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8" style={{ fontFamily: "DM Sans, system-ui, sans-serif" }}>
 
       <div>
         <p className={L}>Services Offered</p>
