@@ -1,44 +1,43 @@
-export const dynamic = 'force-dynamic'
-
-// src/app/[countryCode]/[citySlug]/page.tsx
+// src/app/[countryCode]/page.tsx
 import { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import LocationSidebar from '@/components/layout/LocationSidebar'
 import ModelGrid from '@/components/model/ModelGrid'
+import { prisma } from '@/lib/db/prisma'
 
 interface Props {
-  params: { countryCode: string; citySlug: string }
-}
-
-async function getPrisma() {
-  const { prisma } = await import('@/lib/db/prisma')
-  return prisma
+  params: { countryCode: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const countryCode = params.countryCode.toUpperCase()
-  const profile = await (await getPrisma()).profile.findFirst({
-    where: { countryCode, citySlug: params.citySlug, isActive: true },
-    select: { country: true, city: true },
+  const profile = await prisma.profile.findFirst({
+    where: { countryCode, isActive: true },
+    select: { country: true },
   })
 
-  if (!profile) return { title: 'Models' }
-
+  const country = profile?.country || countryCode
   return {
-    title: `Models in ${profile.city}, ${profile.country}`,
-    description: `Browse professional female models based in ${profile.city}, ${profile.country}.`,
+    title: `Escorts in ${country} | International Escorts`,
+    description: `Browse verified premium escorts based in ${country}. Find and book premium escorts for companionship and events. International Escorts.`,
+    keywords: `escorts in ${country}, ${country} models, book an escort ${country}, escort directory ${country}`,
+    openGraph: {
+      title: `Escorts in ${country} | International Escorts`,
+      description: `Browse verified premium escorts based in ${country} on International Escorts.`,
+      type: 'website',
+    },
   }
 }
 
-export default async function CityPage({ params }: Props) {
+export default async function CountryPage({ params }: Props) {
   const countryCode = params.countryCode.toUpperCase()
 
-  const locationInfo = await (await getPrisma()).profile.findFirst({
-    where: { countryCode: countryCode, citySlug: params.citySlug, isActive: true },
-    select: { country: true, city: true },
+  const countryInfo = await prisma.profile.findFirst({
+    where: { countryCode, isActive: true },
+    select: { country: true },
   })
 
-  const filters = { countryCode: countryCode, citySlug: params.citySlug }
+  const country = countryInfo?.country || countryCode
 
   return (
     <div className="min-h-screen">
@@ -51,8 +50,8 @@ export default async function CityPage({ params }: Props) {
             </div>
           </div>
           <ModelGrid
-            title={locationInfo ? `Models in ${locationInfo.city}` : 'Models'}
-            initialFilters={filters}
+            title={`Escorts in ${country}`}
+            initialFilters={{ countryCode }}
           />
         </div>
       </div>

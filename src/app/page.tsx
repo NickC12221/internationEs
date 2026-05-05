@@ -4,6 +4,17 @@ import ModelGrid from '@/components/model/ModelGrid'
 
 export const dynamic = 'force-dynamic'
 
+export const metadata = {
+  title: 'International Escorts — Discover Professional Models Worldwide',
+  description: 'Browse verified premium escorts and agencies from cities around the world. Find and book premium escorts for companionship, events and more.',
+  keywords: 'escort directory, female models, book an escort, modelling agency, international models, escort directory',
+  openGraph: {
+    title: 'International Escorts — Discover Professional Models Worldwide',
+    description: 'Browse verified premium escorts and agencies from cities around the world.',
+    type: 'website',
+  },
+}
+
 export default function HomePage() {
   return (
     <div className="min-h-screen">
@@ -12,14 +23,14 @@ export default function HomePage() {
       {/* Hero */}
       <div className="border-b border-stone-900 bg-stone-950 px-4 py-12 text-center sm:px-6">
         <p className="mb-2 text-xs font-medium uppercase tracking-[0.3em] text-amber-600">
-          Premier Model Directory
+          Premium International Escort Directory
         </p>
         <h1 className="text-5xl font-light tracking-wide text-stone-100 sm:text-6xl"
           style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-          Discover Exceptional Talent
+          Discover Premium Escorts Worldwide
         </h1>
         <p className="mx-auto mt-4 max-w-lg text-base text-stone-400">
-          Browse verified professional models from cities around the world.
+          Browse verified premium escorts from cities around the world.
           Filter by location, availability, and more.
         </p>
       </div>
@@ -43,7 +54,7 @@ export default function HomePage() {
             <div className="rounded-2xl border border-stone-800 bg-stone-900 p-8">
               <div className="mb-4 text-3xl">✦</div>
               <h3 className="text-xl font-light text-stone-100 mb-2" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>Verified Talent</h3>
-              <p className="text-sm text-stone-400 leading-relaxed">Every model on Femme Directory is reviewed and verified by our team. Browse with confidence knowing each profile is genuine.</p>
+              <p className="text-sm text-stone-400 leading-relaxed">Every model on International Escorts is reviewed and verified by our team. Browse with confidence knowing each profile is genuine.</p>
             </div>
             <div className="rounded-2xl border border-stone-800 bg-stone-900 p-8">
               <div className="mb-4 text-3xl">◈</div>

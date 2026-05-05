@@ -88,7 +88,7 @@ export default function Header() {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0">
             <span className="font-display text-2xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-              FEMME
+              IE
             </span>
           </Link>
 
@@ -100,7 +100,7 @@ export default function Header() {
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search models, cities..."
+                placeholder="Search escorts, cities..."
                 className="w-full rounded-full border border-stone-800 bg-stone-900 py-2 pl-9 pr-4 text-sm text-stone-200 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
               />
             </div>
@@ -158,7 +158,10 @@ export default function Header() {
                         <Link href="/dashboard/notifications" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           🔔 Notifications
                         </Link>
-<Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                        <Link href="/agency-dashboard/bookings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
+                          📅 Bookings
+                        </Link>
+                        <Link href="/dashboard/settings" className="flex items-center gap-2 px-4 py-2 text-sm text-stone-300 hover:bg-stone-800 hover:text-stone-100" onClick={() => setUserMenuOpen(false)}>
                           ⚙️ Account Settings
                         </Link>
                       </>
@@ -245,7 +248,7 @@ export default function Header() {
                   type="text"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
-                  placeholder="Search models, cities..."
+                  placeholder="Search escorts, cities..."
                   className="w-full rounded-full border border-stone-800 bg-stone-900 py-2 pl-9 pr-4 text-sm text-stone-200 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
                 />
               </div>

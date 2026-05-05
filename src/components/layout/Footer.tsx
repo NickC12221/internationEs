@@ -8,10 +8,10 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <span className="text-2xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-              FEMME
+              IE
             </span>
             <p className="mt-3 text-sm text-stone-500 leading-relaxed">
-              The premier directory connecting clients with professional models and agencies worldwide.
+              The premier directory connecting clients with premium escorts and agencies worldwide.
             </p>
           </div>
 
@@ -66,7 +66,7 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-stone-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-stone-600">
-            © {new Date().getFullYear()} Femme Directory. All rights reserved.
+            © {new Date().getFullYear()} International Escorts. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="text-xs text-stone-600 hover:text-stone-400 transition-colors">Privacy Policy</Link>

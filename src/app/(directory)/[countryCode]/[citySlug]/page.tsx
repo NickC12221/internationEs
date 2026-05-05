@@ -20,8 +20,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     })
     if (!profile) return { title: 'Models' }
     return {
-      title: `Models in ${profile.city}, ${profile.country}`,
-      description: `Browse professional female models based in ${profile.city}, ${profile.country}.`,
+      title: `Escorts in ${profile.city}, ${profile.country}`,
+      description: `Browse premium international escorts based in ${profile.city}, ${profile.country}.`,
     }
   } catch {
     return { title: 'Models' }
@@ -29,15 +29,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function CityPage({ params }: Props) {
-  if (["api", "_next", "dashboard", "admin", "agencies", "book", "contact", "search", "login", "signup"].includes(params.countryCode)) {
-    const { notFound } = await import("next/navigation")
-    notFound()
-  }
-  // Prevent API routes being caught by dynamic segment
-  if (['api', '_next', 'dashboard', 'admin', 'agencies', 'book', 'contact', 'search', 'login', 'signup'].includes(params.countryCode)) {
-    const { notFound } = await import('next/navigation')
-    notFound()
-  }
   const cc = params.countryCode.toUpperCase()
   let locationInfo = null
   try {
@@ -62,7 +53,7 @@ export default async function CityPage({ params }: Props) {
 
           {/* Main content */}
           <ModelGrid
-            title={locationInfo ? `Models in ${locationInfo.city}` : 'Models'}
+            title={locationInfo ? `Escorts in ${locationInfo.city}` : 'Models'}
             initialFilters={{ citySlug: params.citySlug }}
           />
 
