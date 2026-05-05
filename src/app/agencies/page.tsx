@@ -83,7 +83,7 @@ export default function AgenciesPage() {
         <h1 className="text-4xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
           Talent Agencies
         </h1>
-        <p className="mt-2 text-sm text-stone-400">Discover professional model agencies worldwide</p>
+        <p className="mt-2 text-sm text-stone-400">Discover premium escort agencies worldwide</p>
       </div>
 
       <div className="mx-auto max-w-screen-xl px-4 py-8 sm:px-6">
@@ -162,7 +162,7 @@ export default function AgenciesPage() {
                         <div className="mt-3 flex items-center justify-between">
                           <span className="flex items-center gap-1 text-xs text-stone-500">
                             <Users className="h-3.5 w-3.5" />
-                            {agency._count.models} models
+                            {agency._count.models} escorts
                           </span>
                           <span className="text-xs text-amber-600">View profile →</span>
                         </div>

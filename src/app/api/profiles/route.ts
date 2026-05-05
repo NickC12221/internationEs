@@ -1,74 +1,76 @@
 export const dynamic = 'force-dynamic'
-
 import { NextRequest, NextResponse } from 'next/server'
+import { getSessionFromRequest } from '@/lib/auth/jwt'
+import { prisma } from '@/lib/db/prisma'
 
 export async function GET(req: NextRequest) {
   try {
-    const { prisma } = await import('@/lib/db/prisma')
     const { searchParams } = new URL(req.url)
-    const country = searchParams.get('country')
-    const countryCode = searchParams.get('countryCode')
+    const page = parseInt(searchParams.get('page') || '1')
+    const pageSize = parseInt(searchParams.get('pageSize') || '32')
+    const countryCode = searchParams.get('countryCode')?.toUpperCase()
     const citySlug = searchParams.get('citySlug')
     const availability = searchParams.get('availability')
     const search = searchParams.get('search')
-    const page = parseInt(searchParams.get('page') || '1')
-    const pageSize = Math.min(parseInt(searchParams.get('pageSize') || '24'), 48)
+    const ethnicity = searchParams.get('ethnicity')
+    const nationality = searchParams.get('nationality')
+    const build = searchParams.get('build')
+    const incall = searchParams.get('incall')
+    const outcall = searchParams.get('outcall')
+    const travel = searchParams.get('travel')
 
     const where: any = { isActive: true }
-    if (countryCode) where.countryCode = countryCode.toUpperCase()
-    else if (country) where.country = { contains: country, mode: 'insensitive' }
+    if (countryCode) where.countryCode = countryCode
     if (citySlug) where.citySlug = citySlug
     if (availability) where.availability = availability
+    if (ethnicity) where.ethnicity = ethnicity
+    if (nationality) where.nationality = nationality
+    if (build) where.build = build
+    if (incall === 'true') where.incall = true
+    if (outcall === 'true') where.outcall = true
+    if (travel === 'true') where.travel = true
     if (search) {
       where.OR = [
         { displayName: { contains: search, mode: 'insensitive' } },
         { city: { contains: search, mode: 'insensitive' } },
+        { country: { contains: search, mode: 'insensitive' } },
         { bio: { contains: search, mode: 'insensitive' } },
+        { nationality: { contains: search, mode: 'insensitive' } },
       ]
     }
 
-    const [total, profiles] = await Promise.all([
-      prisma.profile.count({ where }),
+    const [profiles, total] = await Promise.all([
       prisma.profile.findMany({
         where,
-        include: {
-          images: { orderBy: { order: 'asc' }, take: 5 },
-          agencyModel: { include: { agency: { select: { name: true, slug: true } } } },
-        },
         orderBy: [{ listingTier: 'desc' }, { createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
+        select: {
+          id: true, displayName: true, slug: true, city: true, country: true,
+          countryCode: true, citySlug: true, age: true, availability: true,
+          listingTier: true, profileImageUrl: true, isVerified: true,
+          nationality: true, ethnicity: true, build: true, services: true,
+          incall: true, outcall: true, languages: true,
+        }
       }),
+      prisma.profile.count({ where })
     ])
 
-    return NextResponse.json({
-      success: true,
-      data: profiles,
-      total,
-      page,
-      pageSize,
-      totalPages: Math.ceil(total / pageSize),
-    })
-  } catch (error) {
-    console.error('Profiles error:', error)
-    return NextResponse.json({ success: false, error: 'Failed to fetch profiles' }, { status: 500 })
+    return NextResponse.json({ success: true, data: profiles, total, totalPages: Math.ceil(total / pageSize), page })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-    const { prisma } = await import('@/lib/db/prisma')
     const session = await getSessionFromRequest(req)
     if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    const body = await req.json()
-    const profile = await prisma.profile.update({
-      where: { userId: session.id },
-      data: { ...body, updatedAt: new Date() },
-      include: { images: true },
-    })
+    const data = await req.json()
+    const profile = await prisma.profile.update({ where: { userId: session.id }, data })
     return NextResponse.json({ success: true, data: profile })
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to update profile' }, { status: 500 })
+  } catch (err) {
+    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }

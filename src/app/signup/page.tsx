@@ -76,20 +76,20 @@ const SORTED_COUNTRIES = Object.keys(COUNTRIES_WITH_CITIES).sort()
 
 const FREE_FEATURES = [
   'Agency profile & directory listing',
-  'Add up to 5 models',
-  'Model profiles with photos',
+  'Add up to 5 escorts',
+  'Escort profiles with photos',
   'Booking & messaging system',
-  'Client reviews on model profiles',
+  'Client reviews on escort profiles',
 ]
 
 const PREMIUM_FEATURES = [
   { icon: '📍', text: 'City Page Sidebar — featured on your city\'s model listing page' },
   { icon: '⭐', text: 'Premium Badge — gold "Premium Agency" badge builds instant trust' },
   { icon: '🔝', text: 'Priority Placement — top of agency directory above standard listings' },
-  { icon: '📊', text: 'Profile Analytics — see views on your agency profile and models' },
+  { icon: '📊', text: 'Profile Analytics — see views on your agency profile and escorts' },
   { icon: '✉️', text: 'Newsletter Feature — included in our monthly featured agency newsletter' },
-  { icon: '👥', text: 'Up to 20 models — free accounts limited to 5 models' },
-  { icon: '🌟', text: 'Discounted Model Premium — upgrade models at a reduced rate' },
+  { icon: '👥', text: 'Up to 20 escorts — free accounts limited to 5 escorts' },
+  { icon: '🌟', text: 'Discounted Escort Premium — upgrade escorts at a reduced rate' },
 ]
 
 type AccountType = 'model' | 'agency' | 'guest' | null
@@ -145,7 +145,7 @@ export default function SignupPage() {
       <div className="w-full max-w-lg">
         <div className="mb-8 text-center">
           <Link href="/">
-            <span className="text-4xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>FEMME</span>
+            <span className="text-4xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>IE</span>
           </Link>
           <p className="mt-2 text-sm text-stone-500">Create your account</p>
         </div>
@@ -162,8 +162,8 @@ export default function SignupPage() {
                   <User className="h-6 w-6 text-stone-300" />
                 </div>
                 <div>
-                  <p className="font-medium text-stone-200">Independent Model</p>
-                  <p className="text-xs text-stone-500 mt-0.5">Create your own profile and be discovered</p>
+                  <p className="font-medium text-stone-200">Independent Escort</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Create your own escort profile and be discovered</p>
                 </div>
               </button>
 
@@ -173,8 +173,8 @@ export default function SignupPage() {
                   <Building2 className="h-6 w-6 text-amber-400" />
                 </div>
                 <div>
-                  <p className="font-medium text-stone-200">Model Agency</p>
-                  <p className="text-xs text-stone-500 mt-0.5">Manage a roster of models and get featured</p>
+                  <p className="font-medium text-stone-200">Escort Agency</p>
+                  <p className="text-xs text-stone-500 mt-0.5">Manage a roster of escorts and get featured</p>
                 </div>
               </button>
 
@@ -300,7 +300,7 @@ export default function SignupPage() {
               <button onClick={() => { setAccountType(null); setError('') }} className="text-stone-500 hover:text-stone-300 text-sm">← Back</button>
               <span className="flex items-center gap-1.5 rounded-full bg-stone-800 px-3 py-1 text-xs font-medium text-stone-400">
                 <User className="h-3.5 w-3.5" />
-                {accountType === 'guest' ? 'Client Account' : 'Model Account'}
+                {accountType === 'guest' ? 'Client Account' : 'Escort Account'}
               </span>
             </div>
 
@@ -313,7 +313,7 @@ export default function SignupPage() {
                 </label>
                 <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required minLength={2}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-500 focus:border-amber-700 focus:outline-none"
-                  placeholder={accountType === 'guest' ? 'Your full name' : 'Your professional name'} />
+                  placeholder={accountType === 'guest' ? 'Your full name' : 'Your escort name / stage name / stage name'} />
               </div>
               <div>
                 <label className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-stone-400">Email</label>

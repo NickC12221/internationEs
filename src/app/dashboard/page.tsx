@@ -8,6 +8,7 @@ import {
   Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
+import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ReportButton from '@/components/support/ReportButton'
 
@@ -71,7 +72,7 @@ function GuestDashboard({ user }: { user: any }) {
           </div>
           <div>
             <h3 className="font-medium text-stone-200">Browse Agencies</h3>
-            <p className="text-sm text-stone-500 mt-0.5">Find talent agencies near you</p>
+            <p className="text-sm text-stone-500 mt-0.5">Find escort agencies near you</p>
           </div>
         </Link>
 
@@ -96,6 +97,21 @@ function GuestDashboard({ user }: { user: any }) {
             <p className="text-sm text-stone-500 mt-0.5">Booking updates and messages</p>
           </div>
         </Link>
+      </div>
+
+      {/* Services & Extras */}
+      <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
+        <h2 className="mb-6 text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          Services & Profile Details
+        </h2>
+        <ProfileExtrasForm
+          profile={user.profile}
+          onSave={async (data) => {
+            const res = await fetch('/api/profiles', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+            const d = await res.json()
+            if (!d.success) alert(d.error)
+          }}
+        />
       </div>
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
@@ -349,6 +365,21 @@ function ModelDashboard({ user }: { user: any }) {
             <p className="text-xs text-stone-500">Email, password & security</p>
           </div>
         </Link>
+      </div>
+
+      {/* Services & Extras */}
+      <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
+        <h2 className="mb-6 text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
+          Services & Profile Details
+        </h2>
+        <ProfileExtrasForm
+          profile={user.profile}
+          onSave={async (data) => {
+            const res = await fetch('/api/profiles', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+            const d = await res.json()
+            if (!d.success) alert(d.error)
+          }}
+        />
       </div>
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
