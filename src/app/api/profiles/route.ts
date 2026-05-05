@@ -49,8 +49,7 @@ export async function GET(req: NextRequest) {
           id: true, displayName: true, slug: true, city: true, country: true,
           countryCode: true, citySlug: true, age: true, availability: true,
           listingTier: true, profileImageUrl: true, isVerified: true,
-          nationality: true, ethnicity: true, build: true, services: true,
-          incall: true, outcall: true, languages: true,
+
         }
       }),
       prisma.profile.count({ where })
