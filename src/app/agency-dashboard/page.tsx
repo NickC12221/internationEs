@@ -210,6 +210,7 @@ export default function AgencyDashboardPage() {
         setAddPhotos([])
         setAddPhotoUrls([])
         setMainPhotoIndex(0)
+        setAddForm({ displayName: '', city: '', age: '', bio: '', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
         fetchData()
       }
       else setAddError(data.error || 'Failed')
@@ -658,6 +659,64 @@ export default function AgencyDashboardPage() {
                 <textarea value={addForm.bio} onChange={e => setAddForm(p => ({ ...p, bio: e.target.value }))} rows={2}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
+              {/* Services in add modal */}
+              <div className="border-t border-stone-800 pt-3 mt-1">
+                <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Services</label>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {['GFE (Girlfriend Experience)','PSE','Dinner Date','Overnight Stay','Travel Companion','Webcam / Virtual','Duo Available','Couples Welcome','Massage','Tantric','Domination','Submissive','Role Play','Fetish Friendly','BDSM','Striptease'].map(s => (
+                    <button key={s} type="button"
+                      onClick={() => setAddForm((p: any) => ({ ...p, services: (p.services||[]).includes(s) ? (p.services||[]).filter((x: string) => x !== s) : [...(p.services||[]), s] }))}
+                      className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${(addForm as any).services?.includes(s) ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+
+                <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Availability</label>
+                <div className="flex gap-2 flex-wrap mb-3">
+                  {[['incall','Incall'],['outcall','Outcall'],['travel','Travel']].map(([key, label]) => (
+                    <button key={key} type="button"
+                      onClick={() => setAddForm((p: any) => ({ ...p, [key]: !p[key] }))}
+                      className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${(addForm as any)[key] ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical</label>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                    <div key={key}>
+                      <label className="mb-1 block text-xs text-stone-600">{label}</label>
+                      {opts ? (
+                        <select value={(addForm as any)[key] || ''} onChange={e => setAddForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                          className="w-full rounded-lg border border-stone-700 bg-stone-800 px-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none">
+                          <option value="">Select...</option>
+                          {opts.split(',').map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      ) : (
+                        <input value={(addForm as any)[key] || ''} onChange={e => setAddForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                          className="w-full rounded-lg border border-stone-700 bg-stone-800 px-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Rates (USD)</label>
+                <div className="grid grid-cols-2 gap-2 mb-1">
+                  {[['rate1hr','1hr'],['rate2hr','2hrs'],['rateDinner','Dinner'],['rateOvernight','Overnight']].map(([key, label]) => (
+                    <div key={key}>
+                      <label className="mb-1 block text-xs text-stone-600">{label}</label>
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-stone-500 text-xs">$</span>
+                        <input type="number" value={(addForm as any)[key] || ''} onChange={e => setAddForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                          className="w-full rounded-lg border border-stone-700 bg-stone-800 pl-5 pr-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="0" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Photos <span className="text-stone-600 font-normal">(optional — add up to 15 now)</span></label>
                 <div className="grid grid-cols-4 gap-2 mb-2">
@@ -721,23 +780,6 @@ export default function AgencyDashboardPage() {
             </div>
 
             <div className="overflow-y-auto flex-1 p-5">
-              {/* Services & profile extras */}
-              <div className="mb-5 border-b border-stone-800 pb-5">
-                <p className="text-sm font-medium text-stone-300 mb-4">Services & Profile Details</p>
-                <ProfileExtrasForm
-                  profile={editingModel}
-                  onSave={async (data) => {
-                    if (!editingModel) return
-                    await fetch(`/api/agency/models/${editingModel.id}`, {
-                      method: 'PATCH',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify(data)
-                    })
-                    fetchData()
-                  }}
-                />
-              </div>
-
               {/* Photos section */}
               <div className="mb-5">
                 <div className="flex items-center justify-between mb-3">
@@ -829,9 +871,90 @@ export default function AgencyDashboardPage() {
                   <textarea value={editForm.bio} onChange={e => setEditForm(p => ({ ...p, bio: e.target.value }))} rows={3}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" />
                 </div>
+                {/* Services */}
+                <div className="border-t border-stone-800 pt-4 mt-2">
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Services Offered</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['GFE (Girlfriend Experience)','PSE','Dinner Date','Overnight Stay','Travel Companion','Webcam / Virtual','Duo Available','Couples Welcome','Massage','Tantric','Domination','Submissive','Role Play','Fetish Friendly','BDSM','Striptease'].map(s => (
+                      <button key={s} type="button"
+                        onClick={() => setEditForm((p: any) => ({ ...p, services: (p.services||[]).includes(s) ? (p.services||[]).filter((x: string) => x !== s) : [...(p.services||[]), s] }))}
+                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${(editForm as any).services?.includes(s) ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Availability type */}
+                <div>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Availability</label>
+                  <div className="flex gap-2 flex-wrap">
+                    {[['incall','Incall'],['outcall','Outcall'],['travel','Travel Available']].map(([key, label]) => (
+                      <button key={key} type="button"
+                        onClick={() => setEditForm((p: any) => ({ ...p, [key]: !p[key] }))}
+                        className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${(editForm as any)[key] ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Physical */}
+                <div>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical Details</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                      <div key={key}>
+                        <label className="mb-1 block text-xs text-stone-600">{label}</label>
+                        {opts ? (
+                          <select value={(editForm as any)[key] || ''} onChange={e => setEditForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                            className="w-full rounded-lg border border-stone-700 bg-stone-800 px-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none">
+                            <option value="">Select...</option>
+                            {opts.split(',').map(o => <option key={o} value={o}>{o}</option>)}
+                          </select>
+                        ) : (
+                          <input value={(editForm as any)[key] || ''} onChange={e => setEditForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                            className="w-full rounded-lg border border-stone-700 bg-stone-800 px-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Languages */}
+                <div>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Languages</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {['English','French','Spanish','Arabic','Russian','Italian','German','Portuguese','Mandarin','Japanese','Korean','Other'].map(l => (
+                      <button key={l} type="button"
+                        onClick={() => setEditForm((p: any) => ({ ...p, languages: (p.languages||[]).includes(l) ? (p.languages||[]).filter((x: string) => x !== l) : [...(p.languages||[]), l] }))}
+                        className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${(editForm as any).languages?.includes(l) ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Rates */}
+                <div>
+                  <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Rates (USD)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[['rate1hr','1 Hour'],['rate2hr','2 Hours'],['rate3hr','3 Hours'],['rate4hr','4 Hours'],['rateHalf','Half Day'],['rateFull','Full Day'],['rateDinner','Dinner Date'],['rateOvernight','Overnight']].map(([key, label]) => (
+                      <div key={key}>
+                        <label className="mb-1 block text-xs text-stone-600">{label}</label>
+                        <div className="relative">
+                          <span className="absolute left-2 top-1/2 -translate-y-1/2 text-stone-500 text-xs">$</span>
+                          <input type="number" value={(editForm as any)[key] || ''} onChange={e => setEditForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                            className="w-full rounded-lg border border-stone-700 bg-stone-800 pl-5 pr-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="0" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <div className="flex gap-3 pt-1">
                   <button type="submit" disabled={saving} className="flex-1 rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? 'Saving...' : 'Save All Changes'}
                   </button>
                   <button type="button" onClick={() => setEditingModel(null)}
                     className="flex-1 rounded-lg border border-stone-700 py-2.5 text-sm text-stone-400 hover:border-stone-600">Cancel</button>
