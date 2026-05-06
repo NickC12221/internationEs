@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
     const { prisma } = await import('@/lib/db/prisma')
     const agency = await prisma.agency.findUnique({
-      where: { slug: params.slug, isActive: true },
+      where: { slug: params.slug, isActive: true, approvalStatus: 'APPROVED' },
       select: { name: true, bio: true, city: true, country: true },
     })
     if (!agency) return { title: 'Agency Not Found' }
@@ -33,7 +33,7 @@ export default async function AgencyProfilePage({ params }: Props) {
   const { prisma } = await import('@/lib/db/prisma')
 
   const agency = await prisma.agency.findUnique({
-    where: { slug: params.slug, isActive: true },
+    where: { slug: params.slug, isActive: true, approvalStatus: 'APPROVED' },
     include: {
       user: { select: { id: true } },
       models: {
@@ -211,15 +211,15 @@ export default async function AgencyProfilePage({ params }: Props) {
                       <span className="truncate">{agency.website.replace(/^https?:\/\//, '')}</span>
                     </a>
                   )}
-                  {agency.instagram && (
+                  {agency.twitter && (
                     <a
-                      href={`https://twitter.com/${agency.instagram.replace('@', '')}`}
+                      href={`https://twitter.com/${agency.twitter.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors"
                     >
                       <Twitter className="h-4 w-4 flex-shrink-0" />
-                      <span>{agency.instagram}</span>
+                      <span>{agency.twitter}</span>
                     </a>
                   )}
                   {agency.phone && (
@@ -232,7 +232,7 @@ export default async function AgencyProfilePage({ params }: Props) {
                     </a>
                   )}
 
-                  {!agency.website && !agency.instagram && !agency.phone && !agency.email && (
+                  {!agency.website && !agency.twitter && !agency.phone && !agency.email && (
                     <p className="text-sm text-stone-600">No contact info provided</p>
                   )}
                 </div>
