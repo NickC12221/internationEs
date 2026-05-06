@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  outputFileTracingExcludes: {
+    "*": ["./public/banners/**"],
+  },
   async redirects() {
     return [
       // Country redirects
