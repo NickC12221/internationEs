@@ -6,6 +6,7 @@ import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Up
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
+import VerificationUpload from '@/components/profile/VerificationUpload'
 import ReportButton from '@/components/support/ReportButton'
 
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
@@ -952,6 +953,18 @@ export default function AgencyDashboardPage() {
                     <p className="text-xs text-stone-600">Upgrade this escort to Premium to enable video upload</p>
                   </div>
                 )}
+              </div>
+
+              {/* Identity Verification */}
+              <div className="mb-5 border-b border-stone-800 pb-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-stone-300">Identity Verification</h3>
+                  {(editingModel as any)?.isVerified && (
+                    <span className="flex items-center gap-1 text-xs text-blue-400 bg-blue-950/30 px-2 py-1 rounded-full">✓ Verified</span>
+                  )}
+                </div>
+                <p className="text-xs text-stone-500 mb-3">Submit ID and a video selfie to get the verified badge on this escort's profile.</p>
+                <VerificationUpload profileId={editingModel?.id} isVerified={(editingModel as any)?.isVerified} />
               </div>
 
               {/* Edit form */}

@@ -38,6 +38,7 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState('Overview')
   const [analytics, setAnalytics] = useState<any>(null)
   const [verifications, setVerifications] = useState<any[]>([])
+  const [approvals, setApprovals] = useState<any>({ profiles: [], agencies: [] })
   const [bookings, setBookings] = useState<any[]>([])
   const [reviews, setReviews] = useState<any[]>([])
   const [conversations, setConversations] = useState<any[]>([])
@@ -67,13 +68,15 @@ export default function AdminDashboard() {
     })
     const load = async () => {
       setLoading(true)
-      const [analyticsRes, verificationsRes, usersRes] = await Promise.all([
+      const [analyticsRes, verificationsRes, usersRes, approvalsRes] = await Promise.all([
         fetch('/api/admin/analytics').then(r => r.json()),
         fetch('/api/admin/verifications').then(r => r.json()),
         fetch('/api/admin/users').then(r => r.json()),
+        fetch('/api/admin/approvals').then(r => r.json()),
       ])
       if (analyticsRes.success) setAnalytics(analyticsRes.data)
       if (verificationsRes.success) setVerifications(verificationsRes.data)
+      if (approvalsRes.success) setApprovals(approvalsRes.data)
       if (usersRes.success) setUsers(usersRes.data)
       setLoading(false)
     }
@@ -131,6 +134,18 @@ export default function AdminDashboard() {
     setBroadcasting(false)
   }
 
+  const approvalAction = async (id: string, type: string, action: string, adminNotes?: string) => {
+    const res = await fetch('/api/admin/approvals', {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, type, action, adminNotes })
+    })
+    const data = await res.json()
+    if (data.success) {
+      const approvalsRes = await fetch('/api/admin/approvals').then(r => r.json())
+      if (approvalsRes.success) setApprovals(approvalsRes.data)
+    }
+  }
+
   const userAction = async (userId: string, action: string, label: string) => {
     if (!confirm(`${label}?`)) return
     const res = await fetch(`/api/admin/users/${userId}`, {
@@ -147,7 +162,7 @@ export default function AdminDashboard() {
   }
 
   const messageUser = async (userId: string) => {
-    const res = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipientUserId: userId, initialMessage: 'Hi, this is Femme Directory admin.' }) })
+    const res = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ recipientUserId: userId, initialMessage: 'Hi, this is International Escorts admin.' }) })
     const data = await res.json()
     if (data.success) { setTab('Inbox'); setTimeout(() => openConvo(data.data.conversationId), 300) }
   }
@@ -189,6 +204,9 @@ export default function AdminDashboard() {
             <button key={t} onClick={() => setTab(t)}
               className={`relative flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === t ? 'bg-stone-800 text-stone-100' : 'text-stone-500 hover:text-stone-300'}`}>
               {t}
+              {t === 'Approvals' && (approvals.profiles.length + approvals.agencies.length) > 0 && (
+                <span className="ml-1.5 rounded-full bg-red-700 px-1.5 py-0.5 text-xs text-white">{approvals.profiles.length + approvals.agencies.length}</span>
+              )}
               {t === 'Verifications' && analytics?.verifications?.pending > 0 && (
                 <span className="ml-1.5 rounded-full bg-amber-700 px-1.5 py-0.5 text-xs text-white">{analytics.verifications.pending}</span>
               )}
@@ -255,6 +273,92 @@ export default function AdminDashboard() {
             )}
 
             {/* VERIFICATIONS */}
+            {tab === 'Approvals' && (
+              <div className="space-y-6">
+                {approvals.profiles.length === 0 && approvals.agencies.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-stone-700 py-12 text-center">
+                    <p className="text-stone-500">No pending approvals</p>
+                  </div>
+                ) : (
+                  <>
+                    {/* Escort approvals */}
+                    {approvals.profiles.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Escorts ({approvals.profiles.length})</h3>
+                        <div className="space-y-3">
+                          {approvals.profiles.map((p: any) => (
+                            <div key={p.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
+                              <div className="flex gap-4 flex-wrap">
+                                {p.images?.[0] && (
+                                  <img src={p.images[0].url} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-stone-200">{p.displayName}</p>
+                                  <p className="text-xs text-stone-500">{p.city}, {p.country}</p>
+                                  <p className="text-xs text-stone-600">{p.user?.email}</p>
+                                  {p.bio && <p className="text-xs text-stone-400 mt-1 line-clamp-2">{p.bio}</p>}
+                                  <p className="text-xs text-stone-700 mt-1">Submitted {new Date(p.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <div className="flex flex-col gap-2 flex-shrink-0">
+                                  <button onClick={() => approvalAction(p.id, 'profile', 'APPROVED')}
+                                    className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
+                                    ✓ Approve
+                                  </button>
+                                  <button onClick={() => {
+                                    const notes = prompt('Rejection reason (optional):')
+                                    approvalAction(p.id, 'profile', 'REJECTED', notes || undefined)
+                                  }} className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
+                                    ✕ Reject
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Agency approvals */}
+                    {approvals.agencies.length > 0 && (
+                      <div>
+                        <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Agencies ({approvals.agencies.length})</h3>
+                        <div className="space-y-3">
+                          {approvals.agencies.map((a: any) => (
+                            <div key={a.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
+                              <div className="flex gap-4 flex-wrap">
+                                {a.logoUrl && (
+                                  <img src={a.logoUrl} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />
+                                )}
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium text-stone-200">{a.name}</p>
+                                  <p className="text-xs text-stone-500">{a.city}, {a.country}</p>
+                                  <p className="text-xs text-stone-600">{a.user?.email}</p>
+                                  {a.bio && <p className="text-xs text-stone-400 mt-1 line-clamp-2">{a.bio}</p>}
+                                  <p className="text-xs text-stone-700 mt-1">Submitted {new Date(a.createdAt).toLocaleDateString()}</p>
+                                </div>
+                                <div className="flex flex-col gap-2 flex-shrink-0">
+                                  <button onClick={() => approvalAction(a.id, 'agency', 'APPROVED')}
+                                    className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
+                                    ✓ Approve
+                                  </button>
+                                  <button onClick={() => {
+                                    const notes = prompt('Rejection reason (optional):')
+                                    approvalAction(a.id, 'agency', 'REJECTED', notes || undefined)
+                                  }} className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
+                                    ✕ Reject
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
             {tab === 'Verifications' && (
               <div className="space-y-3">
                 <div className="mb-4 rounded-xl border border-amber-900/30 bg-amber-950/10 px-4 py-3 text-sm text-amber-400">

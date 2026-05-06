@@ -40,9 +40,12 @@ export async function POST(req: NextRequest) {
             city,
             citySlug,
             email,
-            isPremium: false,
-            subscriptionStatus: 'EXPIRED',
-
+            plan: plan === 'PREMIUM' ? 'PREMIUM' : 'FREE',
+            isPremium: plan === 'PREMIUM',
+            subscriptionStatus: 'ACTIVE',
+            subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+            isPremium: isPremium === true,
+            premiumExpiresAt: isPremium === true ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null,
           }
         }
       },

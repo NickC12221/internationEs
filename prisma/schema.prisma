@@ -22,6 +22,17 @@ enum VerificationStatus {
   REJECTED
 }
 
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum VerificationType {
+  PROFILE
+  IDENTITY
+}
+
 enum AvailabilityStatus {
   AVAILABLE
   UNAVAILABLE
@@ -222,8 +233,9 @@ model Profile {
 
   availability AvailabilityStatus @default(AVAILABLE)
   listingTier  ListingTier        @default(FREE)
-  isActive     Boolean            @default(true)
-  isVerified   Boolean            @default(false)
+  isActive       Boolean            @default(false)
+  approvalStatus ApprovalStatus     @default(PENDING)
+  isVerified     Boolean            @default(false)
 
   profileImageUrl String?
   images          ProfileImage[]
@@ -348,7 +360,8 @@ model Agency {
   videoUrl      String?
   videoKey      String?
 
-  isActive    Boolean  @default(true)
+  isActive       Boolean        @default(false)
+  approvalStatus ApprovalStatus @default(PENDING)
 
   models      AgencyModel[]
 
@@ -377,9 +390,12 @@ model VerificationRequest {
   id        String             @id @default(cuid())
   userId    String             @unique
   user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  status    VerificationStatus @default(PENDING)
+  type          VerificationType   @default(IDENTITY)
+  status        VerificationStatus @default(PENDING)
   idImageKey    String?
+  idImageUrl    String?
   videoKey      String?
+  videoUrl      String?
   adminNotes    String?  @db.Text
   reviewedAt    DateTime?
   reviewedBy    String?

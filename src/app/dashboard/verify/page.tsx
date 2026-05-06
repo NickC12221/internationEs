@@ -50,7 +50,7 @@ export default function VerifyPage() {
     setError('')
 
     try {
-      const { key: idImageKey } = await uploadFile(idFile, 'verification')
+      const { key: idImageKey, publicUrl: idPublicUrl } = await uploadFile(idFile, 'verification')
       let videoKey = null
       if (videoFile) {
         const result = await uploadFile(videoFile, 'verification')
@@ -60,7 +60,7 @@ export default function VerifyPage() {
       const res = await fetch('/api/verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idImageKey, videoKey }),
+        body: JSON.stringify({ idImageKey, idImageUrl: idPublicUrl, videoKey, videoUrl: videoPublicUrl }),
       })
       const data = await res.json()
 

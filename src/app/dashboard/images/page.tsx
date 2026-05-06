@@ -137,21 +137,25 @@ export default function ImagesPage() {
         ) : (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
             {images.map(img => (
-              <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl bg-stone-900">
-                <Image src={img.url} alt="Gallery photo" fill className="object-cover" sizes="(max-width: 640px) 33vw, 25vw" />
-                {img.isMain && (
-                  <div className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-amber-800/90 px-2 py-0.5 text-xs text-amber-200">
-                    <Star className="h-3 w-3 fill-current" /> Main
-                  </div>
-                )}
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-stone-950/70 opacity-0 transition-opacity group-hover:opacity-100">
+              <div key={img.id} className="flex flex-col gap-1">
+                <div className="relative aspect-square overflow-hidden rounded-xl bg-stone-900">
+                  <Image src={img.url} alt="Gallery photo" fill className="object-cover" sizes="(max-width: 640px) 33vw, 25vw" />
+                  {img.isMain && (
+                    <div className="absolute left-1.5 top-1.5 flex items-center gap-1 rounded-full bg-amber-800/90 px-2 py-0.5 text-xs text-amber-200">
+                      <Star className="h-3 w-3 fill-current" /> Main
+                    </div>
+                  )}
+                </div>
+                <div className="flex gap-1">
                   {!img.isMain && (
-                    <button onClick={() => setMainImage(img.id)} className="flex items-center gap-1.5 rounded-lg bg-amber-800 px-3 py-1.5 text-xs font-medium text-amber-100 hover:bg-amber-700 transition-colors">
-                      <Star className="h-3.5 w-3.5" /> Set Main
+                    <button onClick={() => setMainImage(img.id)}
+                      className="flex-1 rounded bg-stone-800 py-1 text-xs text-stone-400 hover:bg-amber-900/30 hover:text-amber-400 transition-colors">
+                      Set Main
                     </button>
                   )}
-                  <button onClick={() => deleteImage(img.id)} className="flex items-center gap-1.5 rounded-lg bg-red-900 px-3 py-1.5 text-xs font-medium text-red-200 hover:bg-red-800 transition-colors">
-                    <Trash2 className="h-3.5 w-3.5" /> Remove
+                  <button onClick={() => deleteImage(img.id)}
+                    className="flex-1 rounded bg-stone-800 py-1 text-xs text-stone-400 hover:bg-red-950/30 hover:text-red-400 transition-colors">
+                    Delete
                   </button>
                 </div>
               </div>
