@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Twitter/X, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
+import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Twitter, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
@@ -597,7 +597,7 @@ export default function AgencyDashboardPage() {
                       placeholder="https://youragency.com" />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs font-medium text-stone-400 flex items-center gap-1.5"><Twitter/X className="h-3.5 w-3.5" /> Twitter/X</label>
+                    <label className="mb-1.5 block text-xs font-medium text-stone-400 flex items-center gap-1.5"><Twitter className="h-3.5 w-3.5" /> Twitter/X</label>
                     <input value={settingsForm.twitter} onChange={e => setSettingsForm(p => ({ ...p, twitter: e.target.value }))}
                       className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-600 focus:border-amber-700 focus:outline-none"
                       placeholder="@youragency" />

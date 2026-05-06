@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Globe, Twitter/X, Phone, Star, Users, CheckCircle, MessageSquare } from 'lucide-react'
+import { MapPin, Globe, Twitter, Phone, Star, Users, CheckCircle, MessageSquare } from 'lucide-react'
 import AgencyContactButton from '@/components/messaging/AgencyContactButton'
 import Header from '@/components/layout/Header'
 
@@ -218,7 +218,7 @@ export default async function AgencyProfilePage({ params }: Props) {
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors"
                     >
-                      <Twitter/X className="h-4 w-4 flex-shrink-0" />
+                      <Twitter className="h-4 w-4 flex-shrink-0" />
                       <span>{agency.twitter}</span>
                     </a>
                   )}
