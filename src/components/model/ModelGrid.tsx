@@ -30,18 +30,12 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
   const [ethnicity, setEthnicity] = useState('')
   const [nationality, setNationality] = useState('')
   const [build, setBuild] = useState('')
+  const [incall, setIncall] = useState(false)
+  const [outcall, setOutcall] = useState(false)
+  const [travel, setTravel] = useState(false)
   const [height, setHeight] = useState('')
   const [hairColor, setHairColor] = useState('')
   const [eyeColor, setEyeColor] = useState('')
-  const [incall, setIncall] = useState(false)
-  const [outcall, setOutcall] = useState(false)
-  const [travel, setTravel] = useState(false)
-  const [ethnicity, setEthnicity] = useState('')
-  const [nationality, setNationality] = useState('')
-  const [build, setBuild] = useState('')
-  const [incall, setIncall] = useState(false)
-  const [outcall, setOutcall] = useState(false)
-  const [travel, setTravel] = useState(false)
 
   const fetchProfiles = useCallback(
     async (currentPage = 1, availabilityFilter = availability) => {
