@@ -1,5 +1,7 @@
 import Header from '@/components/layout/Header'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Banners | International Escorts',
   description: 'Download banners and link codes to promote International Escorts on your website.',
