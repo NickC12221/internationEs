@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
+    const { prisma } = await import('@/lib/db/prisma')
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = parseInt(searchParams.get('pageSize') || '32')
