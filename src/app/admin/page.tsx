@@ -271,7 +271,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="rounded-xl bg-stone-800 p-3 text-center">
                     <p className="text-xs text-stone-500 mb-1">Revenue</p>
-                    <p className="text-xl font-light text-amber-400">${stats.reduce((s: number, d: any) => s + d.revenue, 0).toLocaleString()}</p>
+                    <p className="text-xl font-light text-amber-400">${'{'}stats.reduce((s: number, d: any) => s + d.revenue, 0).toLocaleString(){'}'}</p>
                   </div>
                 </div>
                 <AdminChart stats={stats} />
@@ -357,7 +357,6 @@ export default function AdminDashboard() {
                                   <p className="text-xs text-stone-700 mt-1">Submitted {new Date(p.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex flex-col gap-2 flex-shrink-0">
-                                  <a href={`/admin/preview/${p.id}`} target="_blank" className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors text-center">👁 Preview</a>
                                   <button onClick={() => approvalAction(p.id, 'profile', 'APPROVED')}
                                     className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
                                     ✓ Approve
@@ -399,7 +398,6 @@ export default function AdminDashboard() {
                                   <p className="text-xs text-stone-700 mt-1">Submitted {new Date(a.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex flex-col gap-2 flex-shrink-0">
-                                  <a href={`/admin/preview-agency/${a.id}`} target="_blank" className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors text-center">👁 Preview</a>
                                   <button onClick={() => approvalAction(a.id, 'agency', 'APPROVED')}
                                     className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
                                     ✓ Approve
@@ -438,21 +436,40 @@ export default function AdminDashboard() {
                   </div>
                 ) : verifications.map(v => (
                   <div key={v.id} className="rounded-xl border border-stone-800 bg-stone-900 p-5">
-                    <div className="flex items-start justify-between gap-4 flex-wrap">
+                    <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <p className="font-medium text-stone-200">{v.profile?.displayName || v.user?.email}</p>
+                          <p className="font-medium text-stone-200">{v.user?.profile?.displayName || v.user?.email}</p>
                           <span className={`rounded-full px-2 py-0.5 text-xs ${STATUS_COLOR[v.status] || 'text-stone-400 bg-stone-800'}`}>{v.status}</span>
                         </div>
                         <p className="text-xs text-stone-500 mt-0.5">{v.user?.email}</p>
-                        {v.documentUrl && <a href={v.documentUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-block text-xs text-amber-500 hover:text-amber-400">View document →</a>}
                         <p className="text-xs text-stone-600 mt-1">Submitted {new Date(v.createdAt).toLocaleDateString()}</p>
+                        {v.adminNotes && <p className="text-xs text-amber-600 mt-1">Notes: {v.adminNotes}</p>}
                       </div>
                       {v.status === 'PENDING' && (
                         <div className="flex gap-2">
                           <button onClick={() => handleVerification(v.id, 'APPROVED')} className="flex items-center gap-1.5 rounded-lg bg-emerald-900/30 px-3 py-1.5 text-sm text-emerald-400 hover:bg-emerald-900/50"><Check className="h-4 w-4" /> Approve</button>
                           <button onClick={() => handleVerification(v.id, 'REJECTED')} className="flex items-center gap-1.5 rounded-lg bg-red-900/20 px-3 py-1.5 text-sm text-red-400 hover:bg-red-900/40"><X className="h-4 w-4" /> Reject</button>
                         </div>
+                      )}
+                    </div>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {v.idImageUrl && (
+                        <div>
+                          <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">ID Document</p>
+                          <a href={v.idImageUrl} target="_blank" rel="noopener noreferrer">
+                            <img src={v.idImageUrl} alt="ID" className="w-full rounded-lg object-cover border border-stone-700 hover:border-amber-700 transition-colors max-h-48" />
+                          </a>
+                        </div>
+                      )}
+                      {v.videoUrl && (
+                        <div>
+                          <p className="text-xs text-stone-500 mb-2 uppercase tracking-wider">Video Selfie</p>
+                          <video src={v.videoUrl} controls className="w-full rounded-lg bg-stone-800 max-h-48" />
+                        </div>
+                      )}
+                      {!v.idImageUrl && !v.videoUrl && (
+                        <p className="text-xs text-stone-600 col-span-2">No media uploaded</p>
                       )}
                     </div>
                   </div>
