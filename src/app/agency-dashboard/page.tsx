@@ -78,7 +78,7 @@ export default function AgencyDashboardPage() {
 
   // Add model
   const [showAddModal, setShowAddModal] = useState(false)
-  const [addForm, setAddForm] = useState({ displayName: '', city: '', bio: '', age: '' })
+  const [addForm, setAddForm] = useState<any>({ displayName: '', city: '', age: '', bio: '', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
   const [addPhotos, setAddPhotos] = useState<File[]>([])
   const [addPhotoUrls, setAddPhotoUrls] = useState<string[]>([])
   const [mainPhotoIndex, setMainPhotoIndex] = useState(0)
@@ -87,7 +87,7 @@ export default function AgencyDashboardPage() {
 
   // Edit model
   const [editingModel, setEditingModel] = useState<AgencyModel | null>(null)
-  const [editForm, setEditForm] = useState({ displayName: '', city: '', bio: '', age: '', phone: '', availability: 'AVAILABLE' })
+  const [editForm, setEditForm] = useState<any>({ displayName: '', city: '', age: '', bio: '', phone: '', availability: 'AVAILABLE', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
   const [saving, setSaving] = useState(false)
   const [modelImages, setModelImages] = useState<ProfileImage[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
