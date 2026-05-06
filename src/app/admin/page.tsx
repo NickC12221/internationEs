@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
-const TABS = ['Overview', 'Approvals', 'Verifications', 'Bookings', 'Reviews', 'Inbox', 'Payments', 'Broadcast', 'Users']
+const TABS = ['Overview', 'Verifications', 'Bookings', 'Reviews', 'Inbox', 'Payments', 'Broadcast', 'Users']
 
 function StatCard({ label, value, sub, color = 'text-stone-100', icon: Icon, onClick }: any) {
   return (
@@ -77,7 +77,13 @@ export default function AdminDashboard() {
         ])
         if (analyticsRes.success) setAnalytics(analyticsRes.data)
         if (verificationsRes.success) setVerifications(verificationsRes.data)
-        if (approvalsRes.success) setApprovals(approvalsRes.data)
+        if (approvalsRes.success) {
+      const data = approvalsRes.data
+      // Filter out internal agency emails
+      data.profiles = (data.profiles || []).filter((p: any) => !p.user?.email?.includes('@agency-'))
+      data.agencies = (data.agencies || []).filter((a: any) => !a.user?.email?.includes('@agency-'))
+      setApprovals(data)
+    }
         if (usersRes.success) setUsers(usersRes.data)
       } catch (e) {
         console.error('Admin load error:', e)
@@ -147,7 +153,12 @@ export default function AdminDashboard() {
     const data = await res.json()
     if (data.success) {
       const approvalsRes = await fetch('/api/admin/approvals').then(r => r.json())
-      if (approvalsRes.success) setApprovals(approvalsRes.data)
+      if (approvalsRes.success) {
+        const data = approvalsRes.data
+        data.profiles = (data.profiles || []).filter((p: any) => !p.user?.email?.includes('@agency-'))
+        data.agencies = (data.agencies || []).filter((a: any) => !a.user?.email?.includes('@agency-'))
+        setApprovals(data)
+      }
     }
   }
 
@@ -209,9 +220,6 @@ export default function AdminDashboard() {
             <button key={t} onClick={() => setTab(t)}
               className={`relative flex-shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${tab === t ? 'bg-stone-800 text-stone-100' : 'text-stone-500 hover:text-stone-300'}`}>
               {t}
-              {t === 'Approvals' && (approvals.profiles.length + approvals.agencies.length) > 0 && (
-                <span className="ml-1.5 rounded-full bg-red-700 px-1.5 py-0.5 text-xs text-white">{approvals.profiles.length + approvals.agencies.length}</span>
-              )}
               {t === 'Approvals' && (approvals.profiles.length + approvals.agencies.length) > 0 && (
                 <span className="ml-1.5 rounded-full bg-red-700 px-1.5 py-0.5 text-xs text-white">{approvals.profiles.length + approvals.agencies.length}</span>
               )}
@@ -357,91 +365,6 @@ export default function AdminDashboard() {
                                     const notes = prompt('Rejection reason (optional):')
                                     approvalAction(a.id, 'agency', 'REJECTED', notes || undefined)
                                   }} className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
-                                    ✕ Reject
-                                  </button>
-                                  <button onClick={() => messageUser(a.user?.id)}
-                                    className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
-                                    💬 Message
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            )}
-
-            {tab === 'Approvals' && (
-              <div className="space-y-6">
-                {approvals.profiles.length === 0 && approvals.agencies.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-stone-700 py-12 text-center">
-                    <p className="text-stone-500">No pending approvals</p>
-                  </div>
-                ) : (
-                  <>
-                    {approvals.profiles.length > 0 && (
-                      <div>
-                        <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Escorts ({approvals.profiles.length})</h3>
-                        <div className="space-y-3">
-                          {approvals.profiles.map((p: any) => (
-                            <div key={p.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
-                              <div className="flex gap-4 flex-wrap">
-                                {p.images?.[0] && (
-                                  <img src={p.images[0].url} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />
-                                )}
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-stone-200">{p.displayName}</p>
-                                  <p className="text-xs text-stone-500">{p.city}, {p.country}</p>
-                                  <p className="text-xs text-stone-600">{p.user?.email}</p>
-                                  {p.bio && <p className="text-xs text-stone-400 mt-1 line-clamp-2">{p.bio}</p>}
-                                  <p className="text-xs text-stone-700 mt-1">Submitted {new Date(p.createdAt).toLocaleDateString()}</p>
-                                </div>
-                                <div className="flex flex-col gap-2 flex-shrink-0">
-                                  <button onClick={() => approvalAction(p.id, 'profile', 'APPROVED')}
-                                    className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
-                                    ✓ Approve
-                                  </button>
-                                  <button onClick={() => { const notes = prompt('Rejection reason (optional):'); approvalAction(p.id, 'profile', 'REJECTED', notes || undefined) }}
-                                    className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
-                                    ✕ Reject
-                                  </button>
-                                  <button onClick={() => messageUser(p.user?.id)}
-                                    className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
-                                    💬 Message
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    {approvals.agencies.length > 0 && (
-                      <div>
-                        <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Agencies ({approvals.agencies.length})</h3>
-                        <div className="space-y-3">
-                          {approvals.agencies.map((a: any) => (
-                            <div key={a.id} className="rounded-xl border border-stone-800 bg-stone-900 p-4">
-                              <div className="flex gap-4 flex-wrap">
-                                {a.logoUrl && <img src={a.logoUrl} alt="" className="h-16 w-16 rounded-lg object-cover flex-shrink-0" />}
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-stone-200">{a.name}</p>
-                                  <p className="text-xs text-stone-500">{a.city}, {a.country}</p>
-                                  <p className="text-xs text-stone-600">{a.user?.email}</p>
-                                  {a.bio && <p className="text-xs text-stone-400 mt-1 line-clamp-2">{a.bio}</p>}
-                                  <p className="text-xs text-stone-700 mt-1">Submitted {new Date(a.createdAt).toLocaleDateString()}</p>
-                                </div>
-                                <div className="flex flex-col gap-2 flex-shrink-0">
-                                  <button onClick={() => approvalAction(a.id, 'agency', 'APPROVED')}
-                                    className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
-                                    ✓ Approve
-                                  </button>
-                                  <button onClick={() => { const notes = prompt('Rejection reason (optional):'); approvalAction(a.id, 'agency', 'REJECTED', notes || undefined) }}
-                                    className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
                                     ✕ Reject
                                   </button>
                                   <button onClick={() => messageUser(a.user?.id)}
