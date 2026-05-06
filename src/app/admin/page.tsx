@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
-const TABS = ['Overview', 'Approvals', 'Verifications', 'Bookings', 'Reviews', 'Inbox', 'Payments', 'Broadcast', 'Users']
+const TABS = ['Overview', 'Verifications', 'Bookings', 'Reviews', 'Inbox', 'Payments', 'Broadcast', 'Users']
 
 function StatCard({ label, value, sub, color = 'text-stone-100', icon: Icon, onClick }: any) {
   return (
@@ -315,6 +315,10 @@ export default function AdminDashboard() {
                                   }} className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
                                     ✕ Reject
                                   </button>
+                                  <button onClick={() => messageUser(p.user?.id)}
+                                    className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                                    💬 Message
+                                  </button>
                                 </div>
                               </div>
                             </div>
@@ -351,6 +355,10 @@ export default function AdminDashboard() {
                                     approvalAction(a.id, 'agency', 'REJECTED', notes || undefined)
                                   }} className="rounded-lg bg-red-950/30 border border-red-900 px-3 py-1.5 text-xs text-red-400 hover:bg-red-950/50 transition-colors">
                                     ✕ Reject
+                                  </button>
+                                  <button onClick={() => messageUser(a.user?.id)}
+                                    className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors">
+                                    💬 Message
                                   </button>
                                 </div>
                               </div>
