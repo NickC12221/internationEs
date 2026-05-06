@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
+  User, Camera, CheckCircle, Star, MapPin, Clock,
   Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
@@ -210,6 +210,7 @@ function ModelDashboard({ user }: { user: any }) {
       age: user.profile?.age || '',
       phone: user.profile?.phone || '',
       twitter: user.profile?.twitter || '',
+      twitter: user.profile?.twitter || '',
       website: user.profile?.website || '',
       availability: user.profile?.availability || 'AVAILABLE',
     })
@@ -365,6 +366,18 @@ function ModelDashboard({ user }: { user: any }) {
                 </select>
               </div>
             </div>
+            <div className="border-t border-stone-800 pt-5 mt-2">
+              <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-4">Services & Profile Details</p>
+              <ProfileExtrasForm
+                profile={user.profile}
+                onSave={async (data) => {
+                  const res = await fetch('/api/profiles', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+                  const d = await res.json()
+                  if (!d.success) alert(d.error)
+                }}
+              />
+            </div>
+
             <button onClick={handleSave} disabled={saving}
               className="w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60 transition-colors">
               {saving ? 'Saving...' : 'Save Changes'}
