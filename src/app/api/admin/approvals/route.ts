@@ -47,14 +47,17 @@ export async function PATCH(req: NextRequest) {
     const approved = action === 'APPROVED'
 
     if (type === 'profile') {
-      await prisma.profile.update({ where: { id }, data: { approvalStatus: action, isActive: approved } })
+      await prisma.profile.update({ where: { id }, data: { 
+        approvalStatus: action, 
+        isActive: approved,
+      } })
       const profile = await prisma.profile.findUnique({ where: { id }, select: { userId: true, displayName: true } })
       if (profile) {
         await prisma.notification.create({ data: {
           userId: profile.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Profile Approved!' : 'Profile Not Approved',
-          body: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
+          body: approved ? 'Your profile is now live on the directory.' : `Your profile was not approved. ${adminNotes || 'It may have broken one of our listing rules.'} Please update your profile and resubmit for review.`,
         }}).catch(() => {})
         // Send email
         const user = await prisma.user.findUnique({ where: { id: profile.userId }, select: { email: true } })
@@ -72,7 +75,7 @@ export async function PATCH(req: NextRequest) {
           userId: agency.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Agency Approved!' : 'Agency Not Approved',
-          body: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
+          body: approved ? 'Your agency is now live on the directory.' : `Your agency was not approved. ${adminNotes || 'It may have broken one of our listing rules.'} Please update your details and contact support to resubmit.`,
         }}).catch(() => {})
         // Send email
         const agencyUser = await prisma.user.findUnique({ where: { id: agency.userId }, select: { email: true } })

@@ -1,91 +1,46 @@
-export const dynamic = 'force-dynamic' // force-rebuild
-
-// src/app/api/verification/route.ts
+export const dynamic = 'force-dynamic'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
-  const session = await getSessionFromRequest(req)
-  if (!session) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
-
   try {
-    const { idImageKey, videoKey } = await req.json()
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+    const { prisma } = await import('@/lib/db/prisma')
+    const session = await getSessionFromRequest(req)
+    if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
 
-    if (!idImageKey) {
-      return NextResponse.json(
-        { success: false, error: 'ID image is required' },
-        { status: 400 }
-      )
+    const { idImageKey, idImageUrl, videoKey, videoUrl, profileId } = await req.json()
+
+    // For agency escorts
+    const userId = profileId
+      ? (await prisma.profile.findUnique({ where: { id: profileId }, select: { userId: true } }))?.userId || session.id
+      : session.id
+
+    const existing = await prisma.verificationRequest.findUnique({ where: { userId } })
+
+    if (existing) {
+      await prisma.verificationRequest.update({
+        where: { userId },
+        data: { 
+          type: 'IDENTITY', 
+          idImageKey, 
+          idImageUrl: idImageUrl || null,
+          videoKey: videoKey || null,
+          videoUrl: videoUrl || null,
+          status: 'PENDING', 
+          reviewedAt: null,
+          reviewedBy: null,
+          adminNotes: null,
+        }
+      })
+    } else {
+      await prisma.verificationRequest.create({
+        data: { userId, type: 'IDENTITY', idImageKey, idImageUrl, videoKey, videoUrl, status: 'PENDING' }
+      })
     }
 
-    // Check if already has a pending or approved request
-    const existing = await prisma.verificationRequest.findUnique({
-      where: { userId: session.id },
-    })
-
-    if (existing?.status === 'APPROVED') {
-      return NextResponse.json(
-        { success: false, error: 'Your account is already verified' },
-        { status: 400 }
-      )
-    }
-
-    if (existing?.status === 'PENDING') {
-      return NextResponse.json(
-        { success: false, error: 'You already have a pending verification request' },
-        { status: 400 }
-      )
-    }
-
-    const verification = await prisma.verificationRequest.upsert({
-      where: { userId: session.id },
-      update: {
-        idImageKey,
-        videoKey: videoKey || null,
-        status: 'PENDING',
-        adminNotes: null,
-        reviewedAt: null,
-        reviewedBy: null,
-      },
-      create: {
-        userId: session.id,
-        idImageKey,
-        videoKey: videoKey || null,
-        status: 'PENDING',
-      },
-    })
-
-    return NextResponse.json({ success: true, data: verification })
-  } catch (error) {
-    console.error('Verification error:', error)
-    return NextResponse.json({ success: false, error: 'Failed to submit verification' }, { status: 500 })
-  }
-}
-
-export async function GET(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
-  const session = await getSessionFromRequest(req)
-  if (!session) {
-    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-  }
-
-  try {
-    const verification = await prisma.verificationRequest.findUnique({
-      where: { userId: session.id },
-      select: {
-        status: true,
-        adminNotes: true,
-        createdAt: true,
-        reviewedAt: true,
-      },
-    })
-
-    return NextResponse.json({ success: true, data: verification })
-  } catch (error) {
-    return NextResponse.json({ success: false, error: 'Failed to fetch verification status' }, { status: 500 })
+    return NextResponse.json({ success: true })
+  } catch (err) {
+    console.error(err)
+    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
   }
 }
