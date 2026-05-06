@@ -749,7 +749,7 @@ export default function AgencyDashboardPage() {
 
                 <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                  {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       {opts ? (
@@ -968,7 +968,7 @@ export default function AgencyDashboardPage() {
                 <div>
                   <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical Details</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                    {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                       <div key={key}>
                         <label className="mb-1 block text-xs text-stone-600">{label}</label>
                         {opts ? (
