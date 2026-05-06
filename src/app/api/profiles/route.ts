@@ -17,6 +17,8 @@ export async function GET(req: NextRequest) {
     const incall = searchParams.get('incall')
     const outcall = searchParams.get('outcall')
     const travel = searchParams.get('travel')
+    const height = searchParams.get('height')
+    const hairColor = searchParams.get('hairColor')
 
     const where: any = { isActive: true }
     if (countryCode) where.countryCode = countryCode
@@ -28,6 +30,8 @@ export async function GET(req: NextRequest) {
     if (incall === 'true') where.incall = true
     if (outcall === 'true') where.outcall = true
     if (travel === 'true') where.travel = true
+    if (height) where.height = height
+    if (hairColor) where.hairColor = hairColor
     if (search) {
       where.OR = [
         { displayName: { contains: search, mode: 'insensitive' } },

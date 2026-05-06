@@ -30,6 +30,8 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
   const [ethnicity, setEthnicity] = useState('')
   const [nationality, setNationality] = useState('')
   const [build, setBuild] = useState('')
+  const [height, setHeight] = useState('')
+  const [hairColor, setHairColor] = useState('')
   const [incall, setIncall] = useState(false)
   const [outcall, setOutcall] = useState(false)
   const [travel, setTravel] = useState(false)
@@ -46,6 +48,8 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
         if (ethnicity) params.set('ethnicity', ethnicity)
         if (nationality) params.set('nationality', nationality)
         if (build) params.set('build', build)
+        if (height) params.set('height', height)
+        if (hairColor) params.set('hairColor', hairColor)
         if (incall) params.set('incall', 'true')
         if (outcall) params.set('outcall', 'true')
         if (travel) params.set('travel', 'true')
@@ -70,7 +74,7 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
         setLoading(false)
       }
     },
-    [initialFilters, availability, ethnicity, nationality, build, incall, outcall, travel]
+    [initialFilters, availability, ethnicity, nationality, build, height, hairColor, incall, outcall, travel]
   )
 
   useEffect(() => {
@@ -111,13 +115,13 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
         <button
           onClick={() => setFilterOpen(!filterOpen)}
           className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
-            filterOpen || ethnicity || build || nationality || incall || outcall || travel || availability
+            filterOpen || ethnicity || build || nationality || height || hairColor || incall || outcall || travel || availability
               ? 'border-amber-700 bg-amber-950/20 text-amber-400'
               : 'border-stone-800 bg-stone-900 text-stone-400 hover:border-stone-700'
           }`}
         >
           <SlidersHorizontal className="h-4 w-4" />
-          <span className="hidden sm:block">Filters{(ethnicity || build || nationality || incall || outcall || travel || availability) ? ' •' : ''}</span>
+          <span className="hidden sm:block">Filters{(ethnicity || build || nationality || height || hairColor || incall || outcall || travel || availability) ? ' •' : ''}</span>
         </button>
       </div>
 
@@ -156,6 +160,26 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
               </select>
             </div>
 
+            {/* Height */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Height</label>
+              <select value={height} onChange={e => { setHeight(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any height</option>
+                {['4ft10','4ft11','5ft0','5ft1','5ft2','5ft3','5ft4','5ft5','5ft6','5ft7','5ft8','5ft9','5ft10','5ft11','6ft0','6ft1','6ft2'].map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+
+            {/* Hair colour */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Hair Colour</label>
+              <select value={hairColor} onChange={e => { setHairColor(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any hair</option>
+                {['Blonde','Brunette','Black','Red','Auburn','Grey','Other'].map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+
             {/* Nationality */}
             <div>
               <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Nationality</label>
@@ -182,10 +206,11 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
           </div>
 
           {/* Clear filters */}
-          {(ethnicity || build || nationality || incall || outcall || travel || availability) && (
+          {(ethnicity || build || nationality || height || hairColor || incall || outcall || travel || availability) && (
             <div className="mt-4 border-t border-stone-800 pt-4">
               <button onClick={() => {
                 setAvailability(''); setEthnicity(''); setBuild(''); setNationality('');
+                setHeight(''); setHairColor('');
                 setIncall(false); setOutcall(false); setTravel(false);
                 fetchProfiles(1);
               }} className="text-xs text-stone-500 hover:text-amber-400 transition-colors">
