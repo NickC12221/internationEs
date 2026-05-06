@@ -8,6 +8,7 @@ import { CheckCircle, Star, MapPin, Twitter, Globe, Phone, Building2, Calendar, 
 import Header from '@/components/layout/Header'
 import BookContactButtons from '@/components/booking/BookContactButtons'
 import ProfileReviews from '@/components/model/ProfileReviews'
+import ImageGallery from '@/components/profile/ImageGallery'
 import ProfileRating from '@/components/model/ProfileRating'
 
 interface Props {
@@ -87,15 +88,9 @@ export default async function ModelProfilePage({ params }: Props) {
         <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
           {/* Left - Images */}
           <div>
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-stone-900">
-              {allImages[0] ? (
-                <Image src={allImages[0].url} alt={profile.displayName} fill className="object-cover" priority sizes="(max-width: 1024px) 100vw, 60vw" />
-              ) : (
-                <div className="flex h-full items-center justify-center">
-                  <span className="text-8xl font-light text-stone-700" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>{profile.displayName[0]}</span>
-                </div>
-              )}
-              <div className="absolute left-3 top-3 flex flex-col gap-2">
+            <div className="relative">
+              <ImageGallery images={allImages} displayName={profile.displayName} />
+              <div className="absolute left-3 top-3 flex flex-col gap-2 z-10 pointer-events-none">
                 {profile.listingTier === 'PREMIUM' && (
                   <span className="flex items-center gap-1.5 rounded-full bg-amber-900/90 px-3 py-1 text-xs font-medium text-amber-300 backdrop-blur-sm">
                     <Star className="h-3.5 w-3.5 fill-current" /> Premium
@@ -108,16 +103,6 @@ export default async function ModelProfilePage({ params }: Props) {
                 )}
               </div>
             </div>
-
-            {allImages.length > 1 && (
-              <div className="mt-3 grid grid-cols-4 gap-2">
-                {allImages.slice(1, 9).map(img => (
-                  <div key={img.id} className="relative aspect-square overflow-hidden rounded-lg bg-stone-900">
-                    <Image src={img.url} alt={profile.displayName} fill className="object-cover" sizes="25vw" />
-                  </div>
-                ))}
-              </div>
-            )}
 
             <ProfileReviews profileId={profile.id} />
           </div>
