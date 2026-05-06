@@ -210,7 +210,6 @@ function ModelDashboard({ user }: { user: any }) {
       age: user.profile?.age || '',
       phone: user.profile?.phone || '',
       twitter: user.profile?.twitter || '',
-      twitter: user.profile?.twitter || '',
       website: user.profile?.website || '',
       availability: user.profile?.availability || 'AVAILABLE',
     })
