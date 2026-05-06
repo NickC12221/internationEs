@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
             citySlug,
             email,
             isPremium: false,
-            subscriptionStatus: 'INACTIVE',
+            subscriptionStatus: 'EXPIRED',
 
           }
         }
