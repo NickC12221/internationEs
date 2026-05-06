@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
+  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2, Loader2,
   Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
@@ -209,7 +209,6 @@ function ModelDashboard({ user }: { user: any }) {
       bio: user.profile?.bio || '',
       age: user.profile?.age || '',
       phone: user.profile?.phone || '',
-      twitter: user.profile?.twitter || '',
       twitter: user.profile?.twitter || '',
       website: user.profile?.website || '',
       availability: user.profile?.availability || 'AVAILABLE',
