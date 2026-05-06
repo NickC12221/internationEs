@@ -49,7 +49,7 @@ export async function PATCH(req: NextRequest) {
           userId: profile.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Profile Approved!' : 'Profile Not Approved',
-          message: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
+          body: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
         }}).catch(() => {})
       }
     } else {
@@ -60,7 +60,7 @@ export async function PATCH(req: NextRequest) {
           userId: agency.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Agency Approved!' : 'Agency Not Approved',
-          message: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
+          body: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
         }}).catch(() => {})
       }
     }
