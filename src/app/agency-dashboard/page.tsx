@@ -202,24 +202,7 @@ export default function AgencyDashboardPage() {
     try {
       await fetch(`/api/agency/models/${editingModel.id}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          displayName: editForm.displayName, city: editForm.city, bio: editForm.bio,
-          age: editForm.age ? parseInt(editForm.age) : undefined,
-          phone: editForm.phone, availability: editForm.availability,
-          services: editForm.services, incall: editForm.incall, outcall: editForm.outcall, travel: editForm.travel,
-          height: editForm.height || null, build: editForm.build || null,
-          hairColor: editForm.hairColor || null, eyeColor: editForm.eyeColor || null,
-          ethnicity: editForm.ethnicity || null, nationality: editForm.nationality || null,
-          languages: editForm.languages, smoker: editForm.smoker,
-          rate1hr: editForm.rate1hr ? parseInt(editForm.rate1hr) : null,
-          rate2hr: editForm.rate2hr ? parseInt(editForm.rate2hr) : null,
-          rate3hr: editForm.rate3hr ? parseInt(editForm.rate3hr) : null,
-          rate4hr: editForm.rate4hr ? parseInt(editForm.rate4hr) : null,
-          rateHalf: editForm.rateHalf ? parseInt(editForm.rateHalf) : null,
-          rateFull: editForm.rateFull ? parseInt(editForm.rateFull) : null,
-          rateDinner: editForm.rateDinner ? parseInt(editForm.rateDinner) : null,
-          rateOvernight: editForm.rateOvernight ? parseInt(editForm.rateOvernight) : null,
-        }),
+        body: JSON.stringify({ displayName: editForm.displayName, city: editForm.city, bio: editForm.bio, age: editForm.age ? parseInt(editForm.age) : undefined, phone: editForm.phone, availability: editForm.availability }),
       })
       setEditingModel(null)
       fetchData()
