@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 
-const TABS = ['Overview', 'Verifications', 'Bookings', 'Reviews', 'Inbox', 'Payments', 'Broadcast', 'Users']
+const TABS = ['Overview', 'Approvals', 'Verifications', 'Bookings', 'Reviews', 'Inbox', 'Payments', 'Broadcast', 'Users']
 
 function StatCard({ label, value, sub, color = 'text-stone-100', icon: Icon, onClick }: any) {
   return (
