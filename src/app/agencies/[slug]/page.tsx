@@ -211,15 +211,15 @@ export default async function AgencyProfilePage({ params }: Props) {
                       <span className="truncate">{agency.website.replace(/^https?:\/\//, '')}</span>
                     </a>
                   )}
-                  {agency.twitter && (
+                  {agency.instagram && (
                     <a
-                      href={`https://twitter.com/${agency.twitter.replace('@', '')}`}
+                      href={`https://twitter.com/${agency.instagram.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors"
                     >
                       <Twitter className="h-4 w-4 flex-shrink-0" />
-                      <span>{agency.twitter}</span>
+                      <span>{agency.instagram}</span>
                     </a>
                   )}
                   {agency.phone && (
@@ -232,7 +232,7 @@ export default async function AgencyProfilePage({ params }: Props) {
                     </a>
                   )}
 
-                  {!agency.website && !agency.twitter && !agency.phone && !agency.email && (
+                  {!agency.website && !agency.instagram && !agency.phone && !agency.email && (
                     <p className="text-sm text-stone-600">No contact info provided</p>
                   )}
                 </div>
