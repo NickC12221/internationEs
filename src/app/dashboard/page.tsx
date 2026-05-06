@@ -374,7 +374,7 @@ function ModelDashboard({ user }: { user: any }) {
           <div className="space-y-2 text-sm text-stone-400">
             {profile?.bio && <p className="leading-relaxed">{profile.bio}</p>}
             {profile?.phone && <p className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" />{profile.phone}</p>}
-            {profile?.twitter && <p className="flex items-center gap-2"><Twitter/X className="h-3.5 w-3.5" />{profile.twitter}</p>}
+            {profile?.twitter && <p className="flex items-center gap-2"><Twitter className="h-3.5 w-3.5" />{profile.twitter}</p>}
             {profile?.website && <p className="flex items-center gap-2"><Globe className="h-3.5 w-3.5" />{profile.website}</p>}
           </div>
         )}
