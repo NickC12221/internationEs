@@ -53,7 +53,7 @@ export default function BannersPage() {
                     width={Math.min(w, 660)}
                     height={Math.round(h * (Math.min(w, 660) / w))}
                     alt={`${b.label} banner preview`}
-                    className="max-w-full"}
+                    className="max-w-full"
                   />
                   <div className="hidden text-xs text-stone-600 py-2" id={`placeholder-${b.file}`}>
                     Banner image not yet uploaded
