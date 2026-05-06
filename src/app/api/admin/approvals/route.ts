@@ -8,7 +8,10 @@ export async function GET(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session || session.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
 
-    const [profiles, agencies] = await Promise.all([
+    // approvalStatus may not exist yet if DB push hasn't run
+    let profiles: any[] = [], agencies: any[] = []
+    try {
+    const [profilesRes, agenciesRes] = await Promise.all([
       prisma.profile.findMany({
         where: { approvalStatus: 'PENDING' },
         include: {
@@ -49,7 +52,7 @@ export async function PATCH(req: NextRequest) {
           userId: profile.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Profile Approved!' : 'Profile Not Approved',
-          body: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
+          message: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
         }}).catch(() => {})
       }
     } else {
@@ -60,7 +63,7 @@ export async function PATCH(req: NextRequest) {
           userId: agency.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Agency Approved!' : 'Agency Not Approved',
-          body: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
+          message: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
         }}).catch(() => {})
       }
     }
