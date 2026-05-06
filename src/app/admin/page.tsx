@@ -299,6 +299,37 @@ export default function AdminDashboard() {
             )}
 
             {/* VERIFICATIONS */}
+            {tab === 'Overview' && stats.length > 0 && (
+              <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
+                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+                  <h2 className="text-lg font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>Performance</h2>
+                  <div className="flex gap-2">
+                    {[7, 30, 60, 90].map(d => (
+                      <button key={d} onClick={() => { setStatsDays(d); fetchStats(d) }}
+                        className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${statsDays === d ? 'border-amber-700 bg-amber-900/20 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                        {d}d
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 mb-5">
+                  <div className="rounded-xl bg-stone-800 p-3 text-center">
+                    <p className="text-xs text-stone-500 mb-1">Signups</p>
+                    <p className="text-xl font-light text-stone-100">{stats.reduce((s, d) => s + d.signups, 0)}</p>
+                  </div>
+                  <div className="rounded-xl bg-stone-800 p-3 text-center">
+                    <p className="text-xs text-stone-500 mb-1">Purchases</p>
+                    <p className="text-xl font-light text-stone-100">{stats.reduce((s, d) => s + d.purchases, 0)}</p>
+                  </div>
+                  <div className="rounded-xl bg-stone-800 p-3 text-center">
+                    <p className="text-xs text-stone-500 mb-1">Revenue</p>
+                    <p className="text-xl font-light text-amber-400">${stats.reduce((s, d) => s + d.revenue, 0).toLocaleString()}</p>
+                  </div>
+                </div>
+                <AdminChart stats={stats} />
+              </div>
+            )}
+
             {tab === 'Approvals' && (
               <div className="space-y-6">
                 {approvals.profiles.length === 0 && approvals.agencies.length === 0 ? (
