@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { CheckCircle, Star, MapPin, Instagram, Globe, Phone, Building2, Calendar, MessageSquare } from 'lucide-react'
+import { CheckCircle, Star, MapPin, Twitter/X, Globe, Phone, Building2, Calendar, MessageSquare } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import BookContactButtons from '@/components/booking/BookContactButtons'
 import ProfileReviews from '@/components/model/ProfileReviews'
@@ -216,20 +216,42 @@ export default async function ModelProfilePage({ params }: Props) {
 
               {/* Languages */}
               {(profile as any).languages?.length > 0 && (
-                <p className="mt-3 text-xs text-stone-500">Languages: <span className="text-stone-300">{((profile as any).languages as string[]).join(', ')}</span></p>
-              )}
-
-              {/* Rates */}
-              {((profile as any).rateHourly || (profile as any).rateDinner || (profile as any).rateOvernight) && (
-                <div className="mt-4 rounded-xl border border-stone-800 bg-stone-900/50 p-4">
-                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-3">Rates</p>
-                  <div className="space-y-1.5">
-                    {(profile as any).rateHourly && <div className="flex justify-between text-sm"><span className="text-stone-500">Per hour</span><span className="text-amber-400 font-medium">${((profile as any).rateHourly as number).toLocaleString()}</span></div>}
-                    {(profile as any).rateDinner && <div className="flex justify-between text-sm"><span className="text-stone-500">Dinner date</span><span className="text-amber-400 font-medium">${((profile as any).rateDinner as number).toLocaleString()}</span></div>}
-                    {(profile as any).rateOvernight && <div className="flex justify-between text-sm"><span className="text-stone-500">Overnight</span><span className="text-amber-400 font-medium">${((profile as any).rateOvernight as number).toLocaleString()}</span></div>}
+                <div className="mt-3">
+                  <p className="text-xs text-stone-500 mb-1.5">Languages</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {((profile as any).languages as string[]).map((l: string) => (
+                      <span key={l} className="rounded-full border border-stone-700 bg-stone-800/50 px-2.5 py-1 text-xs text-stone-300">{l}</span>
+                    ))}
                   </div>
                 </div>
               )}
+
+              {/* Rates */}
+              {(() => {
+                const p = profile as any
+                const rates = [
+                  ['1 Hour', p.rate1hr], ['2 Hours', p.rate2hr], ['3 Hours', p.rate3hr],
+                  ['4 Hours', p.rate4hr], ['Half Day (6hrs)', p.rateHalf], ['Full Day (12hrs)', p.rateFull],
+                  ['Dinner Date', p.rateDinner], ['Overnight', p.rateOvernight],
+                ].filter(([, v]) => v)
+                return (
+                  <div className="mt-4 rounded-xl border border-stone-800 bg-stone-900/50 p-4">
+                    <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-3">Rates</p>
+                    {rates.length > 0 ? (
+                      <div className="space-y-1.5">
+                        {rates.map(([label, val]) => (
+                          <div key={label as string} className="flex justify-between text-sm">
+                            <span className="text-stone-500">{label as string}</span>
+                            <span className="text-amber-400 font-medium">${(val as number).toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-stone-500 italic">Contact for rates</p>
+                    )}
+                  </div>
+                )
+              })()}
 
               {/* Video */}
               {(profile as any).videoUrl && (
@@ -248,11 +270,11 @@ export default async function ModelProfilePage({ params }: Props) {
                     <span>{profile.phone}</span>
                   </a>
                 )}
-                {profile.instagram && (
-                  <a href={`https://instagram.com/${profile.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
+                {profile.twitter && (
+                  <a href={`https://twitter.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
-                    <Instagram className="h-4 w-4 flex-shrink-0" />
-                    <span>{profile.instagram}</span>
+                    <Twitter/X className="h-4 w-4 flex-shrink-0" />
+                    <span>{profile.twitter}</span>
                   </a>
                 )}
                 {profile.website && (
@@ -262,7 +284,7 @@ export default async function ModelProfilePage({ params }: Props) {
                     <span className="truncate">{profile.website}</span>
                   </a>
                 )}
-                {!profile.phone && !profile.instagram && !profile.website && (
+                {!profile.phone && !profile.twitter && !profile.website && (
                   <p className="text-sm text-stone-600">No contact info provided</p>
                 )}
               </div>

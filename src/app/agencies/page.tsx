@@ -81,7 +81,7 @@ export default function AgenciesPage() {
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-amber-600">Agency Directory</p>
         </div>
         <h1 className="text-4xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-          Talent Agencies
+          Escort Agencies
         </h1>
         <p className="mt-2 text-sm text-stone-400">Discover premium escort agencies worldwide</p>
       </div>

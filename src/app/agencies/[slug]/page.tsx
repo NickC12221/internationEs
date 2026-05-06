@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { MapPin, Globe, Instagram, Phone, Star, Users, CheckCircle, MessageSquare } from 'lucide-react'
+import { MapPin, Globe, Twitter/X, Phone, Star, Users, CheckCircle, MessageSquare } from 'lucide-react'
 import AgencyContactButton from '@/components/messaging/AgencyContactButton'
 import Header from '@/components/layout/Header'
 
@@ -57,7 +57,7 @@ export default async function AgencyProfilePage({ params }: Props) {
     <div className="min-h-screen bg-stone-950">
       <Header />
 
-      {/* Banner */}
+      {/* Banner - starts below header */}
       <div className="relative h-56 w-full bg-stone-900 sm:h-72">
         {agency.logoUrl ? (
           <Image
@@ -211,15 +211,15 @@ export default async function AgencyProfilePage({ params }: Props) {
                       <span className="truncate">{agency.website.replace(/^https?:\/\//, '')}</span>
                     </a>
                   )}
-                  {agency.instagram && (
+                  {agency.twitter && (
                     <a
-                      href={`https://instagram.com/${agency.instagram.replace('@', '')}`}
+                      href={`https://twitter.com/${agency.twitter.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors"
                     >
-                      <Instagram className="h-4 w-4 flex-shrink-0" />
-                      <span>{agency.instagram}</span>
+                      <Twitter/X className="h-4 w-4 flex-shrink-0" />
+                      <span>{agency.twitter}</span>
                     </a>
                   )}
                   {agency.phone && (
@@ -232,7 +232,7 @@ export default async function AgencyProfilePage({ params }: Props) {
                     </a>
                   )}
 
-                  {!agency.website && !agency.instagram && !agency.phone && !agency.email && (
+                  {!agency.website && !agency.twitter && !agency.phone && !agency.email && (
                     <p className="text-sm text-stone-600">No contact info provided</p>
                   )}
                 </div>

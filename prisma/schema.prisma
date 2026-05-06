@@ -251,7 +251,12 @@ model Profile {
   smoker        Boolean?
 
   // Rates (USD)
-  rateHourly    Int?
+  rate1hr       Int?
+  rate2hr       Int?
+  rate3hr       Int?
+  rate4hr       Int?
+  rateHalf      Int?  // 6 hours
+  rateFull      Int?  // 12 hours
   rateDinner    Int?
   rateOvernight Int?
 
@@ -330,7 +335,12 @@ model Agency {
   smoker        Boolean?
 
   // Rates (USD)
-  rateHourly    Int?
+  rate1hr       Int?
+  rate2hr       Int?
+  rate3hr       Int?
+  rate4hr       Int?
+  rateHalf      Int?  // 6 hours
+  rateFull      Int?  // 12 hours
   rateDinner    Int?
   rateOvernight Int?
 

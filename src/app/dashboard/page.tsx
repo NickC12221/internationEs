@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
-  Instagram, Globe, Phone, Edit3, Calendar, MessageSquare,
+  User, Camera, CheckCircle, Star, MapPin, Clock,
+  Twitter/X, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
@@ -97,22 +97,6 @@ function GuestDashboard({ user }: { user: any }) {
             <p className="text-sm text-stone-500 mt-0.5">Booking updates and messages</p>
           </div>
         </Link>
-      </div>
-
-      {/* Services & Extras */}
-      <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
-        <h2 className="mb-6 text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-          Services & Profile Details
-        </h2>
-        <p className="text-xs text-stone-500 -mt-4 mb-6">These details appear on your public profile to help clients find you.</p>
-        <ProfileExtrasForm
-          profile={user.profile}
-          onSave={async (data) => {
-            const res = await fetch('/api/profiles', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-            const d = await res.json()
-            if (!d.success) alert(d.error)
-          }}
-        />
       </div>
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
@@ -214,7 +198,7 @@ function VideoUploadTile({ isPremium, videoUrl, onUpdate }: { isPremium: boolean
 }
 
 function ModelDashboard({ user }: { user: any }) {
-  const [editing, setEditing] = useState(false)
+  const [editing, setEditing] = useState(!user?.profile?.bio && (!user?.profile?.services || user?.profile?.services?.length === 0))
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState<any>({})
   const [saveMsg, setSaveMsg] = useState('')
@@ -225,7 +209,7 @@ function ModelDashboard({ user }: { user: any }) {
       bio: user.profile?.bio || '',
       age: user.profile?.age || '',
       phone: user.profile?.phone || '',
-      instagram: user.profile?.instagram || '',
+      twitter: user.profile?.twitter || '',
       twitter: user.profile?.twitter || '',
       website: user.profile?.website || '',
       availability: user.profile?.availability || 'AVAILABLE',
@@ -338,6 +322,7 @@ function ModelDashboard({ user }: { user: any }) {
 
         {saveMsg && <div className="mb-3 rounded-lg bg-emerald-950 px-3 py-2 text-sm text-emerald-400">{saveMsg}</div>}
 
+        {/* Auto-open if new escort (no services set) */}
         {editing ? (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
@@ -364,8 +349,8 @@ function ModelDashboard({ user }: { user: any }) {
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
               </div>
               <div>
-                <label className="mb-1 block text-xs text-stone-500">Instagram</label>
-                <input value={form.instagram} onChange={e => setForm((p: any) => ({ ...p, instagram: e.target.value }))}
+                <label className="mb-1 block text-xs text-stone-500">Twitter/X</label>
+                <input value={form.twitter} onChange={e => setForm((p: any) => ({ ...p, twitter: e.target.value }))}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="@handle" />
               </div>
               <div>
@@ -390,7 +375,7 @@ function ModelDashboard({ user }: { user: any }) {
           <div className="space-y-2 text-sm text-stone-400">
             {profile?.bio && <p className="leading-relaxed">{profile.bio}</p>}
             {profile?.phone && <p className="flex items-center gap-2"><Phone className="h-3.5 w-3.5" />{profile.phone}</p>}
-            {profile?.instagram && <p className="flex items-center gap-2"><Instagram className="h-3.5 w-3.5" />{profile.instagram}</p>}
+            {profile?.twitter && <p className="flex items-center gap-2"><Twitter/X className="h-3.5 w-3.5" />{profile.twitter}</p>}
             {profile?.website && <p className="flex items-center gap-2"><Globe className="h-3.5 w-3.5" />{profile.website}</p>}
           </div>
         )}
@@ -458,22 +443,6 @@ function ModelDashboard({ user }: { user: any }) {
         </Link>
 
         <VideoUploadTile isPremium={isPremium} videoUrl={user.profile?.videoUrl} onUpdate={() => window.location.reload()} />
-      </div>
-
-      {/* Services & Extras */}
-      <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
-        <h2 className="mb-6 text-xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-          Services & Profile Details
-        </h2>
-        <p className="text-xs text-stone-500 -mt-4 mb-6">These details appear on your public profile to help clients find you.</p>
-        <ProfileExtrasForm
-          profile={user.profile}
-          onSave={async (data) => {
-            const res = await fetch('/api/profiles', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-            const d = await res.json()
-            if (!d.success) alert(d.error)
-          }}
-        />
       </div>
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">

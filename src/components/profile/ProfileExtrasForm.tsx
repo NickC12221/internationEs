@@ -35,7 +35,12 @@ export default function ProfileExtrasForm({ profile, onSave }: Props) {
     nationality: profile?.nationality || '',
     languages: profile?.languages || [],
     smoker: profile?.smoker ?? null,
-    rateHourly: profile?.rateHourly || '',
+    rate1hr: profile?.rate1hr || '',
+    rate2hr: profile?.rate2hr || '',
+    rate3hr: profile?.rate3hr || '',
+    rate4hr: profile?.rate4hr || '',
+    rateHalf: profile?.rateHalf || '',
+    rateFull: profile?.rateFull || '',
     rateDinner: profile?.rateDinner || '',
     rateOvernight: profile?.rateOvernight || '',
   })
@@ -47,7 +52,17 @@ export default function ProfileExtrasForm({ profile, onSave }: Props) {
 
   const handleSave = async () => {
     setSaving(true)
-    await onSave({ ...form, rateHourly: form.rateHourly ? parseInt(String(form.rateHourly)) : null, rateDinner: form.rateDinner ? parseInt(String(form.rateDinner)) : null, rateOvernight: form.rateOvernight ? parseInt(String(form.rateOvernight)) : null })
+    await onSave({
+      ...form,
+      rate1hr: form.rate1hr ? parseInt(String(form.rate1hr)) : null,
+      rate2hr: form.rate2hr ? parseInt(String(form.rate2hr)) : null,
+      rate3hr: form.rate3hr ? parseInt(String(form.rate3hr)) : null,
+      rate4hr: form.rate4hr ? parseInt(String(form.rate4hr)) : null,
+      rateHalf: form.rateHalf ? parseInt(String(form.rateHalf)) : null,
+      rateFull: form.rateFull ? parseInt(String(form.rateFull)) : null,
+      rateDinner: form.rateDinner ? parseInt(String(form.rateDinner)) : null,
+      rateOvernight: form.rateOvernight ? parseInt(String(form.rateOvernight)) : null,
+    })
     setSaved(true); setSaving(false)
     setTimeout(() => setSaved(false), 3000)
   }
@@ -127,20 +142,24 @@ export default function ProfileExtrasForm({ profile, onSave }: Props) {
 
       <div>
         <p className={L}>Rates (USD) — Optional</p>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {[['rateHourly', 'Per Hour', '300'], ['rateDinner', 'Dinner Date', '800'], ['rateOvernight', 'Overnight', '2000']].map(([key, label, ph]) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            ['rate1hr', '1 Hour'],['rate2hr', '2 Hours'],['rate3hr', '3 Hours'],['rate4hr', '4 Hours'],
+            ['rateHalf', 'Half Day (6hrs)'],['rateFull', 'Full Day (12hrs)'],['rateDinner', 'Dinner Date'],['rateOvernight', 'Overnight'],
+          ].map(([key, label]) => (
             <div key={key}>
               <label className="mb-1 block text-xs text-stone-500">{label}</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-500 text-sm">$</span>
-                <input type="number" value={form[key as keyof typeof form] as string} onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
+                <input type="number" value={form[key as keyof typeof form] as string}
+                  onChange={e => setForm(p => ({ ...p, [key]: e.target.value }))}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 pl-7 pr-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
-                  placeholder={ph} />
+                  placeholder="0" />
               </div>
             </div>
           ))}
         </div>
-        <p className="mt-1.5 text-xs text-stone-600">Leave blank to show "Contact for rates".</p>
+        <p className="mt-1.5 text-xs text-stone-600">Leave any blank to show "Contact for rates" on that option.</p>
       </div>
 
       <button onClick={handleSave} disabled={saving}

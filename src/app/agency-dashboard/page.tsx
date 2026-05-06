@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Instagram, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
+import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Twitter/X, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
@@ -65,7 +65,7 @@ interface Agency {
   id: string; name: string; slug: string; city: string; country: string
   logoUrl: string | null; isPremium: boolean; subscriptionStatus: string
   subscriptionExpiresAt: string | null; bio: string | null; email: string | null
-  phone: string | null; website: string | null; instagram: string | null
+  phone: string | null; website: string | null; twitter: string | null
 }
 
 type Tab = 'models' | 'bookings' | 'settings'
@@ -96,7 +96,7 @@ export default function AgencyDashboardPage() {
   // Agency settings
   const [agencyBookings, setAgencyBookings] = useState<any[]>([])
   const [loadingBookings, setLoadingBookings] = useState(false)
-  const [settingsForm, setSettingsForm] = useState({ bio: '', phone: '', website: '', instagram: '' })
+  const [settingsForm, setSettingsForm] = useState({ bio: '', phone: '', website: '', twitter: '' })
   const [savingSettings, setSavingSettings] = useState(false)
   const [settingsSaved, setSettingsSaved] = useState(false)
   const [bannerUploading, setBannerUploading] = useState(false)
@@ -107,7 +107,7 @@ export default function AgencyDashboardPage() {
       const [ad, md] = await Promise.all([ar.json(), mr.json()])
       if (ad.success) {
         setAgency(ad.data as Agency)
-        setSettingsForm({ bio: ad.data.bio || '', phone: ad.data.phone || '', website: ad.data.website || '', instagram: ad.data.instagram || '' })
+        setSettingsForm({ bio: ad.data.bio || '', phone: ad.data.phone || '', website: ad.data.website || '', twitter: ad.data.twitter || '' })
       }
       if (md.success) setModels(md.data)
     } finally {
@@ -259,7 +259,7 @@ export default function AgencyDashboardPage() {
   return (
     <div className="min-h-screen bg-stone-950">
       <Header />
-      <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      <div className="mx-auto max-w-5xl px-4 pt-4 pb-8 sm:px-6">
 
         {/* Agency Header */}
         <div className="mb-6 rounded-2xl border border-stone-800 bg-stone-900 overflow-hidden">
@@ -404,7 +404,7 @@ export default function AgencyDashboardPage() {
               <p className="text-sm text-stone-500">{slotsUsed} of 20 model slots used</p>
               <button onClick={() => { const limit = agency?.isPremium ? 20 : 5; slotsUsed < limit ? setShowAddModal(true) : alert(agency?.isPremium ? 'Model limit reached (20/20)' : 'Free plan limited to 5 models. Upgrade to Premium for up to 20 models.') }}
                 className="flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
-                <Plus className="h-4 w-4" /> Add Model
+                <Plus className="h-4 w-4" /> Add Escort
               </button>
             </div>
 
@@ -412,7 +412,7 @@ export default function AgencyDashboardPage() {
               <div className="rounded-2xl border border-dashed border-stone-700 py-16 text-center">
                 <Users className="mx-auto h-10 w-10 text-stone-700 mb-3" />
                 <p className="text-stone-400 font-medium">No models yet</p>
-                <p className="text-stone-600 text-sm mt-1">Click "Add Model" to get started</p>
+                <p className="text-stone-600 text-sm mt-1">Click "Add Escort" to get started</p>
               </div>
             ) : (
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -597,8 +597,8 @@ export default function AgencyDashboardPage() {
                       placeholder="https://youragency.com" />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-xs font-medium text-stone-400 flex items-center gap-1.5"><Instagram className="h-3.5 w-3.5" /> Instagram</label>
-                    <input value={settingsForm.instagram} onChange={e => setSettingsForm(p => ({ ...p, instagram: e.target.value }))}
+                    <label className="mb-1.5 block text-xs font-medium text-stone-400 flex items-center gap-1.5"><Twitter/X className="h-3.5 w-3.5" /> Twitter/X</label>
+                    <input value={settingsForm.twitter} onChange={e => setSettingsForm(p => ({ ...p, twitter: e.target.value }))}
                       className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 placeholder-stone-600 focus:border-amber-700 focus:outline-none"
                       placeholder="@youragency" />
                   </div>
@@ -619,12 +619,12 @@ export default function AgencyDashboardPage() {
         <ReportButton />
       </div>
 
-      {/* Add Model Modal */}
+      {/* Add Escort Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 px-4 backdrop-blur-sm">
           <div className="w-full max-w-md rounded-2xl border border-stone-800 bg-stone-900 p-6">
             <div className="flex items-center justify-between mb-1">
-              <h2 className="text-lg font-medium text-stone-200">Add Model</h2>
+              <h2 className="text-lg font-medium text-stone-200">Add Escort</h2>
               <button onClick={() => { setShowAddModal(false); setAddError('') }} className="text-stone-500 hover:text-stone-300"><X className="h-5 w-5" /></button>
             </div>
             <p className="mb-4 text-xs text-stone-500">Listed under {agency?.country}. You can add photos after creating the profile.</p>
@@ -701,7 +701,7 @@ export default function AgencyDashboardPage() {
               </div>
               <div className="flex gap-3 pt-1">
                 <button type="submit" disabled={adding} className="flex-1 rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60">
-                  {adding ? 'Adding...' : 'Add Model'}
+                  {adding ? 'Adding...' : 'Add Escort'}
                 </button>
                 <button type="button" onClick={() => { setShowAddModal(false); setAddError('') }}
                   className="flex-1 rounded-lg border border-stone-700 py-2.5 text-sm text-stone-400 hover:border-stone-600">Cancel</button>
