@@ -8,24 +8,26 @@ export async function GET(req: NextRequest) {
     const session = await getSessionFromRequest(req)
     if (!session || session.role !== 'ADMIN') return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
 
-    // approvalStatus may not exist yet if DB push hasn't run
     let profiles: any[] = [], agencies: any[] = []
     try {
-    const [profilesRes, agenciesRes] = await Promise.all([
-      prisma.profile.findMany({
-        where: { approvalStatus: 'PENDING' },
-        include: {
-          user: { select: { id: true, email: true, createdAt: true } },
-          images: { where: { isMain: true }, take: 1 },
-        },
-        orderBy: { createdAt: 'desc' }
-      }),
-      prisma.agency.findMany({
-        where: { approvalStatus: 'PENDING' },
-        include: { user: { select: { id: true, email: true, createdAt: true } } },
-        orderBy: { createdAt: 'desc' }
-      })
-    ])
+      const [profilesRes, agenciesRes] = await Promise.all([
+        prisma.profile.findMany({
+          where: { approvalStatus: 'PENDING' },
+          include: {
+            user: { select: { id: true, email: true, createdAt: true } },
+            images: { where: { isMain: true }, take: 1 },
+          },
+          orderBy: { createdAt: 'desc' }
+        }),
+        prisma.agency.findMany({
+          where: { approvalStatus: 'PENDING' },
+          include: { user: { select: { id: true, email: true, createdAt: true } } },
+          orderBy: { createdAt: 'desc' }
+        })
+      ])
+      profiles = profilesRes
+      agencies = agenciesRes
+    } catch (e) { /* schema not migrated yet */ }
 
     return NextResponse.json({ success: true, data: { profiles, agencies } })
   } catch (err) {
@@ -52,7 +54,7 @@ export async function PATCH(req: NextRequest) {
           userId: profile.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Profile Approved!' : 'Profile Not Approved',
-          message: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
+          body: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
         }}).catch(() => {})
       }
     } else {
@@ -63,7 +65,7 @@ export async function PATCH(req: NextRequest) {
           userId: agency.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Agency Approved!' : 'Agency Not Approved',
-          message: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
+          body: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
         }}).catch(() => {})
       }
     }
