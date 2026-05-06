@@ -48,7 +48,7 @@ export async function PATCH(req: NextRequest) {
 
     if (type === 'profile') {
       await prisma.profile.update({ where: { id }, data: { approvalStatus: action, isActive: approved } })
-      const profile = await prisma.profile.findUnique({ where: { id }, select: { userId: true } })
+      const profile = await prisma.profile.findUnique({ where: { id }, select: { userId: true, displayName: true } })
       if (profile) {
         await prisma.notification.create({ data: {
           userId: profile.userId,
@@ -56,10 +56,17 @@ export async function PATCH(req: NextRequest) {
           title: approved ? '🎉 Profile Approved!' : 'Profile Not Approved',
           body: approved ? 'Your profile is now live on the directory.' : adminNotes || 'Your profile requires changes. Please contact support.',
         }}).catch(() => {})
+        // Send email
+        const user = await prisma.user.findUnique({ where: { id: profile.userId }, select: { email: true } })
+        if (user?.email) {
+          const { sendEmail, emailTemplates } = await import('@/lib/email/resend')
+          const tmpl = approved ? emailTemplates.profileApproved(profile.displayName) : emailTemplates.profileRejected(profile.displayName, adminNotes)
+          await sendEmail({ to: user.email, ...tmpl }).catch(() => {})
+        }
       }
     } else {
       await prisma.agency.update({ where: { id }, data: { approvalStatus: action, isActive: approved } })
-      const agency = await prisma.agency.findUnique({ where: { id }, select: { userId: true } })
+      const agency = await prisma.agency.findUnique({ where: { id }, select: { userId: true, name: true } })
       if (agency) {
         await prisma.notification.create({ data: {
           userId: agency.userId,
@@ -67,6 +74,13 @@ export async function PATCH(req: NextRequest) {
           title: approved ? '🎉 Agency Approved!' : 'Agency Not Approved',
           body: approved ? 'Your agency is now live on the directory.' : adminNotes || 'Your agency requires changes. Please contact support.',
         }}).catch(() => {})
+        // Send email
+        const agencyUser = await prisma.user.findUnique({ where: { id: agency.userId }, select: { email: true } })
+        if (agencyUser?.email) {
+          const { sendEmail, emailTemplates } = await import('@/lib/email/resend')
+          const tmpl = approved ? emailTemplates.agencyApproved(agency.name) : emailTemplates.agencyRejected(agency.name, adminNotes)
+          await sendEmail({ to: agencyUser.email, ...tmpl }).catch(() => {})
+        }
       }
     }
 
