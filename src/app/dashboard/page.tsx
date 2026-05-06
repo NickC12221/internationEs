@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock,
+  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
   Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
