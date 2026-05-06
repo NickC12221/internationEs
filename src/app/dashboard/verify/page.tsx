@@ -23,23 +23,21 @@ export default function VerifyPage() {
       .finally(() => setLoading(false))
   }, [])
 
-  const uploadFile = async (file: File, folder: string): Promise<{ key: string }> => {
-    // Get presigned URL
+  const uploadFile = async (file: File, folder: string): Promise<{ key: string; publicUrl: string }> => {
     const res = await fetch('/api/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mimeType: file.type, folder, isPrivate: true }),
+      body: JSON.stringify({ mimeType: file.type, folder, isPrivate: false }),
     })
     const { data } = await res.json()
 
-    // Upload directly to S3
     await fetch(data.uploadUrl, {
       method: 'PUT',
       body: file,
       headers: { 'Content-Type': file.type },
     })
 
-    return { key: data.key }
+    return { key: data.key, publicUrl: data.publicUrl }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,17 +48,19 @@ export default function VerifyPage() {
     setError('')
 
     try {
-      const { key: idImageKey } = await uploadFile(idFile, 'verification'); const idPublicUrl = null
+      const { key: idImageKey, publicUrl: idImageUrl } = await uploadFile(idFile, 'gallery')
       let videoKey = null
+      let videoUrl = null
       if (videoFile) {
-        const result = await uploadFile(videoFile, 'verification')
+        const result = await uploadFile(videoFile, 'gallery')
         videoKey = result.key
+        videoUrl = result.publicUrl
       }
 
       const res = await fetch('/api/verification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idImageKey, videoKey }),
+        body: JSON.stringify({ idImageKey, idImageUrl, videoKey, videoUrl }),
       })
       const data = await res.json()
 
