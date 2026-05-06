@@ -1,4 +1,5 @@
 'use client'
+import AdminChart from '@/components/admin/AdminChart'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -39,6 +40,8 @@ export default function AdminDashboard() {
   const [analytics, setAnalytics] = useState<any>(null)
   const [verifications, setVerifications] = useState<any[]>([])
   const [approvals, setApprovals] = useState<any>({ profiles: [], agencies: [] })
+  const [stats, setStats] = useState<any[]>([])
+  const [statsDays, setStatsDays] = useState(30)
   const [bookings, setBookings] = useState<any[]>([])
   const [reviews, setReviews] = useState<any[]>([])
   const [conversations, setConversations] = useState<any[]>([])
@@ -69,11 +72,12 @@ export default function AdminDashboard() {
     const load = async () => {
       setLoading(true)
       try {
-        const [analyticsRes, verificationsRes, usersRes, approvalsRes] = await Promise.all([
+        const [analyticsRes, verificationsRes, usersRes, approvalsRes, statsRes] = await Promise.all([
           fetch('/api/admin/analytics').then(r => r.json()).catch(() => ({ success: false })),
           fetch('/api/admin/verifications').then(r => r.json()).catch(() => ({ success: false })),
           fetch('/api/admin/users').then(r => r.json()).catch(() => ({ success: false })),
           fetch('/api/admin/approvals').then(r => r.json()).catch(() => ({ success: false, data: { profiles: [], agencies: [] } })),
+          fetch('/api/admin/stats?days=30').then(r => r.json()).catch(() => ({ success: false })),
         ])
         if (analyticsRes.success) setAnalytics(analyticsRes.data)
         if (verificationsRes.success) setVerifications(verificationsRes.data)
@@ -85,6 +89,7 @@ export default function AdminDashboard() {
       setApprovals(data)
     }
         if (usersRes.success) setUsers(usersRes.data)
+        if (statsRes?.success) setStats(statsRes.data)
       } catch (e) {
         console.error('Admin load error:', e)
       } finally {
@@ -143,6 +148,11 @@ export default function AdminDashboard() {
     setBroadcastMsg(data.success ? `✓ Sent to ${data.data.sent} users` : `Error: ${data.error}`)
     if (data.success) setBroadcast({ title: '', body: '', targetRole: 'ALL', link: '' })
     setBroadcasting(false)
+  }
+
+  const fetchStats = async (days: number) => {
+    const res = await fetch('/api/admin/stats?days=' + days).then(r => r.json())
+    if (res.success) setStats(res.data)
   }
 
   const approvalAction = async (id: string, type: string, action: string, adminNotes?: string) => {
