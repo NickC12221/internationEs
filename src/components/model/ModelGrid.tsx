@@ -159,6 +159,26 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
               </select>
             </div>
 
+            {/* Height */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Height</label>
+              <select value={height} onChange={e => { setHeight(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any height</option>
+                {['4ft10','4ft11','5ft0','5ft1','5ft2','5ft3','5ft4','5ft5','5ft6','5ft7','5ft8','5ft9','5ft10','5ft11','6ft0','6ft1','6ft2'].map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+
+            {/* Hair colour */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Hair Colour</label>
+              <select value={hairColor} onChange={e => { setHairColor(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any hair</option>
+                {['Blonde','Brunette','Black','Red','Auburn','Grey','Other'].map(h => <option key={h} value={h}>{h}</option>)}
+              </select>
+            </div>
+
             {/* Eye colour */}
             <div>
               <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Eye Colour</label>
