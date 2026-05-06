@@ -40,7 +40,6 @@ export async function POST(req: NextRequest) {
             city,
             citySlug,
             email,
-            plan: plan === 'PREMIUM' ? 'PREMIUM' : 'FREE',
             isPremium: plan === 'PREMIUM',
             subscriptionStatus: 'ACTIVE',
             subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
