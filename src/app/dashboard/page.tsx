@@ -98,7 +98,8 @@ function GuestDashboard({ user }: { user: any }) {
         </Link>
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4 flex-wrap">
+        <Link href="/info" className="flex items-center gap-1.5 rounded-xl border border-stone-700 px-4 py-2 text-sm text-stone-400 hover:border-stone-500 hover:text-stone-200 transition-colors">ℹ How It Works</Link>
         <ContactSupportButton />
         <ReportButton />
       </div>
@@ -566,7 +567,8 @@ function ModelDashboard({ user }: { user: any }) {
         <VideoUploadTile isPremium={isPremium} videoUrl={user.profile?.videoUrl} onUpdate={() => window.location.reload()} />
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4 flex-wrap">
+        <Link href="/info" className="flex items-center gap-1.5 rounded-xl border border-stone-700 px-4 py-2 text-sm text-stone-400 hover:border-stone-500 hover:text-stone-200 transition-colors">ℹ How It Works</Link>
         <ContactSupportButton />
         <ReportButton />
       </div>
