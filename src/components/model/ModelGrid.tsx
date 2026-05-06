@@ -43,6 +43,12 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
         if (initialFilters.citySlug) params.set('citySlug', initialFilters.citySlug)
         if (initialFilters.search) params.set('search', initialFilters.search)
         if (availabilityFilter) params.set('availability', availabilityFilter)
+        if (ethnicity) params.set('ethnicity', ethnicity)
+        if (nationality) params.set('nationality', nationality)
+        if (build) params.set('build', build)
+        if (incall) params.set('incall', 'true')
+        if (outcall) params.set('outcall', 'true')
+        if (travel) params.set('travel', 'true')
         params.set('page', currentPage.toString())
         params.set('pageSize', pageSize.toString())
 
@@ -64,7 +70,7 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
         setLoading(false)
       }
     },
-    [initialFilters, availability]
+    [initialFilters, availability, ethnicity, nationality, build, incall, outcall, travel]
   )
 
   useEffect(() => {
@@ -101,40 +107,94 @@ export default function ModelGrid({ initialFilters = {}, title, pageSize = 32 }:
           )}
         </div>
 
-        {/* Filter */}
-        <div className="relative">
-          <button
-            onClick={() => setFilterOpen(!filterOpen)}
-            className="flex items-center gap-2 rounded-lg border border-stone-800 bg-stone-900 px-3 py-2 text-sm text-stone-400 hover:border-stone-700 hover:text-stone-100 transition-colors"
-          >
-            <SlidersHorizontal className="h-4 w-4" />
-            <span className="hidden sm:block">
-              {availability ? AVAILABILITY_OPTIONS.find((o) => o.value === availability)?.label : 'Filter'}
-            </span>
-          </button>
+        {/* Filter toggle */}
+        <button
+          onClick={() => setFilterOpen(!filterOpen)}
+          className={`flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
+            filterOpen || ethnicity || build || nationality || incall || outcall || travel || availability
+              ? 'border-amber-700 bg-amber-950/20 text-amber-400'
+              : 'border-stone-800 bg-stone-900 text-stone-400 hover:border-stone-700'
+          }`}
+        >
+          <SlidersHorizontal className="h-4 w-4" />
+          <span className="hidden sm:block">Filters{(ethnicity || build || nationality || incall || outcall || travel || availability) ? ' •' : ''}</span>
+        </button>
+      </div>
 
-          {filterOpen && (
-            <div className="absolute right-0 mt-2 w-48 rounded-lg border border-stone-800 bg-stone-900 py-1 shadow-xl z-10">
-              <p className="px-3 py-2 text-xs font-medium uppercase tracking-wider text-stone-500">
-                Availability
-              </p>
-              {AVAILABILITY_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => handleAvailabilityChange(opt.value)}
-                  className={`flex w-full items-center px-3 py-2 text-sm transition-colors ${
-                    availability === opt.value
-                      ? 'text-amber-400'
-                      : 'text-stone-400 hover:bg-stone-800 hover:text-stone-100'
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+      {/* Filter panel */}
+      {filterOpen && (
+        <div className="mb-6 rounded-xl border border-stone-800 bg-stone-900 p-5">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            {/* Availability status */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Status</label>
+              <select value={availability} onChange={e => { setAvailability(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any status</option>
+                {AVAILABILITY_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+            </div>
+
+            {/* Ethnicity */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Ethnicity</label>
+              <select value={ethnicity} onChange={e => { setEthnicity(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any ethnicity</option>
+                {['Caucasian','Latin','Asian','African','Middle Eastern','Mixed','Other'].map(e => <option key={e} value={e}>{e}</option>)}
+              </select>
+            </div>
+
+            {/* Build */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Build</label>
+              <select value={build} onChange={e => { setBuild(e.target.value); fetchProfiles(1); }}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                <option value="">Any build</option>
+                {['Slim','Athletic','Average','Curvy','BBW','Petite','Tall'].map(b => <option key={b} value={b}>{b}</option>)}
+              </select>
+            </div>
+
+            {/* Nationality */}
+            <div>
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Nationality</label>
+              <input value={nationality} onChange={e => setNationality(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && fetchProfiles(1)}
+                onBlur={() => fetchProfiles(1)}
+                className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none"
+                placeholder="e.g. Brazilian, Russian..." />
+            </div>
+
+            {/* Service type */}
+            <div className="sm:col-span-2">
+              <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Service Type</label>
+              <div className="flex flex-wrap gap-2">
+                {[['incall', 'Incall', incall, setIncall], ['outcall', 'Outcall', outcall, setOutcall], ['travel', 'Travel Available', travel, setTravel]].map(([key, label, val, setter]: any) => (
+                  <button key={key} type="button"
+                    onClick={() => { setter(!val); fetchProfiles(1); }}
+                    className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${val ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-400 hover:border-stone-600'}`}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Clear filters */}
+          {(ethnicity || build || nationality || incall || outcall || travel || availability) && (
+            <div className="mt-4 border-t border-stone-800 pt-4">
+              <button onClick={() => {
+                setAvailability(''); setEthnicity(''); setBuild(''); setNationality('');
+                setIncall(false); setOutcall(false); setTravel(false);
+                fetchProfiles(1);
+              }} className="text-xs text-stone-500 hover:text-amber-400 transition-colors">
+                ✕ Clear all filters
+              </button>
             </div>
           )}
         </div>
-      </div>
+      )}
 
       {/* Grid */}
       {loading ? (
