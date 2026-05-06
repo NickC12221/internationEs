@@ -357,6 +357,7 @@ export default function AdminDashboard() {
                                   <p className="text-xs text-stone-700 mt-1">Submitted {new Date(p.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex flex-col gap-2 flex-shrink-0">
+                                  <a href={`/admin/preview/${p.id}`} target="_blank" className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors text-center">👁 Preview</a>
                                   <button onClick={() => approvalAction(p.id, 'profile', 'APPROVED')}
                                     className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
                                     ✓ Approve
@@ -398,6 +399,7 @@ export default function AdminDashboard() {
                                   <p className="text-xs text-stone-700 mt-1">Submitted {new Date(a.createdAt).toLocaleDateString()}</p>
                                 </div>
                                 <div className="flex flex-col gap-2 flex-shrink-0">
+                                  <a href={`/admin/preview-agency/${a.id}`} target="_blank" className="rounded-lg border border-stone-700 px-3 py-1.5 text-xs text-stone-400 hover:border-amber-700 hover:text-amber-400 transition-colors text-center">👁 Preview</a>
                                   <button onClick={() => approvalAction(a.id, 'agency', 'APPROVED')}
                                     className="rounded-lg bg-emerald-900/30 border border-emerald-800 px-3 py-1.5 text-xs text-emerald-400 hover:bg-emerald-900/50 transition-colors">
                                     ✓ Approve
