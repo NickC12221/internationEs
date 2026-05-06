@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(req: NextRequest) {
   try {
-    const { prisma } = await import('@/lib/db/prisma')
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = parseInt(searchParams.get('pageSize') || '32')
@@ -19,6 +18,7 @@ export async function GET(req: NextRequest) {
     const travel = searchParams.get('travel')
     const height = searchParams.get('height')
     const hairColor = searchParams.get('hairColor')
+    const eyeColor = searchParams.get('eyeColor')
 
     const where: any = { isActive: true }
     if (countryCode) where.countryCode = countryCode
@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
     if (travel === 'true') where.travel = true
     if (height) where.height = height
     if (hairColor) where.hairColor = hairColor
+    if (eyeColor) where.eyeColor = eyeColor
     if (search) {
       where.OR = [
         { displayName: { contains: search, mode: 'insensitive' } },
