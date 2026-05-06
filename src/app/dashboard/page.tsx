@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
+  User, Camera, CheckCircle, Star, MapPin, Clock,
   Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
@@ -323,7 +323,7 @@ function ModelDashboard({ user }: { user: any }) {
             <a href={profileUrl} target="_blank" rel="noopener noreferrer"
               className="ml-auto text-xs text-amber-600 hover:text-amber-400">View public profile →</a>
           ) : (
-            <Link href="/how-it-works"
+            <Link href="/info"
               className="ml-auto text-xs text-amber-700 hover:text-amber-600">⏳ Awaiting approval →</Link>
           )
         )}
@@ -436,7 +436,7 @@ function ModelDashboard({ user }: { user: any }) {
               <div className="mb-4">
                 <label className="mb-2 block text-xs text-stone-500">Physical Details</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                  {([['height','Height',"4'10",4'11",5'0",5'1",5'2",5'3",5'4",5'5",5'6",5'7",5'8",5'9",5'10",5'11",6'0",6'1",6'2""],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       {opts ? (
