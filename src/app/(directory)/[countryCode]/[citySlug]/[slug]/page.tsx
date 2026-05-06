@@ -4,7 +4,7 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
-import { CheckCircle, Star, MapPin, Twitter/X, Globe, Phone, Building2, Calendar, MessageSquare } from 'lucide-react'
+import { CheckCircle, Star, MapPin, Twitter, Globe, Phone, Building2, Calendar, MessageSquare } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import BookContactButtons from '@/components/booking/BookContactButtons'
 import ProfileReviews from '@/components/model/ProfileReviews'
@@ -273,7 +273,7 @@ export default async function ModelProfilePage({ params }: Props) {
                 {profile.twitter && (
                   <a href={`https://twitter.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
-                    <Twitter/X className="h-4 w-4 flex-shrink-0" />
+                    <Twitter className="h-4 w-4 flex-shrink-0" />
                     <span>{profile.twitter}</span>
                   </a>
                 )}
