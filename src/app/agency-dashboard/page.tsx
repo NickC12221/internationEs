@@ -202,7 +202,24 @@ export default function AgencyDashboardPage() {
     try {
       await fetch(`/api/agency/models/${editingModel.id}`, {
         method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ displayName: editForm.displayName, city: editForm.city, bio: editForm.bio, age: editForm.age ? parseInt(editForm.age) : undefined, phone: editForm.phone, availability: editForm.availability }),
+        body: JSON.stringify({
+          displayName: editForm.displayName, city: editForm.city, bio: editForm.bio,
+          age: editForm.age ? parseInt(editForm.age) : undefined,
+          phone: editForm.phone, availability: editForm.availability,
+          services: editForm.services, incall: editForm.incall, outcall: editForm.outcall, travel: editForm.travel,
+          height: editForm.height || null, build: editForm.build || null,
+          hairColor: editForm.hairColor || null, eyeColor: editForm.eyeColor || null,
+          ethnicity: editForm.ethnicity || null, nationality: editForm.nationality || null,
+          languages: editForm.languages, smoker: editForm.smoker,
+          rate1hr: editForm.rate1hr ? parseInt(editForm.rate1hr) : null,
+          rate2hr: editForm.rate2hr ? parseInt(editForm.rate2hr) : null,
+          rate3hr: editForm.rate3hr ? parseInt(editForm.rate3hr) : null,
+          rate4hr: editForm.rate4hr ? parseInt(editForm.rate4hr) : null,
+          rateHalf: editForm.rateHalf ? parseInt(editForm.rateHalf) : null,
+          rateFull: editForm.rateFull ? parseInt(editForm.rateFull) : null,
+          rateDinner: editForm.rateDinner ? parseInt(editForm.rateDinner) : null,
+          rateOvernight: editForm.rateOvernight ? parseInt(editForm.rateOvernight) : null,
+        }),
       })
       setEditingModel(null)
       fetchData()
@@ -220,6 +237,26 @@ export default function AgencyDashboardPage() {
       const data = await res.json()
       if (data.success) {
         const profileId = data.data.id
+
+        await fetch('/api/agency/models/' + profileId, {
+          method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            services: addForm.services, incall: addForm.incall, outcall: addForm.outcall, travel: addForm.travel,
+            height: addForm.height || null, build: addForm.build || null,
+            hairColor: addForm.hairColor || null, eyeColor: addForm.eyeColor || null,
+            ethnicity: addForm.ethnicity || null, nationality: addForm.nationality || null,
+            languages: addForm.languages, smoker: addForm.smoker,
+            rate1hr: addForm.rate1hr ? parseInt(addForm.rate1hr) : null,
+            rate2hr: addForm.rate2hr ? parseInt(addForm.rate2hr) : null,
+            rate3hr: addForm.rate3hr ? parseInt(addForm.rate3hr) : null,
+            rate4hr: addForm.rate4hr ? parseInt(addForm.rate4hr) : null,
+            rateHalf: addForm.rateHalf ? parseInt(addForm.rateHalf) : null,
+            rateFull: addForm.rateFull ? parseInt(addForm.rateFull) : null,
+            rateDinner: addForm.rateDinner ? parseInt(addForm.rateDinner) : null,
+            rateOvernight: addForm.rateOvernight ? parseInt(addForm.rateOvernight) : null,
+          })
+        })
+
         // Upload photos if any
         if (addPhotos.length > 0) {
           for (const photo of addPhotos) {
