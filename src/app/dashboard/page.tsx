@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
   User, Camera, CheckCircle, Star, MapPin, Clock,
-  Twitter/X, Globe, Phone, Edit3, Calendar, MessageSquare,
+  Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
