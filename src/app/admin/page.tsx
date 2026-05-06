@@ -68,17 +68,22 @@ export default function AdminDashboard() {
     })
     const load = async () => {
       setLoading(true)
-      const [analyticsRes, verificationsRes, usersRes, approvalsRes] = await Promise.all([
-        fetch('/api/admin/analytics').then(r => r.json()),
-        fetch('/api/admin/verifications').then(r => r.json()),
-        fetch('/api/admin/users').then(r => r.json()),
-        fetch('/api/admin/approvals').then(r => r.json()),
-      ])
-      if (analyticsRes.success) setAnalytics(analyticsRes.data)
-      if (verificationsRes.success) setVerifications(verificationsRes.data)
-      if (approvalsRes.success) setApprovals(approvalsRes.data)
-      if (usersRes.success) setUsers(usersRes.data)
-      setLoading(false)
+      try {
+        const [analyticsRes, verificationsRes, usersRes, approvalsRes] = await Promise.all([
+          fetch('/api/admin/analytics').then(r => r.json()).catch(() => ({ success: false })),
+          fetch('/api/admin/verifications').then(r => r.json()).catch(() => ({ success: false })),
+          fetch('/api/admin/users').then(r => r.json()).catch(() => ({ success: false })),
+          fetch('/api/admin/approvals').then(r => r.json()).catch(() => ({ success: false, data: { profiles: [], agencies: [] } })),
+        ])
+        if (analyticsRes.success) setAnalytics(analyticsRes.data)
+        if (verificationsRes.success) setVerifications(verificationsRes.data)
+        if (approvalsRes.success) setApprovals(approvalsRes.data)
+        if (usersRes.success) setUsers(usersRes.data)
+      } catch (e) {
+        console.error('Admin load error:', e)
+      } finally {
+        setLoading(false)
+      }
     }
     load()
   }, [])

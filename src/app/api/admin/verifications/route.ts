@@ -1,36 +1,100 @@
-export const dynamic = 'force-dynamic'
+// src/app/api/admin/verifications/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { getSessionFromRequest } from '@/lib/auth/jwt'
+import { prisma } from '@/lib/db/prisma'
+import { getPrivateSignedUrl } from '@/lib/storage/s3'
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
+  const session = await getSessionFromRequest(req)
+  if (!session || session.role !== 'ADMIN') {
+    return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
+  }
+
+  const { searchParams } = new URL(req.url)
+  const status = searchParams.get('status') || 'PENDING'
+
   try {
-    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-    const { prisma } = await import('@/lib/db/prisma')
-    const session = await getSessionFromRequest(req)
-    if (!session) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
+    const verifications = await prisma.verificationRequest.findMany({
+      where: { status: status as 'PENDING' | 'APPROVED' | 'REJECTED' },
+      include: {
+        user: {
+          select: {
+            email: true,
+            profile: {
+              select: { displayName: true, slug: true, country: true, city: true },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'asc' },
+    })
 
-    const { idImageKey, idImageUrl, videoKey, videoUrl, profileId } = await req.json()
+    return NextResponse.json({ success: true, data: verifications })
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Failed to fetch verifications' }, { status: 500 })
+  }
+}
 
-    // For agency escorts
-    const userId = profileId
-      ? (await prisma.profile.findUnique({ where: { id: profileId }, select: { userId: true } }))?.userId || session.id
-      : session.id
+// Review a verification request
+export async function PATCH(req: NextRequest) {
+  const session = await getSessionFromRequest(req)
+  if (!session || session.role !== 'ADMIN') {
+    return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
+  }
 
-    const existing = await prisma.verificationRequest.findUnique({ where: { userId } })
+  try {
+    const { verificationId, action, adminNotes } = await req.json()
 
-    if (existing) {
-      await prisma.verificationRequest.update({
-        where: { userId },
-        data: { type: 'IDENTITY', idImageKey, idImageUrl, videoKey, videoUrl, status: 'PENDING', reviewedAt: null }
+    if (!['APPROVED', 'REJECTED'].includes(action)) {
+      return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 })
+    }
+
+    const verification = await prisma.verificationRequest.update({
+      where: { id: verificationId },
+      data: {
+        status: action,
+        adminNotes: adminNotes || null,
+        reviewedAt: new Date(),
+        reviewedBy: session.id,
+      },
+    })
+
+    // If approved, set profile as verified and active (goes live)
+    if (action === 'APPROVED') {
+      await prisma.profile.update({
+        where: { userId: verification.userId },
+        data: { isVerified: true, isActive: true },
       })
-    } else {
-      await prisma.verificationRequest.create({
-        data: { userId, type: 'IDENTITY', idImageKey, idImageUrl, videoKey, videoUrl, status: 'PENDING' }
+      // Send notification
+      await prisma.notification.create({
+        data: {
+          userId: verification.userId,
+          type: 'VERIFICATION_APPROVED',
+          title: 'Profile Approved!',
+          body: 'Your profile has been verified and is now live on the directory.',
+        }
+      }).catch(() => {})
+    }
+    if (action === 'REJECTED') {
+      await prisma.notification.create({
+        data: {
+          userId: verification.userId,
+          type: 'VERIFICATION_REJECTED',
+          title: 'Profile Review Update',
+          body: adminNotes ? `Your profile was not approved: ${adminNotes}` : 'Your profile requires changes before it can go live. Please contact support.',
+        }
+      }).catch(() => {})
+    }
+    // If rejected, ensure profile stays inactive
+    if (action === 'REJECTED') {
+      await prisma.profile.updateMany({
+        where: { userId: verification.userId },
+        data: { isActive: false },
       })
     }
 
-    return NextResponse.json({ success: true })
-  } catch (err) {
-    console.error(err)
-    return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
+    return NextResponse.json({ success: true, data: verification })
+  } catch (error) {
+    return NextResponse.json({ success: false, error: 'Failed to review verification' }, { status: 500 })
   }
 }
