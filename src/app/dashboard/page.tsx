@@ -3,12 +3,11 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
+  User, Camera, CheckCircle, Star, MapPin, Clock,
   Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
-import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ReportButton from '@/components/support/ReportButton'
 
@@ -242,7 +241,18 @@ function ModelDashboard({ user }: { user: any }) {
       const res = await fetch('/api/profiles', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          age: form.age ? parseInt(form.age) : null,
+          rate1hr: form.rate1hr ? parseInt(form.rate1hr) : null,
+          rate2hr: form.rate2hr ? parseInt(form.rate2hr) : null,
+          rate3hr: form.rate3hr ? parseInt(form.rate3hr) : null,
+          rate4hr: form.rate4hr ? parseInt(form.rate4hr) : null,
+          rateHalf: form.rateHalf ? parseInt(form.rateHalf) : null,
+          rateFull: form.rateFull ? parseInt(form.rateFull) : null,
+          rateDinner: form.rateDinner ? parseInt(form.rateDinner) : null,
+          rateOvernight: form.rateOvernight ? parseInt(form.rateOvernight) : null,
+        }),
       })
       const data = await res.json()
       if (data.success) {
@@ -388,19 +398,93 @@ function ModelDashboard({ user }: { user: any }) {
             </div>
             <div className="border-t border-stone-800 pt-5 mt-2">
               <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-4">Services & Profile Details</p>
-              <ProfileExtrasForm
-                profile={user.profile}
-                onSave={async (data) => {
-                  const res = await fetch('/api/profiles', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
-                  const d = await res.json()
-                  if (!d.success) alert(d.error)
-                }}
-              />
+
+              {/* Services */}
+              <div className="mb-4">
+                <label className="mb-2 block text-xs text-stone-500">Services Offered</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {['GFE (Girlfriend Experience)','PSE','Dinner Date','Overnight Stay','Travel Companion','Webcam / Virtual','Duo Available','Couples Welcome','Massage','Tantric','Domination','Submissive','Role Play','Fetish Friendly','BDSM','Striptease'].map(s => (
+                    <button key={s} type="button"
+                      onClick={() => setForm((p: any) => ({ ...p, services: (p.services||[]).includes(s) ? (p.services||[]).filter((x: string) => x !== s) : [...(p.services||[]), s] }))}
+                      className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${(form as any).services?.includes(s) ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Availability */}
+              <div className="mb-4">
+                <label className="mb-2 block text-xs text-stone-500">Availability Type</label>
+                <div className="flex gap-2 flex-wrap">
+                  {[['incall','Incall'],['outcall','Outcall'],['travel','Travel Available']].map(([key, label]) => (
+                    <button key={key} type="button"
+                      onClick={() => setForm((p: any) => ({ ...p, [key]: !p[key] }))}
+                      className={`rounded-lg border px-3 py-1.5 text-xs transition-colors ${(form as any)[key] ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Physical */}
+              <div className="mb-4">
+                <label className="mb-2 block text-xs text-stone-500">Physical Details</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {([['height','Height',"4'10",4'11",5'0",5'1",5'2",5'3",5'4",5'5",5'6",5'7",5'8",5'9",5'10",5'11",6'0",6'1",6'2""],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                    <div key={key}>
+                      <label className="mb-1 block text-xs text-stone-600">{label}</label>
+                      {opts ? (
+                        <select value={(form as any)[key] || ''} onChange={e => setForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                          className="w-full rounded-lg border border-stone-700 bg-stone-800 px-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none">
+                          <option value="">Select...</option>
+                          {opts.split(',').map(o => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                      ) : (
+                        <input value={(form as any)[key] || ''} onChange={e => setForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                          className="w-full rounded-lg border border-stone-700 bg-stone-800 px-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Languages */}
+              <div className="mb-4">
+                <label className="mb-2 block text-xs text-stone-500">Languages Spoken</label>
+                <div className="flex flex-wrap gap-1.5">
+                  {['English','French','Spanish','Arabic','Russian','Italian','German','Portuguese','Mandarin','Japanese','Korean','Other'].map(l => (
+                    <button key={l} type="button"
+                      onClick={() => setForm((p: any) => ({ ...p, languages: (p.languages||[]).includes(l) ? (p.languages||[]).filter((x: string) => x !== l) : [...(p.languages||[]), l] }))}
+                      className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${(form as any).languages?.includes(l) ? 'border-amber-700 bg-amber-900/30 text-amber-400' : 'border-stone-700 text-stone-500 hover:border-stone-500'}`}>
+                      {l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Rates */}
+              <div className="mb-4">
+                <label className="mb-2 block text-xs text-stone-500">Rates (USD) — Optional</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[['rate1hr','1 Hour'],['rate2hr','2 Hours'],['rate3hr','3 Hours'],['rate4hr','4 Hours'],['rateHalf','Half Day (6hrs)'],['rateFull','Full Day (12hrs)'],['rateDinner','Dinner Date'],['rateOvernight','Overnight']].map(([key, label]) => (
+                    <div key={key}>
+                      <label className="mb-1 block text-xs text-stone-600">{label}</label>
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-stone-500 text-xs">$</span>
+                        <input type="number" value={(form as any)[key] || ''} onChange={e => setForm((p: any) => ({ ...p, [key]: e.target.value }))}
+                          className="w-full rounded-lg border border-stone-700 bg-stone-800 pl-5 pr-2 py-1.5 text-xs text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="0" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-1 text-xs text-stone-600">Leave blank to show "Contact for rates"</p>
+              </div>
             </div>
 
             <button onClick={handleSave} disabled={saving}
               className="w-full rounded-lg bg-amber-700 py-2.5 text-sm font-medium text-white hover:bg-amber-600 disabled:opacity-60 transition-colors">
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? 'Saving...' : 'Save All Changes'}
             </button>
           </div>
         ) : (
