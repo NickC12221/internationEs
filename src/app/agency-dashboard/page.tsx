@@ -78,7 +78,7 @@ export default function AgencyDashboardPage() {
 
   // Add model
   const [showAddModal, setShowAddModal] = useState(false)
-  const [addForm, setAddForm] = useState<any>({ displayName: '', city: '', age: '', bio: '', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
+  const [addForm, setAddForm] = useState({ displayName: '', city: '', bio: '', age: '' })
   const [addPhotos, setAddPhotos] = useState<File[]>([])
   const [addPhotoUrls, setAddPhotoUrls] = useState<string[]>([])
   const [mainPhotoIndex, setMainPhotoIndex] = useState(0)
@@ -87,7 +87,7 @@ export default function AgencyDashboardPage() {
 
   // Edit model
   const [editingModel, setEditingModel] = useState<AgencyModel | null>(null)
-  const [editForm, setEditForm] = useState<any>({ displayName: '', city: '', age: '', bio: '', phone: '', availability: 'AVAILABLE', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
+  const [editForm, setEditForm] = useState({ displayName: '', city: '', bio: '', age: '', phone: '', availability: 'AVAILABLE' })
   const [saving, setSaving] = useState(false)
   const [modelImages, setModelImages] = useState<ProfileImage[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
@@ -623,40 +623,40 @@ export default function AgencyDashboardPage() {
       {/* Add Escort Modal */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-stone-800 bg-stone-900 p-6">
-            <div className="flex items-center justify-between mb-1">
+          <div className="w-full max-w-lg rounded-2xl border border-stone-800 bg-stone-900 overflow-hidden max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between p-5 border-b border-stone-800 flex-shrink-0">
               <h2 className="text-lg font-medium text-stone-200">Add Escort</h2>
               <button onClick={() => { setShowAddModal(false); setAddError('') }} className="text-stone-500 hover:text-stone-300"><X className="h-5 w-5" /></button>
             </div>
-            <p className="mb-4 text-xs text-stone-500">Listed under {agency?.country}. You can add photos after creating the profile.</p>
-            {addError && <div className="mb-3 rounded-lg bg-red-950 px-3 py-2 text-sm text-red-400">{addError}</div>}
+            {addError && <div className="mx-5 mt-3 rounded-lg bg-red-950 px-3 py-2 text-sm text-red-400">{addError}</div>}
+            <div className="overflow-y-auto flex-1 p-5">
             <form onSubmit={handleAddModel} className="space-y-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Display Name *</label>
-                <input value={addForm.displayName} onChange={e => setAddForm((p: any) => ({ ...p, displayName: e.target.value }))} required
+                <input value={addForm.displayName} onChange={e => setAddForm(p => ({ ...p, displayName: e.target.value }))} required
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="Professional name" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">City * <span className="text-stone-600 font-normal">(within {agency?.country})</span></label>
                 {agencyCities.length > 0 ? (
-                  <select value={addForm.city} onChange={e => setAddForm((p: any) => ({ ...p, city: e.target.value }))} required
+                  <select value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
                     <option value="">Select city...</option>
                     {agencyCities.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 ) : (
-                  <input value={addForm.city} onChange={e => setAddForm((p: any) => ({ ...p, city: e.target.value }))} required
+                  <input value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                 )}
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Age</label>
-                <input type="number" min="18" max="60" value={addForm.age} onChange={e => setAddForm((p: any) => ({ ...p, age: e.target.value }))}
+                <input type="number" min="18" max="60" value={addForm.age} onChange={e => setAddForm(p => ({ ...p, age: e.target.value }))}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="e.g. 24" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Bio</label>
-                <textarea value={addForm.bio} onChange={e => setAddForm((p: any) => ({ ...p, bio: e.target.value }))} rows={2}
+                <textarea value={addForm.bio} onChange={e => setAddForm(p => ({ ...p, bio: e.target.value }))} rows={2}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               {/* Services in add modal */}
@@ -766,6 +766,7 @@ export default function AgencyDashboardPage() {
                   className="flex-1 rounded-lg border border-stone-700 py-2.5 text-sm text-stone-400 hover:border-stone-600">Cancel</button>
               </div>
             </form>
+            </div>
           </div>
         </div>
       )}
@@ -829,36 +830,36 @@ export default function AgencyDashboardPage() {
               <form onSubmit={handleEditModel} className="space-y-3">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Display Name</label>
-                  <input value={editForm.displayName} onChange={e => setEditForm((p: any) => ({ ...p, displayName: e.target.value }))} required
+                  <input value={editForm.displayName} onChange={e => setEditForm(p => ({ ...p, displayName: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="mb-1 block text-xs font-medium text-stone-400">City</label>
                     {agencyCities.length > 0 ? (
-                      <select value={editForm.city} onChange={e => setEditForm((p: any) => ({ ...p, city: e.target.value }))}
+                      <select value={editForm.city} onChange={e => setEditForm(p => ({ ...p, city: e.target.value }))}
                         className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
                         {agencyCities.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
                     ) : (
-                      <input value={editForm.city} onChange={e => setEditForm((p: any) => ({ ...p, city: e.target.value }))}
+                      <input value={editForm.city} onChange={e => setEditForm(p => ({ ...p, city: e.target.value }))}
                         className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                     )}
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-stone-400">Age</label>
-                    <input type="number" min="18" max="60" value={editForm.age} onChange={e => setEditForm((p: any) => ({ ...p, age: e.target.value }))}
+                    <input type="number" min="18" max="60" value={editForm.age} onChange={e => setEditForm(p => ({ ...p, age: e.target.value }))}
                       className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                   </div>
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Phone</label>
-                  <input value={editForm.phone} onChange={e => setEditForm((p: any) => ({ ...p, phone: e.target.value }))}
+                  <input value={editForm.phone} onChange={e => setEditForm(p => ({ ...p, phone: e.target.value }))}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="+1 234 567 890" />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Availability</label>
-                  <select value={editForm.availability} onChange={e => setEditForm((p: any) => ({ ...p, availability: e.target.value }))}
+                  <select value={editForm.availability} onChange={e => setEditForm(p => ({ ...p, availability: e.target.value }))}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
                     <option value="AVAILABLE">Available</option>
                     <option value="BUSY">Busy</option>
@@ -868,7 +869,7 @@ export default function AgencyDashboardPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Bio</label>
-                  <textarea value={editForm.bio} onChange={e => setEditForm((p: any) => ({ ...p, bio: e.target.value }))} rows={3}
+                  <textarea value={editForm.bio} onChange={e => setEditForm(p => ({ ...p, bio: e.target.value }))} rows={3}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" />
                 </div>
                 {/* Services */}
