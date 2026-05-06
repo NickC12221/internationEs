@@ -248,57 +248,6 @@ export default function AdminDashboard() {
         ) : (
           <>
             {/* OVERVIEW */}
-            {tab === 'Overview' && analytics && (
-              <div className="space-y-6">
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                  <StatCard label="Total Users" value={analytics.users.total} icon={Users} sub={`+${analytics.users.newThisMonth} this month`} onClick={() => setTab('Users')} />
-                  <StatCard label="Total Bookings" value={analytics.bookings.total} icon={Calendar} sub={`${analytics.bookings.pending} pending`} color="text-amber-400" onClick={() => setTab('Bookings')} />
-                  <StatCard label="Reviews" value={analytics.reviews.total} icon={Star} sub={`${analytics.reviews.avgRating} avg rating`} color="text-amber-400" onClick={() => setTab('Reviews')} />
-                  <StatCard label="Messages" value={analytics.messages.total} icon={MessageSquare} onClick={() => setTab('Inbox')} />
-                </div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <StatCard label="Models" value={analytics.users.models} sub={`${analytics.premium.models} premium`} />
-                  <StatCard label="Agencies" value={analytics.users.agencies} sub={`${analytics.premium.agencies} premium`} />
-                  <StatCard label="Guests / Clients" value={analytics.users.guests} />
-                </div>
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-xl border border-stone-800 bg-stone-900 p-5">
-                    <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Booking Breakdown</h3>
-                    {[
-                      { label: 'Pending', value: analytics.bookings.pending, color: 'bg-amber-600' },
-                      { label: 'Accepted', value: analytics.bookings.accepted, color: 'bg-emerald-600' },
-                      { label: 'Other', value: analytics.bookings.total - analytics.bookings.pending - analytics.bookings.accepted, color: 'bg-stone-600' },
-                    ].map(item => (
-                      <div key={item.label} className="mb-2">
-                        <div className="flex justify-between text-xs text-stone-500 mb-1"><span>{item.label}</span><span>{item.value}</span></div>
-                        <div className="h-1.5 rounded-full bg-stone-800">
-                          <div className={`h-full rounded-full ${item.color}`} style={{ width: `${analytics.bookings.total > 0 ? (item.value / analytics.bookings.total) * 100 : 0}%` }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="rounded-xl border border-stone-800 bg-stone-900 p-5">
-                    <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Quick Actions</h3>
-                    <div className="space-y-2">
-                      {[
-                        { label: 'Pending Verifications', value: analytics.verifications.pending, tab: 'Verifications', color: 'text-amber-400' },
-                        { label: 'Pending Bookings', value: analytics.bookings.pending, tab: 'Bookings', color: 'text-amber-400' },
-                        { label: 'Unread Messages', value: totalUnread, tab: 'Inbox', color: 'text-blue-400' },
-                        { label: 'Premium Subscriptions', value: (analytics.premium.models || 0) + (analytics.premium.agencies || 0), tab: 'Payments', color: 'text-amber-400' },
-                      ].map(item => (
-                        <button key={item.label} onClick={() => setTab(item.tab)}
-                          className="flex w-full items-center justify-between rounded-lg border border-stone-800 px-3 py-2 text-sm hover:border-stone-700 transition-colors">
-                          <span className="text-stone-400">{item.label}</span>
-                          <span className={`font-medium ${item.color}`}>{item.value} <ChevronRight className="inline h-3 w-3" /></span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* VERIFICATIONS */}
             {tab === 'Overview' && stats.length > 0 && (
               <div className="mt-6 rounded-2xl border border-stone-800 bg-stone-900 p-6">
                 <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
@@ -473,7 +422,59 @@ export default function AdminDashboard() {
                           <span className={`rounded-full px-2 py-0.5 text-xs ${STATUS_COLOR[b.status] || 'text-stone-400 bg-stone-800'}`}>{b.status}</span>
                         </div>
                         <div className="flex items-center gap-3 mt-1 text-xs text-stone-500 flex-wrap">
-                          <span>{new Date(b.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                          <span>{new Date(b.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            {tab === 'Overview' && analytics && (
+              <div className="space-y-6">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <StatCard label="Total Users" value={analytics.users.total} icon={Users} sub={`+${analytics.users.newThisMonth} this month`} onClick={() => setTab('Users')} />
+                  <StatCard label="Total Bookings" value={analytics.bookings.total} icon={Calendar} sub={`${analytics.bookings.pending} pending`} color="text-amber-400" onClick={() => setTab('Bookings')} />
+                  <StatCard label="Reviews" value={analytics.reviews.total} icon={Star} sub={`${analytics.reviews.avgRating} avg rating`} color="text-amber-400" onClick={() => setTab('Reviews')} />
+                  <StatCard label="Messages" value={analytics.messages.total} icon={MessageSquare} onClick={() => setTab('Inbox')} />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <StatCard label="Models" value={analytics.users.models} sub={`${analytics.premium.models} premium`} />
+                  <StatCard label="Agencies" value={analytics.users.agencies} sub={`${analytics.premium.agencies} premium`} />
+                  <StatCard label="Guests / Clients" value={analytics.users.guests} />
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl border border-stone-800 bg-stone-900 p-5">
+                    <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Booking Breakdown</h3>
+                    {[
+                      { label: 'Pending', value: analytics.bookings.pending, color: 'bg-amber-600' },
+                      { label: 'Accepted', value: analytics.bookings.accepted, color: 'bg-emerald-600' },
+                      { label: 'Other', value: analytics.bookings.total - analytics.bookings.pending - analytics.bookings.accepted, color: 'bg-stone-600' },
+                    ].map(item => (
+                      <div key={item.label} className="mb-2">
+                        <div className="flex justify-between text-xs text-stone-500 mb-1"><span>{item.label}</span><span>{item.value}</span></div>
+                        <div className="h-1.5 rounded-full bg-stone-800">
+                          <div className={`h-full rounded-full ${item.color}`} style={{ width: `${analytics.bookings.total > 0 ? (item.value / analytics.bookings.total) * 100 : 0}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-xl border border-stone-800 bg-stone-900 p-5">
+                    <h3 className="text-sm font-medium uppercase tracking-wider text-stone-500 mb-3">Quick Actions</h3>
+                    <div className="space-y-2">
+                      {[
+                        { label: 'Pending Verifications', value: analytics.verifications.pending, tab: 'Verifications', color: 'text-amber-400' },
+                        { label: 'Pending Bookings', value: analytics.bookings.pending, tab: 'Bookings', color: 'text-amber-400' },
+                        { label: 'Unread Messages', value: totalUnread, tab: 'Inbox', color: 'text-blue-400' },
+                        { label: 'Premium Subscriptions', value: (analytics.premium.models || 0) + (analytics.premium.agencies || 0), tab: 'Payments', color: 'text-amber-400' },
+                      ].map(item => (
+                        <button key={item.label} onClick={() => setTab(item.tab)}
+                          className="flex w-full items-center justify-between rounded-lg border border-stone-800 px-3 py-2 text-sm hover:border-stone-700 transition-colors">
+                          <span className="text-stone-400">{item.label}</span>
+                          <span className={`font-medium ${item.color}`}>{item.value} <ChevronRight className="inline h-3 w-3" /></span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* VERIFICATIONS */}
+</span>
                           {b.startTime && <span>at {b.startTime}</span>}
                           <span>{b.duration}h</span>
                           <span>{b.contactEmail}</span>
