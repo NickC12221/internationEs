@@ -50,7 +50,7 @@ export default function LoginPage() {
         <div className="mb-8 text-center">
           <Link href="/">
             <span className="text-4xl font-light tracking-widest text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
-              FEMME
+              INTERNATIONAL ESCORTS
             </span>
           </Link>
           <p className="mt-2 text-sm text-stone-500">Sign in to your account</p>
