@@ -92,6 +92,8 @@ export default function AgencyDashboardPage() {
   const [modelImages, setModelImages] = useState<ProfileImage[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [uploadingVideo, setUploadingVideo] = useState(false)
+  const [modelVideoUrl, setModelVideoUrl] = useState<string | null>(null)
 
   // Agency settings
   const [agencyBookings, setAgencyBookings] = useState<any[]>([])
@@ -129,6 +131,7 @@ export default function AgencyDashboardPage() {
 
   const openEdit = async (model: AgencyModel) => {
     setEditingModel(model)
+    setModelVideoUrl((model as any).videoUrl || null)
     setEditForm({
       displayName: model.displayName,
       city: model.city,
@@ -238,6 +241,7 @@ export default function AgencyDashboardPage() {
       if (data.success) {
         const profileId = data.data.id
 
+        // Save extras
         await fetch('/api/agency/models/' + profileId, {
           method: 'PATCH', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -749,7 +753,7 @@ export default function AgencyDashboardPage() {
 
                 <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                  {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       {opts ? (
@@ -890,6 +894,66 @@ export default function AgencyDashboardPage() {
                 )}
               </div>
 
+              {/* Video section - premium only */}
+              <div className="mb-5">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-stone-300">Profile Video</h3>
+                  {editingModel?.listingTier !== 'PREMIUM' && (
+                    <span className="text-xs text-amber-600">Premium escorts only</span>
+                  )}
+                </div>
+                {editingModel?.listingTier === 'PREMIUM' ? (
+                  <div>
+                    {modelVideoUrl ? (
+                      <div className="space-y-2">
+                        <video src={modelVideoUrl} controls className="w-full rounded-lg aspect-video bg-stone-800" />
+                        <button type="button" onClick={async () => {
+                          await fetch(`/api/agency/models/${editingModel.id}`, {
+                            method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ videoUrl: null, videoKey: null })
+                          })
+                          setModelVideoUrl(null)
+                        }} className="w-full rounded-lg bg-stone-800 py-1.5 text-xs text-red-400 hover:bg-red-950/30 transition-colors">
+                          Remove Video
+                        </button>
+                      </div>
+                    ) : (
+                      <label className={`flex flex-col items-center justify-center rounded-lg border border-dashed border-stone-700 py-6 cursor-pointer hover:border-amber-700 transition-colors ${uploadingVideo ? 'opacity-60' : ''}`}>
+                        {uploadingVideo
+                          ? <><Loader2 className="h-5 w-5 text-stone-500 animate-spin mb-1" /><p className="text-xs text-stone-500">Uploading...</p></>
+                          : <><Camera className="h-5 w-5 text-stone-600 mb-1" /><p className="text-xs text-stone-500">Upload video (MP4/MOV/WebM, max 100MB)</p></>
+                        }
+                        <input type="file" accept="video/mp4,video/quicktime,video/webm" className="hidden" disabled={uploadingVideo}
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0]
+                            if (!file || !editingModel) return
+                            if (file.size > 100 * 1024 * 1024) { alert('Video must be under 100MB'); return }
+                            setUploadingVideo(true)
+                            try {
+                              const res = await fetch('/api/upload', {
+                                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ mimeType: file.type, folder: 'gallery', isPrivate: false })
+                              })
+                              const { data } = await res.json()
+                              await fetch(data.uploadUrl, { method: 'PUT', body: file, headers: { 'Content-Type': file.type } })
+                              await fetch(`/api/agency/models/${editingModel.id}`, {
+                                method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ videoUrl: data.publicUrl, videoKey: data.key })
+                              })
+                              setModelVideoUrl(data.publicUrl)
+                            } catch { alert('Upload failed') }
+                            setUploadingVideo(false)
+                          }} />
+                      </label>
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-dashed border-stone-700 py-6 text-center">
+                    <p className="text-xs text-stone-600">Upgrade this escort to Premium to enable video upload</p>
+                  </div>
+                )}
+              </div>
+
               {/* Edit form */}
               <form onSubmit={handleEditModel} className="space-y-3">
                 <div>
@@ -968,7 +1032,7 @@ export default function AgencyDashboardPage() {
                 <div>
                   <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical Details</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                    {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                       <div key={key}>
                         <label className="mb-1 block text-xs text-stone-600">{label}</label>
                         {opts ? (

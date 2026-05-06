@@ -66,6 +66,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     if (body.rateFull !== undefined) updates.rateFull = body.rateFull || null
     if (body.rateDinner !== undefined) updates.rateDinner = body.rateDinner || null
     if (body.rateOvernight !== undefined) updates.rateOvernight = body.rateOvernight || null
+    if (body.videoUrl !== undefined) updates.videoUrl = body.videoUrl || null
+    if (body.videoKey !== undefined) updates.videoKey = body.videoKey || null
 
     updates.updatedAt = new Date()
 
