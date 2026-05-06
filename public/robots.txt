@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+Disallow: /dashboard
+Disallow: /agency-dashboard
+Disallow: /admin
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /info
+Disallow: /api/
+
+Sitemap: https://www.internationalescorts.com/sitemap.xml
