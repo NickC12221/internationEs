@@ -78,7 +78,7 @@ export default function AgencyDashboardPage() {
 
   // Add model
   const [showAddModal, setShowAddModal] = useState(false)
-  const [addForm, setAddForm] = useState<any>({ displayName: '', city: '', age: '', bio: '', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
+  const [addForm, setAddForm] = useState({ displayName: '', city: '', bio: '', age: '' })
   const [addPhotos, setAddPhotos] = useState<File[]>([])
   const [addPhotoUrls, setAddPhotoUrls] = useState<string[]>([])
   const [mainPhotoIndex, setMainPhotoIndex] = useState(0)
@@ -87,7 +87,7 @@ export default function AgencyDashboardPage() {
 
   // Edit model
   const [editingModel, setEditingModel] = useState<AgencyModel | null>(null)
-  const [editForm, setEditForm] = useState({ displayName: '', city: '', bio: '', age: '', phone: '', availability: 'AVAILABLE' })
+  const [editForm, setEditForm] = useState<any>({ displayName: '', city: '', bio: '', age: '', phone: '', availability: 'AVAILABLE', services: [], incall: false, outcall: false, travel: false, height: '', build: '', hairColor: '', eyeColor: '', ethnicity: '', nationality: '', languages: [], smoker: null, rate1hr: '', rate2hr: '', rate3hr: '', rate4hr: '', rateHalf: '', rateFull: '', rateDinner: '', rateOvernight: '' })
   const [saving, setSaving] = useState(false)
   const [modelImages, setModelImages] = useState<ProfileImage[]>([])
   const [loadingImages, setLoadingImages] = useState(false)
@@ -129,7 +129,34 @@ export default function AgencyDashboardPage() {
 
   const openEdit = async (model: AgencyModel) => {
     setEditingModel(model)
-    setEditForm({ displayName: model.displayName, city: model.city, bio: model.bio || '', age: model.age?.toString() || '', phone: model.phone || '', availability: model.availability })
+    setEditForm({
+      displayName: model.displayName,
+      city: model.city,
+      bio: model.bio || '',
+      age: model.age?.toString() || '',
+      phone: model.phone || '',
+      availability: model.availability,
+      services: (model as any).services || [],
+      incall: (model as any).incall || false,
+      outcall: (model as any).outcall || false,
+      travel: (model as any).travel || false,
+      height: (model as any).height || '',
+      build: (model as any).build || '',
+      hairColor: (model as any).hairColor || '',
+      eyeColor: (model as any).eyeColor || '',
+      ethnicity: (model as any).ethnicity || '',
+      nationality: (model as any).nationality || '',
+      languages: (model as any).languages || [],
+      smoker: (model as any).smoker ?? null,
+      rate1hr: (model as any).rate1hr?.toString() || '',
+      rate2hr: (model as any).rate2hr?.toString() || '',
+      rate3hr: (model as any).rate3hr?.toString() || '',
+      rate4hr: (model as any).rate4hr?.toString() || '',
+      rateHalf: (model as any).rateHalf?.toString() || '',
+      rateFull: (model as any).rateFull?.toString() || '',
+      rateDinner: (model as any).rateDinner?.toString() || '',
+      rateOvernight: (model as any).rateOvernight?.toString() || '',
+    })
     setLoadingImages(true)
     setModelImages([])
     const res = await fetch(`/api/agency/models/${model.id}/images`)
@@ -633,30 +660,30 @@ export default function AgencyDashboardPage() {
             <form onSubmit={handleAddModel} className="space-y-3">
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Display Name *</label>
-                <input value={addForm.displayName} onChange={e => setAddForm((p: any) => ({ ...p, displayName: e.target.value }))} required
+                <input value={addForm.displayName} onChange={e => setAddForm(p => ({ ...p, displayName: e.target.value }))} required
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="Professional name" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">City * <span className="text-stone-600 font-normal">(within {agency?.country})</span></label>
                 {agencyCities.length > 0 ? (
-                  <select value={addForm.city} onChange={e => setAddForm((p: any) => ({ ...p, city: e.target.value }))} required
+                  <select value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
                     <option value="">Select city...</option>
                     {agencyCities.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 ) : (
-                  <input value={addForm.city} onChange={e => setAddForm((p: any) => ({ ...p, city: e.target.value }))} required
+                  <input value={addForm.city} onChange={e => setAddForm(p => ({ ...p, city: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                 )}
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Age</label>
-                <input type="number" min="18" max="60" value={addForm.age} onChange={e => setAddForm((p: any) => ({ ...p, age: e.target.value }))}
+                <input type="number" min="18" max="60" value={addForm.age} onChange={e => setAddForm(p => ({ ...p, age: e.target.value }))}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="e.g. 24" />
               </div>
               <div>
                 <label className="mb-1 block text-xs font-medium text-stone-400">Bio</label>
-                <textarea value={addForm.bio} onChange={e => setAddForm((p: any) => ({ ...p, bio: e.target.value }))} rows={2}
+                <textarea value={addForm.bio} onChange={e => setAddForm(p => ({ ...p, bio: e.target.value }))} rows={2}
                   className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" placeholder="Short bio..." />
               </div>
               {/* Services in add modal */}
@@ -685,7 +712,7 @@ export default function AgencyDashboardPage() {
 
                 <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  {([['height','Height',"4'10",4'11",5'0",5'1",5'2",5'3",5'4",5'5",5'6",5'7",5'8",5'9",5'10",5'11",6'0",6'1",6'2""],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                  {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       {opts ? (
@@ -704,7 +731,7 @@ export default function AgencyDashboardPage() {
 
                 <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Rates (USD)</label>
                 <div className="grid grid-cols-2 gap-2 mb-1">
-                  {[['rate1hr','1 Hour'],['rate2hr','2 Hours'],['rate3hr','3 Hours'],['rate4hr','4 Hours'],['rateHalf','Half Day (6hrs)'],['rateFull','Full Day (12hrs)'],['rateDinner','Dinner Date'],['rateOvernight','Overnight']].map(([key, label]) => (
+                  {[['rate1hr','1hr'],['rate2hr','2hrs'],['rateDinner','Dinner'],['rateOvernight','Overnight']].map(([key, label]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       <div className="relative">
@@ -830,36 +857,36 @@ export default function AgencyDashboardPage() {
               <form onSubmit={handleEditModel} className="space-y-3">
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Display Name</label>
-                  <input value={editForm.displayName} onChange={e => setEditForm((p: any) => ({ ...p, displayName: e.target.value }))} required
+                  <input value={editForm.displayName} onChange={e => setEditForm(p => ({ ...p, displayName: e.target.value }))} required
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="mb-1 block text-xs font-medium text-stone-400">City</label>
                     {agencyCities.length > 0 ? (
-                      <select value={editForm.city} onChange={e => setEditForm((p: any) => ({ ...p, city: e.target.value }))}
+                      <select value={editForm.city} onChange={e => setEditForm(p => ({ ...p, city: e.target.value }))}
                         className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
                         {agencyCities.map(c => <option key={c} value={c}>{c}</option>)}
                       </select>
                     ) : (
-                      <input value={editForm.city} onChange={e => setEditForm((p: any) => ({ ...p, city: e.target.value }))}
+                      <input value={editForm.city} onChange={e => setEditForm(p => ({ ...p, city: e.target.value }))}
                         className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                     )}
                   </div>
                   <div>
                     <label className="mb-1 block text-xs font-medium text-stone-400">Age</label>
-                    <input type="number" min="18" max="60" value={editForm.age} onChange={e => setEditForm((p: any) => ({ ...p, age: e.target.value }))}
+                    <input type="number" min="18" max="60" value={editForm.age} onChange={e => setEditForm(p => ({ ...p, age: e.target.value }))}
                       className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" />
                   </div>
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Phone</label>
-                  <input value={editForm.phone} onChange={e => setEditForm((p: any) => ({ ...p, phone: e.target.value }))}
+                  <input value={editForm.phone} onChange={e => setEditForm(p => ({ ...p, phone: e.target.value }))}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="+1 234 567 890" />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Availability</label>
-                  <select value={editForm.availability} onChange={e => setEditForm((p: any) => ({ ...p, availability: e.target.value }))}
+                  <select value={editForm.availability} onChange={e => setEditForm(p => ({ ...p, availability: e.target.value }))}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
                     <option value="AVAILABLE">Available</option>
                     <option value="BUSY">Busy</option>
@@ -869,7 +896,7 @@ export default function AgencyDashboardPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Bio</label>
-                  <textarea value={editForm.bio} onChange={e => setEditForm((p: any) => ({ ...p, bio: e.target.value }))} rows={3}
+                  <textarea value={editForm.bio} onChange={e => setEditForm(p => ({ ...p, bio: e.target.value }))} rows={3}
                     className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none resize-none" />
                 </div>
                 {/* Services */}
