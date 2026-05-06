@@ -1,16 +1,13 @@
-export const dynamic = 'force-dynamic' // force-rebuild
-
 // src/app/api/auth/signup/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
+import { prisma } from '@/lib/db/prisma'
 import { signToken, setSessionCookie } from '@/lib/auth/jwt'
 import { signUpSchema } from '@/lib/utils/validation'
 import { generateProfileSlug, slugify } from '@/lib/utils'
 import { rateLimit, getClientIp, createRateLimitResponse } from '@/lib/utils/rateLimit'
 
 export async function POST(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
   // Rate limit: 10 signups per 15 minutes per IP
   const ip = getClientIp(req)
   if (!rateLimit(`signup:${ip}`, 'auth')) {
@@ -62,6 +59,7 @@ export async function POST(req: NextRequest) {
             countryCode: countryCode.toUpperCase(),
             city,
             citySlug,
+            isActive: false,
           },
         },
       },

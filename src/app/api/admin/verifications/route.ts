@@ -1,12 +1,10 @@
-export const dynamic = 'force-dynamic' // force-rebuild
-
 // src/app/api/admin/verifications/route.ts
 import { NextRequest, NextResponse } from 'next/server'
+import { getSessionFromRequest } from '@/lib/auth/jwt'
+import { prisma } from '@/lib/db/prisma'
 import { getPrivateSignedUrl } from '@/lib/storage/s3'
 
 export async function GET(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
   const session = await getSessionFromRequest(req)
   if (!session || session.role !== 'ADMIN') {
     return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
@@ -39,8 +37,6 @@ export async function GET(req: NextRequest) {
 
 // Review a verification request
 export async function PATCH(req: NextRequest) {
-  const { getSessionFromRequest } = await import('@/lib/auth/jwt')
-  const { prisma } = await import('@/lib/db/prisma')
   const session = await getSessionFromRequest(req)
   if (!session || session.role !== 'ADMIN') {
     return NextResponse.json({ success: false, error: 'Forbidden' }, { status: 403 })
@@ -63,11 +59,18 @@ export async function PATCH(req: NextRequest) {
       },
     })
 
-    // If approved, update profile verified status
+    // If approved, set profile as verified and active (goes live)
     if (action === 'APPROVED') {
       await prisma.profile.update({
         where: { userId: verification.userId },
-        data: { isVerified: true },
+        data: { isVerified: true, isActive: true },
+      })
+    }
+    // If rejected, ensure profile stays inactive
+    if (action === 'REJECTED') {
+      await prisma.profile.updateMany({
+        where: { userId: verification.userId },
+        data: { isActive: false },
       })
     }
 
