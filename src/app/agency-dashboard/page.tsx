@@ -731,7 +731,7 @@ export default function AgencyDashboardPage() {
 
                 <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Rates (USD)</label>
                 <div className="grid grid-cols-2 gap-2 mb-1">
-                  {[['rate1hr','1hr'],['rate2hr','2hrs'],['rateDinner','Dinner'],['rateOvernight','Overnight']].map(([key, label]) => (
+                  {[['rate1hr','1 Hour'],['rate2hr','2 Hours'],['rate3hr','3 Hours'],['rate4hr','4 Hours'],['rateHalf','Half Day (6hrs)'],['rateFull','Full Day (12hrs)'],['rateDinner','Dinner Date'],['rateOvernight','Overnight']].map(([key, label]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       <div className="relative">
