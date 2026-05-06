@@ -271,7 +271,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="rounded-xl bg-stone-800 p-3 text-center">
                     <p className="text-xs text-stone-500 mb-1">Revenue</p>
-                    <p className="text-xl font-light text-amber-400">${stats.reduce((s: number, d: any) => s + d.revenue, 0).toLocaleString()}</p>
+                    <p className="text-xl font-light text-amber-400">${'{'}stats.reduce((s: number, d: any) => s + d.revenue, 0).toLocaleString(){'}'}</p>
                   </div>
                 </div>
                 <AdminChart stats={stats} />
