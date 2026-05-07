@@ -53,6 +53,17 @@ function GuestDashboard({ user }: { user: any }) {
           </div>
         </Link>
 
+        <Link href="/dashboard/favorites"
+          className="flex items-start gap-4 rounded-2xl border border-stone-800 bg-stone-900 p-5 hover:border-stone-700 transition-colors">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-red-900/20">
+            <Heart className="h-6 w-6 text-red-400" />
+          </div>
+          <div>
+            <h3 className="font-medium text-stone-200">Saved Escorts</h3>
+            <p className="text-sm text-stone-500 mt-0.5">Browse your liked profiles</p>
+          </div>
+        </Link>
+
         <Link href="/"
           className="flex items-start gap-4 rounded-2xl border border-stone-800 bg-stone-900 p-5 hover:border-stone-700 transition-colors">
           <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-stone-800">
