@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
             citySlug,
             isActive: false,
             approvalStatus: 'PENDING',
-            isActive: false,
           },
         },
       },
