@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
-  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2,
+  User, Camera, CheckCircle, Star, MapPin, Clock, Loader2, Heart,
   Twitter, Globe, Phone, Edit3, Calendar, MessageSquare,
   Settings, Building2, Lock
 } from 'lucide-react'
@@ -525,6 +525,14 @@ function ModelDashboard({ user }: { user: any }) {
           <div>
             <p className="text-sm font-medium text-stone-200">Photo Gallery</p>
             <p className="text-xs text-stone-500">{profile?.images?.length || 0} / 15 photos</p>
+          </div>
+        </Link>
+        <Link href="/dashboard/favorites"
+          className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
+          <Heart className="h-5 w-5 text-stone-400" />
+          <div>
+            <p className="text-sm font-medium text-stone-200">Saved Escorts</p>
+            <p className="text-xs text-stone-500">Your liked profiles</p>
           </div>
         </Link>
         <Link href="/dashboard/bookings"
