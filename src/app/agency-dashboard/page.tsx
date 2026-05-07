@@ -774,7 +774,7 @@ export default function AgencyDashboardPage() {
 
                 <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical</label>
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                  {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       {opts ? (
@@ -1015,8 +1015,14 @@ export default function AgencyDashboardPage() {
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Phone</label>
-                  <input value={editForm.phone} onChange={e => setEditForm((p: any) => ({ ...p, phone: e.target.value }))}
-                    className="w-full rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="+1 234 567 890" />
+                  <div className="flex gap-2">
+                    <select value={(editForm as any).phoneCode || '+44'} onChange={e => setEditForm((p: any) => ({...p, phoneCode: e.target.value}))}
+                      className="w-24 rounded-lg border border-stone-700 bg-stone-800 px-2 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none">
+                      {['+1','+7','+27','+33','+34','+39','+40','+41','+43','+44','+45','+46','+47','+48','+49','+51','+52','+54','+55','+57','+60','+61','+62','+63','+64','+65','+66','+81','+82','+84','+86','+90','+91','+92','+98','+212','+234','+254','+351','+352','+353','+354','+371','+372','+373','+374','+380','+381','+385','+386','+420','+421','+852','+880','+886','+960','+961','+962','+963','+964','+965','+966','+967','+968','+971','+972','+973','+974','+977','+994','+995','+998'].map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <input value={editForm.phone} onChange={e => setEditForm((p: any) => ({...p, phone: e.target.value}))}
+                      className="flex-1 rounded-lg border border-stone-700 bg-stone-800 px-3 py-2.5 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="7911123456" />
+                  </div>
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-medium text-stone-400">Availability</label>
@@ -1065,7 +1071,7 @@ export default function AgencyDashboardPage() {
                 <div>
                   <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-stone-500">Physical Details</label>
                   <div className="grid grid-cols-2 gap-2">
-                    {([['height','Height',''],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                    {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                       <div key={key}>
                         <label className="mb-1 block text-xs text-stone-600">{label}</label>
                         {opts ? (
