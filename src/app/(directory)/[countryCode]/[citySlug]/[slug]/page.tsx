@@ -104,6 +104,14 @@ export default async function ModelProfilePage({ params }: Props) {
               </div>
             </div>
 
+            {/* Bio */}
+            {profile.bio && (
+              <div className="mt-6 rounded-xl border border-stone-800 bg-stone-900/50 p-5">
+                <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-3">About</p>
+                <p className="text-sm leading-relaxed text-stone-300">{profile.bio}</p>
+              </div>
+            )}
+
             <ProfileReviews profileId={profile.id} />
           </div>
 
@@ -155,13 +163,34 @@ export default async function ModelProfilePage({ params }: Props) {
                 profileUserId={profile.userId}
               />
 
-              {/* Bio */}
-              {profile.bio && (
-                <div className="mb-5 mt-5">
-                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500 mb-2">About</p>
-                  <p className="text-sm leading-relaxed text-stone-300">{profile.bio}</p>
+
+              {/* Contact */}
+              {(profile.phone || profile.twitter || profile.website) && (
+                <div className="mt-4 space-y-3 rounded-xl border border-stone-800 bg-stone-900 p-4">
+                  <p className="text-xs font-medium uppercase tracking-wider text-stone-500">Contact</p>
+                  {profile.phone && (
+                    <a href={`tel:${profile.phone}`} className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
+                      <Phone className="h-4 w-4 flex-shrink-0" />
+                      <span>{profile.phone}</span>
+                    </a>
+                  )}
+                  {profile.twitter && (
+                    <a href={`https://twitter.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
+                      <Twitter className="h-4 w-4 flex-shrink-0" />
+                      <span>{profile.twitter}</span>
+                    </a>
+                  )}
+                  {profile.website && (
+                    <a href={profile.website} target="_blank" rel="noopener noreferrer"
+                      className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
+                      <Globe className="h-4 w-4 flex-shrink-0" />
+                      <span className="truncate">{profile.website}</span>
+                    </a>
+                  )}
                 </div>
               )}
+
               {/* Services */}
               {(profile as any).services?.length > 0 && (
                 <div className="mt-4">
@@ -246,33 +275,7 @@ export default async function ModelProfilePage({ params }: Props) {
                 </div>
               )}
 
-              {/* Contact */}
-              <div className="space-y-3 rounded-xl border border-stone-800 bg-stone-900 p-4">
-                <p className="text-xs font-medium uppercase tracking-wider text-stone-500">Contact</p>
-                {profile.phone && (
-                  <a href={`tel:${profile.phone}`} className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
-                    <Phone className="h-4 w-4 flex-shrink-0" />
-                    <span>{profile.phone}</span>
-                  </a>
-                )}
-                {profile.twitter && (
-                  <a href={`https://twitter.com/${profile.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
-                    <Twitter className="h-4 w-4 flex-shrink-0" />
-                    <span>{profile.twitter}</span>
-                  </a>
-                )}
-                {profile.website && (
-                  <a href={profile.website} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
-                    <Globe className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">{profile.website}</span>
-                  </a>
-                )}
-                {!profile.phone && !profile.twitter && !profile.website && (
-                  <p className="text-sm text-stone-600">No contact info provided</p>
-                )}
-              </div>
+
 
               <p className="mt-4 text-xs text-stone-600">
                 Member since {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
