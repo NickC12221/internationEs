@@ -23,7 +23,7 @@ const AVAILABILITY_OPTIONS = [
 
 function GuestDashboard({ user }: { user: any }) {
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-2xl px-4 py-6 sm:px-6">
       <div className="mb-8">
         <h1 className="text-3xl font-light text-stone-100" style={{ fontFamily: 'Cormorant Garamond, Georgia, serif' }}>
           Welcome{user.name ? `, ${user.name}` : ''}
@@ -99,7 +99,7 @@ function GuestDashboard({ user }: { user: any }) {
         </Link>
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+      <div className="mt-6 flex items-center justify-center gap-3 pb-2">
         <ContactSupportButton />
         <ReportButton />
         <DeleteAccountButton />
@@ -583,7 +583,7 @@ function ModelDashboard({ user }: { user: any }) {
         <VideoUploadTile isPremium={isPremium} videoUrl={user.profile?.videoUrl} onUpdate={() => window.location.reload()} />
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
+      <div className="mt-6 flex items-center justify-center gap-3 pb-2">
         <ContactSupportButton />
         <ReportButton />
         <DeleteAccountButton />
