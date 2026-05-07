@@ -397,13 +397,13 @@ export default function AgencyDashboardPage() {
             </div>
             <div className="text-right">
               <div className={`text-xs font-medium ${agency?.subscriptionStatus === 'ACTIVE' ? 'text-emerald-400' : 'text-red-400'}`}>
-                {agency?.subscriptionStatus === 'ACTIVE' ? '● Active' : '● Inactive'}
+                {agency?.isPremium ? '● Premium Active' : '● Standard Account'}
               </div>
               {agency?.subscriptionExpiresAt && <div className="text-xs text-stone-600">Expires {new Date(agency.subscriptionExpiresAt).toLocaleDateString()}</div>}
-              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/20</span></div>
+              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/{agency?.isPremium ? 20 : 5}</span></div>
               <div className="text-xs text-stone-500">Models</div>
               <div className="h-1 w-20 overflow-hidden rounded-full bg-stone-700 mt-1 ml-auto">
-                <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / 20) * 100}%` }} />
+                <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / (agency?.isPremium ? 20 : 5)) * 100}%` }} />
               </div>
             </div>
           </div>
@@ -471,7 +471,7 @@ export default function AgencyDashboardPage() {
         {tab === 'models' && (
           <>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-stone-500">{slotsUsed} of 20 model slots used</p>
+              <p className="text-sm text-stone-500">{slotsUsed} of {agency?.isPremium ? 20 : 5} escort slots used</p>
               <button onClick={() => { const limit = agency?.isPremium ? 20 : 5; slotsUsed < limit ? setShowAddModal(true) : alert(agency?.isPremium ? 'Model limit reached (20/20)' : 'Free plan limited to 5 models. Upgrade to Premium for up to 20 models.') }}
                 className="flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
                 <Plus className="h-4 w-4" /> Add Escort
@@ -532,6 +532,16 @@ export default function AgencyDashboardPage() {
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
+                        {(model as any).isVerified ? (
+                          <div className="mt-1.5 flex items-center justify-center gap-1 text-xs text-blue-400">
+                            <CheckCircle className="h-3 w-3" /> Verified
+                          </div>
+                        ) : (
+                          <button onClick={() => openEdit(model)}
+                            className="mt-1.5 w-full rounded-lg bg-blue-950/30 border border-blue-900/50 py-1 text-xs text-blue-400 hover:bg-blue-950/60 transition-colors">
+                            🔒 Submit Verification
+                          </button>
+                        )}
                       </div>
                     </div>
                   )
