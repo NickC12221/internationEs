@@ -15,7 +15,6 @@ export async function GET(req: NextRequest) {
     const where: any = {
       isActive: true,
       approvalStatus: 'APPROVED',
-      subscriptionStatus: 'ACTIVE',
     }
     if (countryCode) where.countryCode = countryCode.toUpperCase()
     if (citySlug) where.citySlug = citySlug
