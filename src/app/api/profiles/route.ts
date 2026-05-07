@@ -25,15 +25,15 @@ export async function GET(req: NextRequest) {
     if (countryCode) where.countryCode = countryCode
     if (citySlug) where.citySlug = citySlug
     if (availability) where.availability = availability
-    if (ethnicity) where.ethnicity = ethnicity
-    if (nationality) where.nationality = nationality
-    if (build) where.build = build
+    if (ethnicity) where.ethnicity = { equals: ethnicity, mode: 'insensitive' }
+    if (nationality) where.nationality = { contains: nationality, mode: 'insensitive' }
+    if (build) where.build = { equals: build, mode: 'insensitive' }
     if (incall === 'true') where.incall = true
     if (outcall === 'true') where.outcall = true
     if (travel === 'true') where.travel = true
-    if (height) where.height = height
-    if (hairColor) where.hairColor = hairColor
-    if (eyeColor) where.eyeColor = eyeColor
+    if (height) where.height = { equals: height, mode: 'insensitive' }
+    if (hairColor) where.hairColor = { equals: hairColor, mode: 'insensitive' }
+    if (eyeColor) where.eyeColor = { equals: eyeColor, mode: 'insensitive' }
     if (search) {
       where.OR = [
         { displayName: { contains: search, mode: 'insensitive' } },
