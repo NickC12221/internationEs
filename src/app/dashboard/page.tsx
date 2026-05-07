@@ -101,7 +101,6 @@ function GuestDashboard({ user }: { user: any }) {
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
-      <DeleteAccountButton />
         <ReportButton />
         <DeleteAccountButton />
       </div>
@@ -594,7 +593,6 @@ function ModelDashboard({ user }: { user: any }) {
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
-      <DeleteAccountButton />
         <ReportButton />
         <DeleteAccountButton />
       </div>
