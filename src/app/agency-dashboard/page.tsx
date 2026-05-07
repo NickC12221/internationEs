@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { Building2, Plus, Clock, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Twitter, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
+import DeleteAccountButton from '@/components/support/DeleteAccountButton'
 import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
 import VerificationUpload from '@/components/profile/VerificationUpload'
 import AgencyEscortVerifyModal from '@/components/profile/AgencyEscortVerifyModal'
@@ -707,6 +708,7 @@ export default function AgencyDashboardPage() {
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
         <ReportButton />
+        <DeleteAccountButton />
       </div>
 
       {/* Add Escort Modal */}

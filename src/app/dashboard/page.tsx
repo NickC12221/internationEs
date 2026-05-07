@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
+import DeleteAccountButton from '@/components/support/DeleteAccountButton'
 import ReportButton from '@/components/support/ReportButton'
 
 const AVAILABILITY_OPTIONS = [
@@ -50,17 +51,6 @@ function GuestDashboard({ user }: { user: any }) {
           <div>
             <h3 className="font-medium text-stone-200">Messages</h3>
             <p className="text-sm text-stone-500 mt-0.5">Chat with models and agencies</p>
-          </div>
-        </Link>
-
-        <Link href="/dashboard/favorites"
-          className="flex items-start gap-4 rounded-2xl border border-stone-800 bg-stone-900 p-5 hover:border-stone-700 transition-colors">
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-red-900/20">
-            <Heart className="h-6 w-6 text-red-400" />
-          </div>
-          <div>
-            <h3 className="font-medium text-stone-200">Saved Escorts</h3>
-            <p className="text-sm text-stone-500 mt-0.5">Browse your liked profiles</p>
           </div>
         </Link>
 
@@ -111,7 +101,9 @@ function GuestDashboard({ user }: { user: any }) {
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
+      <DeleteAccountButton />
         <ReportButton />
+        <DeleteAccountButton />
       </div>
     </div>
   )
@@ -462,7 +454,7 @@ function ModelDashboard({ user }: { user: any }) {
               <div className="mb-4">
                 <label className="mb-2 block text-xs text-stone-500">Physical Details</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {([['height','Height','4ft10,4ft11,5ft0,5ft1,5ft2,5ft3,5ft4,5ft5,5ft6,5ft7,5ft8,5ft9,5ft10,5ft11,6ft0,6ft1,6ft2'],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
+                  {([['height','Height',"4'10",4'11",5'0",5'1",5'2",5'3",5'4",5'5",5'6",5'7",5'8",5'9",5'10",5'11",6'0",6'1",6'2""],['build','Build','Slim,Athletic,Average,Curvy,BBW,Petite,Tall'],['hairColor','Hair','Blonde,Brunette,Black,Red,Auburn,Grey,Other'],['eyeColor','Eyes','Blue,Green,Brown,Hazel,Grey,Other'],['ethnicity','Ethnicity','Caucasian,Latin,Asian,African,Middle Eastern,Mixed,Other'],['nationality','Nationality','']] as [string,string,string][]).map(([key, label, opts]) => (
                     <div key={key}>
                       <label className="mb-1 block text-xs text-stone-600">{label}</label>
                       {opts ? (
@@ -530,26 +522,22 @@ function ModelDashboard({ user }: { user: any }) {
 
       {/* Quick links */}
       <div className="grid gap-4 sm:grid-cols-2">
-        {user?.role === 'MODEL' && (
-          <Link href="/dashboard/images"
-            className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
-            <Camera className="h-5 w-5 text-stone-400" />
-            <div>
-              <p className="text-sm font-medium text-stone-200">Photo Gallery</p>
-              <p className="text-xs text-stone-500">{profile?.images?.length || 0} / 15 photos</p>
-            </div>
-          </Link>
-        )}
-        {user?.role === 'GUEST' && (
-          <Link href="/dashboard/favorites"
-            className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
-            <Heart className="h-5 w-5 text-stone-400" />
-            <div>
-              <p className="text-sm font-medium text-stone-200">Saved Escorts</p>
-              <p className="text-xs text-stone-500">Your liked profiles</p>
-            </div>
-          </Link>
-        )}
+        <Link href="/dashboard/images"
+          className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
+          <Camera className="h-5 w-5 text-stone-400" />
+          <div>
+            <p className="text-sm font-medium text-stone-200">Photo Gallery</p>
+            <p className="text-xs text-stone-500">{profile?.images?.length || 0} / 15 photos</p>
+          </div>
+        </Link>
+        <Link href="/dashboard/favorites"
+          className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
+          <Heart className="h-5 w-5 text-stone-400" />
+          <div>
+            <p className="text-sm font-medium text-stone-200">Saved Escorts</p>
+            <p className="text-xs text-stone-500">Your liked profiles</p>
+          </div>
+        </Link>
         <Link href="/dashboard/bookings"
           className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
           <Calendar className="h-5 w-5 text-stone-400" />
@@ -606,7 +594,9 @@ function ModelDashboard({ user }: { user: any }) {
 
       <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
+      <DeleteAccountButton />
         <ReportButton />
+        <DeleteAccountButton />
       </div>
     </div>
   )
