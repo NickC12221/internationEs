@@ -22,9 +22,6 @@ export async function POST(req: NextRequest) {
     })
 
     if (!agency) return NextResponse.json({ success: false, error: 'Agency not found' }, { status: 404 })
-    if (agency.subscriptionStatus !== 'ACTIVE') {
-      return NextResponse.json({ success: false, error: 'Agency subscription is not active' }, { status: 403 })
-    }
     const limit = agency.isPremium ? MODEL_LIMIT_PREMIUM : MODEL_LIMIT_FREE
     if (agency._count.models >= limit) {
       const msg = agency.isPremium
