@@ -9,6 +9,7 @@ import Header from '@/components/layout/Header'
 import BookContactButtons from '@/components/booking/BookContactButtons'
 import ProfileReviews from '@/components/model/ProfileReviews'
 import ImageGallery from '@/components/profile/ImageGallery'
+import FavoriteButton from '@/components/profile/FavoriteButton'
 import ProfileRating from '@/components/model/ProfileRating'
 
 interface Props {
@@ -182,7 +183,7 @@ export default async function ModelProfilePage({ params }: Props) {
                     </a>
                   )}
                   {profile.website && (
-                    <a href={profile.website} target="_blank" rel="noopener noreferrer"
+                    <a href={profile.website?.startsWith('http') ? profile.website : `https://${profile.website}`} target="_blank" rel="noopener noreferrer"
                       className="flex items-center gap-3 text-sm text-stone-400 hover:text-amber-400 transition-colors">
                       <Globe className="h-4 w-4 flex-shrink-0" />
                       <span className="truncate">{profile.website}</span>
