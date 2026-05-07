@@ -60,6 +60,17 @@ export async function POST(req: NextRequest) {
       })
     }
 
+    // Notify admin
+    try {
+      const { sendEmail, adminEmailTemplates } = await import('@/lib/email/resend')
+      const profile = await prisma.profile.findUnique({ where: { userId }, select: { displayName: true } })
+      const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } })
+      if (profile && user) {
+        const tmpl = adminEmailTemplates.newVerification(profile.displayName, user.email)
+        await sendEmail({ to: 'support@internationalescorts.com', ...tmpl })
+      }
+    } catch {}
+
     return NextResponse.json({ success: true })
   } catch (err) {
     console.error(err)

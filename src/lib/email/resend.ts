@@ -61,3 +61,22 @@ export const emailTemplates = {
     html: base(`<h2 style="font-size:20px;font-weight:400;">✓ Identity Verified</h2>${p(`Hi ${name}, your identity has been verified. Your profile now displays the Verified badge.`)}${btn('https://internationalescorts.com/dashboard', 'View Profile')}`)
   }),
 }
+
+export async function sendAdminEmail(subject: string, html: string) {
+  await sendEmail({ to: 'support@internationalescorts.com', subject, html })
+}
+
+export const adminEmailTemplates = {
+  newEscortSignup: (name: string, city: string, country: string, email: string) => ({
+    subject: `New escort signup: ${name}`,
+    html: base(`<h2 style="font-size:20px;font-weight:400;">New Escort Signup</h2>${p(`<strong style="color:#e7e5e4;">${name}</strong> from ${city}, ${country} has signed up and is awaiting approval.`)}${p(`Email: ${email}`)}<a href="https://internationalescorts.com/admin" style="display:inline-block;margin-top:16px;background:#b45309;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:14px;">Review in Admin →</a>`)
+  }),
+  newAgencySignup: (name: string, city: string, country: string, email: string) => ({
+    subject: `New agency signup: ${name}`,
+    html: base(`<h2 style="font-size:20px;font-weight:400;">New Agency Signup</h2>${p(`<strong style="color:#e7e5e4;">${name}</strong> from ${city}, ${country} has signed up and is awaiting approval.`)}${p(`Email: ${email}`)}<a href="https://internationalescorts.com/admin" style="display:inline-block;margin-top:16px;background:#b45309;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:14px;">Review in Admin →</a>`)
+  }),
+  newVerification: (name: string, email: string) => ({
+    subject: `New verification request: ${name}`,
+    html: base(`<h2 style="font-size:20px;font-weight:400;">New Verification Request</h2>${p(`<strong style="color:#e7e5e4;">${name}</strong> (${email}) has submitted their verification documents for review.`)}<a href="https://internationalescorts.com/admin" style="display:inline-block;margin-top:16px;background:#b45309;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;font-size:14px;">Review in Admin →</a>`)
+  }),
+}
