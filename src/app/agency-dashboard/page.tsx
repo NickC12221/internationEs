@@ -538,6 +538,16 @@ export default function AgencyDashboardPage() {
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
+                        {(model as any).isVerified ? (
+                          <div className="mt-1.5 flex items-center justify-center gap-1 text-xs text-blue-400">
+                            <CheckCircle className="h-3 w-3" /> Verified
+                          </div>
+                        ) : (
+                          <button onClick={() => setVerifyingModel(model)}
+                            className="mt-1.5 w-full rounded-lg bg-blue-950/30 border border-blue-900/50 py-1 text-xs text-blue-400 hover:bg-blue-950/60 transition-colors">
+                            🔒 Submit Verification
+                          </button>
+                        )}
                       </div>
                     </div>
                   )
