@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 export async function GET(req: NextRequest) {
   try {
     const { prisma } = await import('@/lib/db/prisma')
+    const { getSessionFromRequest } = await import('@/lib/auth/jwt')
+    const session = await getSessionFromRequest(req)
     const { searchParams } = new URL(req.url)
     const page = parseInt(searchParams.get('page') || '1')
     const pageSize = parseInt(searchParams.get('pageSize') || '32')
@@ -61,7 +63,18 @@ export async function GET(req: NextRequest) {
       prisma.profile.count({ where })
     ])
 
-    return NextResponse.json({ success: true, data: profiles, total, totalPages: Math.ceil(total / pageSize), page })
+    // Add isFavorited flag if user is logged in
+    let favoriteIds = new Set<string>()
+    if (session) {
+      const favorites = await prisma.favorite.findMany({
+        where: { userId: session.id },
+        select: { profileId: true }
+      })
+      favoriteIds = new Set(favorites.map(f => f.profileId))
+    }
+
+    const profilesWithFav = profiles.map(p => ({ ...p, isFavorited: favoriteIds.has(p.id) }))
+    return NextResponse.json({ success: true, data: profilesWithFav, total, totalPages: Math.ceil(total / pageSize), page })
   } catch (err) {
     console.error(err)
     return NextResponse.json({ success: false, error: 'Server error' }, { status: 500 })
