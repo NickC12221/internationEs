@@ -7,6 +7,7 @@ import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
 import VerificationUpload from '@/components/profile/VerificationUpload'
+import AgencyEscortVerifyModal from '@/components/profile/AgencyEscortVerifyModal'
 import ReportButton from '@/components/support/ReportButton'
 
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
@@ -94,6 +95,7 @@ export default function AgencyDashboardPage() {
   const [loadingImages, setLoadingImages] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [uploadingVideo, setUploadingVideo] = useState(false)
+  const [verifyingModel, setVerifyingModel] = useState<any>(null)
   const [modelVideoUrl, setModelVideoUrl] = useState<string | null>(null)
 
   // Agency settings
@@ -400,10 +402,10 @@ export default function AgencyDashboardPage() {
                 {agency?.isPremium ? '● Premium Active' : '● Standard Account'}
               </div>
               {agency?.subscriptionExpiresAt && <div className="text-xs text-stone-600">Expires {new Date(agency.subscriptionExpiresAt).toLocaleDateString()}</div>}
-              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/{agency?.isPremium ? 20 : 5}</span></div>
+              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/20</span></div>
               <div className="text-xs text-stone-500">Models</div>
               <div className="h-1 w-20 overflow-hidden rounded-full bg-stone-700 mt-1 ml-auto">
-                <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / (agency?.isPremium ? 20 : 5)) * 100}%` }} />
+                <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / 20) * 100}%` }} />
               </div>
             </div>
           </div>
@@ -471,8 +473,12 @@ export default function AgencyDashboardPage() {
         {tab === 'models' && (
           <>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-stone-500">{slotsUsed} of {agency?.isPremium ? 20 : 5} escort slots used</p>
-              <button onClick={() => { const limit = agency?.isPremium ? 20 : 5; slotsUsed < limit ? setShowAddModal(true) : alert(agency?.isPremium ? 'Model limit reached (20/20)' : 'Free plan limited to 5 models. Upgrade to Premium for up to 20 models.') }}
+              <p className="text-sm text-stone-500">{slotsUsed} of 20 model slots used</p>
+              <div className="flex items-center gap-2 text-xs text-stone-500 mb-2">
+                <span>{slotsUsed} / {agency?.isPremium ? 20 : 5} escorts</span>
+                {!agency?.isPremium && <span className="text-stone-600">· Upgrade for up to 20</span>}
+              </div>
+              <button onClick={() => { const limit = agency?.isPremium ? 20 : 5; slotsUsed < limit ? setShowAddModal(true) : alert(agency?.isPremium ? 'Model limit reached (20/20)' : 'Free plan is limited to 5 escorts. Upgrade to Premium for up to 20.') }}
                 className="flex items-center gap-2 rounded-lg bg-amber-700 px-4 py-2 text-sm font-medium text-white hover:bg-amber-600 transition-colors">
                 <Plus className="h-4 w-4" /> Add Escort
               </button>
@@ -532,16 +538,6 @@ export default function AgencyDashboardPage() {
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        {(model as any).isVerified ? (
-                          <div className="mt-1.5 flex items-center justify-center gap-1 text-xs text-blue-400">
-                            <CheckCircle className="h-3 w-3" /> Verified
-                          </div>
-                        ) : (
-                          <button onClick={() => openEdit(model)}
-                            className="mt-1.5 w-full rounded-lg bg-blue-950/30 border border-blue-900/50 py-1 text-xs text-blue-400 hover:bg-blue-950/60 transition-colors">
-                            🔒 Submit Verification
-                          </button>
-                        )}
                       </div>
                     </div>
                   )
@@ -694,8 +690,7 @@ export default function AgencyDashboardPage() {
         )}
       </div>
 
-      <div className="mt-10 flex items-center justify-center gap-3 pb-4 flex-wrap">
-        <Link href="/info" className="flex items-center gap-1.5 rounded-xl border border-stone-700 px-4 py-2 text-sm text-stone-400 hover:border-stone-500 hover:text-stone-200 transition-colors">ℹ How It Works</Link>
+      <div className="mt-10 flex items-center justify-center gap-3 pb-4">
         <ContactSupportButton />
         <ReportButton />
       </div>
@@ -851,6 +846,18 @@ export default function AgencyDashboardPage() {
         </div>
       )}
 
+      {/* Verify Escort Modal */}
+      {verifyingModel && (
+        <AgencyEscortVerifyModal
+          profileId={verifyingModel.id}
+          displayName={verifyingModel.displayName}
+          isVerified={(verifyingModel as any).isVerified || false}
+          verificationStatus={(verifyingModel as any).verificationStatus || null}
+          adminNotes={(verifyingModel as any).adminNotes || null}
+          onClose={() => setVerifyingModel(null)}
+        />
+      )}
+
       {/* Edit Model Modal */}
       {editingModel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-stone-950/80 px-4 backdrop-blur-sm">
@@ -964,18 +971,6 @@ export default function AgencyDashboardPage() {
                     <p className="text-xs text-stone-600">Upgrade this escort to Premium to enable video upload</p>
                   </div>
                 )}
-              </div>
-
-              {/* Identity Verification */}
-              <div className="mb-5 border-b border-stone-800 pb-5">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-medium text-stone-300">Identity Verification</h3>
-                  {(editingModel as any)?.isVerified && (
-                    <span className="flex items-center gap-1 text-xs text-blue-400 bg-blue-950/30 px-2 py-1 rounded-full">✓ Verified</span>
-                  )}
-                </div>
-                <p className="text-xs text-stone-500 mb-3">Submit ID and a video selfie to get the verified badge on this escort's profile.</p>
-                <VerificationUpload profileId={editingModel?.id} isVerified={(editingModel as any)?.isVerified} />
               </div>
 
               {/* Edit form */}
