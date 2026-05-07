@@ -71,19 +71,14 @@ export async function PATCH(req: NextRequest) {
       await prisma.agency.update({ where: { id }, data: { approvalStatus: action, isActive: approved } })
       const agency = await prisma.agency.findUnique({ where: { id }, select: { userId: true, name: true } })
       if (agency) {
-        await prisma.notification.create({ data: {
+        const { notifyUser } = await import('@/lib/notify')
+        await notifyUser({
           userId: agency.userId,
           type: approved ? 'VERIFICATION_APPROVED' : 'VERIFICATION_REJECTED',
           title: approved ? '🎉 Agency Approved!' : 'Agency Not Approved',
-          body: approved ? 'Your agency is now live on the directory.' : `Your agency was not approved. ${adminNotes || 'It may have broken one of our listing rules.'} Please update your details and contact support to resubmit.`,
-        }}).catch(() => {})
-        // Send email
-        const agencyUser = await prisma.user.findUnique({ where: { id: agency.userId }, select: { email: true } })
-        if (agencyUser?.email) {
-          const { sendEmail, emailTemplates } = await import('@/lib/email/resend')
-          const tmpl = approved ? emailTemplates.agencyApproved(agency.name) : emailTemplates.agencyRejected(agency.name, adminNotes)
-          await sendEmail({ to: agencyUser.email, ...tmpl }).catch(() => {})
-        }
+          body: approved ? 'Your agency is now live on the directory. Start adding escorts from your dashboard.' : `Your agency was not approved. ${adminNotes || 'It may have broken one of our listing rules.'} Please contact support.`,
+          link: '/agency-dashboard',
+        })
       }
     }
 

@@ -26,25 +26,25 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         where: { userId: verification.userId },
         data: { isVerified: true, isActive: true }
       })
-      await prisma.notification.create({
-        data: {
-          userId: verification.userId,
-          type: 'VERIFICATION_APPROVED',
-          title: '✓ Identity Verified!',
-          body: 'Your verification has been approved. Your profile now displays the verified badge.',
-        }
-      }).catch(() => {})
+      const { notifyUser } = await import('@/lib/notify')
+      await notifyUser({
+        userId: verification.userId,
+        type: 'VERIFICATION_APPROVED',
+        title: '✓ Identity Verified!',
+        body: 'Your verification has been approved. Your profile now displays the verified badge.',
+        link: '/dashboard/verify',
+      })
     }
 
     if (action === 'REJECTED') {
-      await prisma.notification.create({
-        data: {
-          userId: verification.userId,
-          type: 'VERIFICATION_REJECTED',
-          title: 'Verification Not Approved',
-          body: adminNotes ? `Your verification was not approved: ${adminNotes}` : 'Your documents could not be verified. Please resubmit with clearer photos.',
-        }
-      }).catch(() => {})
+      const { notifyUser: notifyRejected } = await import('@/lib/notify')
+      await notifyRejected({
+        userId: verification.userId,
+        type: 'VERIFICATION_REJECTED',
+        title: 'Verification Not Approved',
+        body: adminNotes ? `Your verification was not approved: ${adminNotes}` : 'Your documents could not be verified. Please resubmit with clearer photos.',
+        link: '/dashboard/verify',
+      })
     }
 
     return NextResponse.json({ success: true })
