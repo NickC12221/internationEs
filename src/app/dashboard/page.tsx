@@ -529,14 +529,6 @@ function ModelDashboard({ user }: { user: any }) {
             <p className="text-xs text-stone-500">{profile?.images?.length || 0} / 15 photos</p>
           </div>
         </Link>
-        <Link href="/dashboard/favorites"
-          className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
-          <Heart className="h-5 w-5 text-stone-400" />
-          <div>
-            <p className="text-sm font-medium text-stone-200">Saved Escorts</p>
-            <p className="text-xs text-stone-500">Your liked profiles</p>
-          </div>
-        </Link>
         <Link href="/dashboard/bookings"
           className="flex items-center gap-3 rounded-xl border border-stone-800 bg-stone-900 p-4 hover:border-stone-700 transition-colors">
           <Calendar className="h-5 w-5 text-stone-400" />
