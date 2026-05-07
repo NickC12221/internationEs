@@ -126,15 +126,14 @@ export async function POST(req: NextRequest) {
       if (profile) modelContext = ` regarding ${profile.displayName}`
     }
 
-    await prisma.notification.create({
-      data: {
-        userId: recipientUserId,
-        type: 'new_message',
-        title: 'New message',
-        body: `${senderName} sent you a message${modelContext}`,
-        link: `/dashboard/inbox`,
-      }
-    })
+    const { notifyUser } = await import('@/lib/notify')
+    await notifyUser({
+      userId: recipientUserId,
+      type: 'new_message',
+      title: `New message from ${senderName}`,
+      body: `${senderName} sent you a message${modelContext}`,
+      link: '/dashboard/inbox',
+    }).catch(() => {})
 
     return NextResponse.json({ success: true, data: { conversationId, message } })
   } catch (err) {
