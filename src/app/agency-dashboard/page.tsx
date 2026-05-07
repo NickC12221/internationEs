@@ -2,7 +2,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Building2, Plus, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Twitter, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
+import { Building2, Plus, Clock, Trash2, Star, Users, MapPin, CheckCircle, Edit3, X, Upload, Loader2, Globe, Twitter, Phone, Mail, Camera, Link as LinkIcon, MessageSquare, RefreshCw } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import ContactSupportButton from '@/components/support/ContactSupportButton'
 import ProfileExtrasForm from '@/components/profile/ProfileExtrasForm'
@@ -402,7 +402,7 @@ export default function AgencyDashboardPage() {
                 {agency?.isPremium ? '● Premium Active' : '● Standard Account'}
               </div>
               {agency?.subscriptionExpiresAt && <div className="text-xs text-stone-600">Expires {new Date(agency.subscriptionExpiresAt).toLocaleDateString()}</div>}
-              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/20</span></div>
+              <div className="text-2xl font-light text-stone-100 mt-1">{slotsUsed}<span className="text-stone-600 text-base">/{agency?.isPremium ? 20 : 5}</span></div>
               <div className="text-xs text-stone-500">Models</div>
               <div className="h-1 w-20 overflow-hidden rounded-full bg-stone-700 mt-1 ml-auto">
                 <div className="h-full rounded-full bg-amber-600" style={{ width: `${(slotsUsed / 20) * 100}%` }} />
@@ -473,7 +473,7 @@ export default function AgencyDashboardPage() {
         {tab === 'models' && (
           <>
             <div className="mb-4 flex items-center justify-between">
-              <p className="text-sm text-stone-500">{slotsUsed} of 20 model slots used</p>
+              <p className="text-sm text-stone-500">{slotsUsed} of {agency?.isPremium ? 20 : 5} escort slots used</p>
               <div className="flex items-center gap-2 text-xs text-stone-500 mb-2">
                 <span>{slotsUsed} / {agency?.isPremium ? 20 : 5} escorts</span>
                 {!agency?.isPremium && <span className="text-stone-600">· Upgrade for up to 20</span>}
@@ -538,9 +538,13 @@ export default function AgencyDashboardPage() {
                             <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        {(model as any).isVerified ? (
-                          <div className="mt-1.5 flex items-center justify-center gap-1 text-xs text-blue-400">
-                            <CheckCircle className="h-3 w-3" /> Verified
+                        {model.isVerified ? (
+                          <div className="mt-1.5 flex items-center justify-center gap-1 rounded-lg bg-blue-950/30 border border-blue-900/50 py-1 text-xs text-blue-400 cursor-default">
+                            <CheckCircle className="h-3 w-3" /> Verified Escort
+                          </div>
+                        ) : (model as any).verificationStatus === 'PENDING' ? (
+                          <div className="mt-1.5 flex items-center justify-center gap-1 rounded-lg bg-amber-950/30 border border-amber-900/50 py-1 text-xs text-amber-400 cursor-default">
+                            ⏳ Verification Submitted
                           </div>
                         ) : (
                           <button onClick={() => setVerifyingModel(model)}

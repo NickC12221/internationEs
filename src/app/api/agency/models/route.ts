@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
       where: { agencyId: agency.id },
       include: {
         profile: {
-          include: { images: { orderBy: { order: 'asc' } } }
+          include: { images: { orderBy: { order: 'asc' } }, user: { include: { verificationRequest: { select: { status: true } } } } }
         }
       },
       orderBy: { createdAt: 'desc' }
@@ -102,7 +102,10 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: models.map(m => m.profile),
+      data: models.map(m => ({
+        ...m.profile,
+        verificationStatus: (m.profile as any).user?.verificationRequest?.status || null
+      })),
       total: models.length,
     })
   } catch (err) {
