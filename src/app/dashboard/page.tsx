@@ -397,6 +397,7 @@ function ModelDashboard({ user }: { user: any }) {
                   <input value={form.phone} onChange={e => setForm((p: any) => ({ ...p, phone: e.target.value }))}
                     className="flex-1 rounded-lg border border-stone-700 bg-stone-800 px-3 py-2 text-sm text-stone-100 focus:border-amber-700 focus:outline-none" placeholder="7911123456" />
                 </div>
+              </div>
               <div>
                 <label className="mb-1 block text-xs text-stone-500">Twitter/X</label>
                 <input value={form.twitter} onChange={e => setForm((p: any) => ({ ...p, twitter: e.target.value }))}
