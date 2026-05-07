@@ -158,7 +158,9 @@ export default async function ModelProfilePage({ params }: Props) {
               </div>
 
               {/* Book + Contact buttons — client component for auth gating */}
-              <FavoriteButton profileId={profile.id} />
+              <div className="mb-3">
+                <FavoriteButton profileId={profile.id} />
+              </div>
               <BookContactButtons
                 profileSlug={profile.slug}
                 profileName={profile.displayName}
