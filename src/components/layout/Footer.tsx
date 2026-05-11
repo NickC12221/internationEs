@@ -31,9 +31,9 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* For Models */}
+          {/* For Escorts */}
           <div>
-            <h4 className="text-xs font-medium uppercase tracking-wider text-stone-400 mb-4">For Models</h4>
+            <h4 className="text-xs font-medium uppercase tracking-wider text-stone-400 mb-4">For Escorts</h4>
             <ul className="space-y-2.5">
               {[
                 { label: 'Create Profile', href: '/signup' },
