@@ -66,7 +66,7 @@ export default function Footer() {
 
         <div className="mt-10 border-t border-stone-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-stone-600">
-            © {new Date().getFullYear()} International Escorts. All rights reserved.
+            © {new Date().getFullYear()} <a href="/" className="hover:text-stone-400 transition-colors">International Escorts</a>. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="text-xs text-stone-600 hover:text-stone-400 transition-colors">Privacy Policy</Link>
