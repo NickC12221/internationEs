@@ -25,8 +25,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     })
     if (!profile) return { title: 'Model Not Found' }
     return {
-      title: `${profile.displayName} — ${profile.city}, ${profile.country}`,
-      description: profile.bio || `Professional model based in ${profile.city}, ${profile.country}.`,
+      title: `${profile.displayName} — Independent Escort in ${profile.city}, ${profile.country}`,
+      description: profile.bio
+        ? profile.bio.substring(0, 150)
+        : `${profile.displayName} is a verified independent escort based in ${profile.city}, ${profile.country}. View rates, photos and availability. Book discreetly online.`,
+      keywords: [`escort ${profile.city}`, `independent escort ${profile.city}`, `${profile.displayName}`, `escorts in ${profile.city}`, `${profile.country} escorts`],
       openGraph: { images: profile.profileImageUrl ? [profile.profileImageUrl] : [] },
     }
   } catch {
