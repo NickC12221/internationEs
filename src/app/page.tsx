@@ -5,12 +5,12 @@ import ModelGrid from '@/components/model/ModelGrid'
 export const dynamic = 'force-dynamic'
 
 export const metadata = {
-  title: 'International Escorts — Discover Professional Models Worldwide',
-  description: 'Browse verified premium escorts and agencies from cities around the world. Find and book premium escorts for companionship, events and more.',
+  title: 'International Escorts — Premium Escort Directory Worldwide',
+  description: 'Find verified independent escorts and escort agencies worldwide. Browse by city, view photos, rates and availability. Discreet bookings across the UK, Europe, UAE and beyond.',
   keywords: 'escort directory, female models, book an escort, modelling agency, international models, escort directory',
   openGraph: {
-    title: 'International Escorts — Discover Professional Models Worldwide',
-    description: 'Browse verified premium escorts and agencies from cities around the world.',
+    title: 'International Escorts — Premium Escort Directory Worldwide',
+    description: 'Find verified independent escorts and escort agencies worldwide. Browse by city, view photos, rates and availability.',
     type: 'website',
   },
 }
