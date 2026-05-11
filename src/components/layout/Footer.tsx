@@ -11,7 +11,7 @@ export default function Footer() {
               IE
             </span>
             <p className="mt-3 text-sm text-stone-500 leading-relaxed">
-              The premier directory connecting clients with premium escorts and agencies worldwide.
+              The world's most trusted international escort directory. Connecting discerning clients with verified escorts and premium agencies worldwide.
             </p>
           </div>
 
