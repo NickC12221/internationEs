@@ -7,12 +7,12 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'International Escorts — Discover Models Worldwide',
+    default: 'International Escorts — Premium Escort Directory Worldwide',
     template: '%s | International Escorts',
   },
   description:
-    'The premier directory for premium international escorts. Browse by country and city, connect with verified talent worldwide.',
-  keywords: ['escort directory', 'female models', 'modeling agency', 'book an escort'],
+    'International Escorts is the premier global escort directory. Browse verified independent escorts and escort agencies by city and country. Discreet, professional and worldwide.',
+  keywords: ['escort directory', 'international escorts', 'escort agency', 'independent escort', 'escorts near me', 'verified escorts', 'premium escort', 'book an escort', 'female escorts', 'escort service'],
   openGraph: {
     type: 'website',
     siteName: 'International Escorts',
